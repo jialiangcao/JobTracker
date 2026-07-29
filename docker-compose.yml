@@ -8,6 +8,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      # Read-only config: edit and `jobtrack sources sync`, no rebuild needed.
+      - ./sources.toml:/app/sources.toml:ro
     command: sh -c "jobtrack db-upgrade && jobtrack serve"
     logging:
       driver: json-file

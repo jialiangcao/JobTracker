@@ -10,6 +10,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from jobtrack.db.models import Candidate, FilterRule, Run, RunSourceResult, SeenJob, Source
 from jobtrack.filtering.dedup import canonical_url, content_hash
 from jobtrack.schema import JobPosting
+from jobtrack.sources_file import SourceSpec, merge_config
 
 
 def utcnow() -> datetime:
@@ -33,6 +34,37 @@ async def add_source(session: AsyncSession, kind: str, name: str, config: dict[s
 
 async def list_sources(session: AsyncSession) -> list[Source]:
     return list(await session.scalars(select(Source).order_by(Source.id)))
+
+
+async def find_source(session: AsyncSession, kind: str, name: str) -> Source | None:
+    return await session.scalar(select(Source).where(Source.kind == kind, Source.name == name))
+
+
+async def sync_source(session: AsyncSession, spec: SourceSpec) -> str:
+    """Reconcile one declared source into the DB. Returns 'added'|'updated'|'unchanged'.
+
+    Config is merged so app-written keys (etag, last_modified) survive; `enabled` is only
+    applied when the file states it, so syncing never silently re-enables a source the
+    circuit breaker disabled."""
+    source = await find_source(session, spec.kind, spec.name)
+    if source is None:
+        source = await add_source(session, spec.kind, spec.name, dict(spec.config))
+        if spec.enabled is False:
+            source.enabled = False
+        return "added"
+
+    changed = False
+    merged = merge_config(source.config, spec.config)
+    if merged != source.config:
+        source.config = merged
+        changed = True
+    if spec.enabled is not None and spec.enabled != source.enabled:
+        source.enabled = spec.enabled
+        if spec.enabled:
+            source.consecutive_failures = 0
+            source.disabled_reason = None
+        changed = True
+    return "updated" if changed else "unchanged"
 
 
 async def set_source_enabled(session: AsyncSession, source_id: int, enabled: bool) -> None:

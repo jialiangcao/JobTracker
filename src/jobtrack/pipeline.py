@@ -16,6 +16,7 @@ from jobtrack.config import Settings
 from jobtrack.db import repo
 from jobtrack.db.engine import SessionFactory
 from jobtrack.db.models import Run, Source
+from jobtrack.filtering.eligibility import is_eligible
 from jobtrack.filtering.rules import RuleSet, compile_rules, matches
 from jobtrack.notify import alerts
 from jobtrack.notify.discord import DiscordSender, drain_outbox
@@ -56,7 +57,9 @@ class RunSummary:
     new_jobs: list[JobPosting] = field(default_factory=list)  # populated for dry runs
 
 
-async def _process_source(ref: SourceRef, client: PoliteClient, rules: RuleSet) -> SourceOutcome:
+async def _process_source(
+    ref: SourceRef, client: PoliteClient, rules: RuleSet, settings: Settings
+) -> SourceOutcome:
     start = time.monotonic()
     outcome = SourceOutcome(source_id=ref.id, status="ok")
     try:
@@ -90,7 +93,9 @@ async def _process_source(ref: SourceRef, client: PoliteClient, rules: RuleSet) 
         if job is None:
             outcome.unparseable_count += 1
             continue
-        if matches(job, rules):
+        if matches(job, rules) and is_eligible(
+            job, max_age_days=settings.max_posting_age_days, us_only=settings.us_only
+        ):
             outcome.matched.append(job)
 
     outcome.duration_ms = int((time.monotonic() - start) * 1000)
@@ -125,7 +130,9 @@ async def run_pipeline(
     log.info("run started", run_id=run_id, sources=len(refs), dry_run=dry_run)
 
     async with PoliteClient(settings) as client:
-        outcomes = await asyncio.gather(*(_process_source(ref, client, rules) for ref in refs))
+        outcomes = await asyncio.gather(
+            *(_process_source(ref, client, rules, settings) for ref in refs)
+        )
 
     summary = RunSummary(run_id=run_id, status="success", sources_total=len(refs))
     async with session_factory() as session:
@@ -143,8 +150,13 @@ async def run_pipeline(
                 summary.sources_ok += 1
                 summary.jobs_fetched += outcome.fetched_count
                 summary.jobs_matched += len(outcome.matched)
+                # A dry run must not store fetch validators: doing so would make the next
+                # real run get a 304 and silently skip the jobs the preview just listed.
                 await repo.record_source_success(
-                    session, source, etag=outcome.etag, last_modified=outcome.last_modified
+                    session,
+                    source,
+                    etag=None if dry_run else outcome.etag,
+                    last_modified=None if dry_run else outcome.last_modified,
                 )
                 for job in outcome.matched:
                     if dry_run:

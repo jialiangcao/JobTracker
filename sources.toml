@@ -1,0 +1,229 @@
+# Declarative source list. Apply with: jobtrack sources sync
+#
+#   kind      greenhouse | lever | ashby | smartrecruiters | workable | scrape
+#   name      display name; (kind, name) identifies the source, so renaming adds a new one
+#   slug      board token from the company's job-board URL (ATS kinds)
+#   url       careers page (scrape kind only)
+#   enabled   omit to leave the DB alone — the circuit breaker also writes this field
+#
+# Optional per-source tuning:
+#   adapter    = "fallback"
+#   politeness = { max_concurrency = 1, min_delay_ms = 3000, max_delay_ms = 6000 }
+#
+# Every slug below was verified against the live API on 2026-07-28 and returned postings.
+# Before adding one, confirm the board answers:
+#   curl -s "https://boards-api.greenhouse.io/v1/boards/<slug>/jobs" | jq '.jobs | length'
+#   curl -s "https://api.ashbyhq.com/posting-api/job-board/<slug>" | jq '.jobs | length'
+#   curl -s "https://api.lever.co/v0/postings/<slug>?mode=json" | jq 'length'
+# A 404 or a count of 0 means the slug is wrong or the board is empty — jobtrack will
+# report a healthy fetch of zero jobs either way, so it fails silently if you skip this.
+
+# --- Greenhouse ---------------------------------------------------------------
+
+[[source]]
+kind = "greenhouse"
+name = "Stripe"
+slug = "stripe"
+
+[[source]]
+kind = "greenhouse"
+name = "Databricks"
+slug = "databricks"
+
+[[source]]
+kind = "greenhouse"
+name = "Anthropic"
+slug = "anthropic"
+
+[[source]]
+kind = "greenhouse"
+name = "Samsara"
+slug = "samsara"
+
+[[source]]
+kind = "greenhouse"
+name = "Brex"
+slug = "brex"
+
+[[source]]
+kind = "greenhouse"
+name = "Cloudflare"
+slug = "cloudflare"
+
+[[source]]
+kind = "greenhouse"
+name = "Verkada"
+slug = "verkada"
+
+[[source]]
+kind = "greenhouse"
+name = "Roblox"
+slug = "roblox"
+
+[[source]]
+kind = "greenhouse"
+name = "Scale AI"
+slug = "scaleai"
+
+[[source]]
+kind = "greenhouse"
+name = "Pinterest"
+slug = "pinterest"
+
+[[source]]
+kind = "greenhouse"
+name = "Reddit"
+slug = "reddit"
+
+[[source]]
+kind = "greenhouse"
+name = "GitLab"
+slug = "gitlab"
+
+[[source]]
+kind = "greenhouse"
+name = "Airbnb"
+slug = "airbnb"
+
+[[source]]
+kind = "greenhouse"
+name = "Affirm"
+slug = "affirm"
+
+[[source]]
+kind = "greenhouse"
+name = "Figma"
+slug = "figma"
+
+[[source]]
+kind = "greenhouse"
+name = "Lyft"
+slug = "lyft"
+
+[[source]]
+kind = "greenhouse"
+name = "Coinbase"
+slug = "coinbase"
+
+[[source]]
+kind = "greenhouse"
+name = "Flexport"
+slug = "flexport"
+
+[[source]]
+kind = "greenhouse"
+name = "Asana"
+slug = "asana"
+
+[[source]]
+kind = "greenhouse"
+name = "Twilio"
+slug = "twilio"
+
+[[source]]
+kind = "greenhouse"
+name = "Robinhood"
+slug = "robinhood"
+
+[[source]]
+kind = "greenhouse"
+name = "Instacart"
+slug = "instacart"
+
+[[source]]
+kind = "greenhouse"
+name = "Chime"
+slug = "chime"
+
+[[source]]
+kind = "greenhouse"
+name = "Duolingo"
+slug = "duolingo"
+
+[[source]]
+kind = "greenhouse"
+name = "SoFi"
+slug = "sofi"
+
+[[source]]
+kind = "greenhouse"
+name = "Amplitude"
+slug = "amplitude"
+
+[[source]]
+kind = "greenhouse"
+name = "Discord"
+slug = "discord"
+
+[[source]]
+kind = "greenhouse"
+name = "Airtable"
+slug = "airtable"
+
+[[source]]
+kind = "greenhouse"
+name = "Dropbox"
+slug = "dropbox"
+
+# Quant / trading — heavy CS internship recruiters.
+
+[[source]]
+kind = "greenhouse"
+name = "DRW"
+slug = "drweng"
+
+[[source]]
+kind = "greenhouse"
+name = "IMC Trading"
+slug = "imc"
+
+[[source]]
+kind = "greenhouse"
+name = "Akuna Capital"
+slug = "akunacapital"
+
+# --- Ashby --------------------------------------------------------------------
+
+[[source]]
+kind = "ashby"
+name = "OpenAI"
+slug = "openai"
+
+[[source]]
+kind = "ashby"
+name = "ClickHouse"
+slug = "clickhouse"
+
+[[source]]
+kind = "ashby"
+name = "Ramp"
+slug = "ramp"
+
+[[source]]
+kind = "ashby"
+name = "Replit"
+slug = "replit"
+
+[[source]]
+kind = "ashby"
+name = "Modal"
+slug = "modal"
+
+[[source]]
+kind = "ashby"
+name = "Linear"
+slug = "linear"
+
+# --- Lever --------------------------------------------------------------------
+
+[[source]]
+kind = "lever"
+name = "Palantir"
+slug = "palantir"
+
+# --- SmartRecruiters ----------------------------------------------------------
+
+[[source]]
+kind = "smartrecruiters"
+name = "Visa"
+slug = "visa"

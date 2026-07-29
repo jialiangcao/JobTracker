@@ -3,6 +3,7 @@
 import asyncio
 import json
 from collections.abc import Awaitable, Callable
+from pathlib import Path
 
 import typer
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,6 +16,7 @@ from jobtrack.filtering.rules import SEED_RULES
 from jobtrack.notify import alerts
 from jobtrack.observability.logging import setup_logging
 from jobtrack.pipeline import run_pipeline
+from jobtrack.sources_file import SourcesFileError, load_sources_file
 
 app = typer.Typer(help="jobtrack — job source poller with Discord delivery")
 sources_app = typer.Typer(help="Manage sources")
@@ -137,6 +139,45 @@ def sources_list() -> None:
                 f"#{s.id} {s.kind}/{s.name} {flag} failures={s.consecutive_failures} "
                 f"config={json.dumps(s.config)}"
             )
+
+    _with_session(fn)
+
+
+@sources_app.command("sync")
+def sources_sync(
+    path: str = typer.Argument("sources.toml", help="Declarative source list"),
+    prune: bool = typer.Option(
+        False, "--prune", help="Disable (never delete) sources absent from the file."
+    ),
+) -> None:
+    """Reconcile sources.toml into the database: add new, update changed, report extras."""
+    try:
+        specs = load_sources_file(Path(path))
+    except SourcesFileError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(1) from exc
+
+    async def fn(session: AsyncSession) -> None:
+        counts = {"added": 0, "updated": 0, "unchanged": 0}
+        for spec in specs:
+            action = await repo.sync_source(session, spec)
+            counts[action] += 1
+            if action != "unchanged":
+                typer.echo(f"{action}: {spec.kind}/{spec.name}")
+
+        declared = {(s.kind, s.name) for s in specs}
+        extras = [s for s in await repo.list_sources(session) if (s.kind, s.name) not in declared]
+        for extra in extras:
+            if prune and extra.enabled:
+                await repo.set_source_enabled(session, extra.id, False)
+                typer.echo(f"disabled: {extra.kind}/{extra.name} (not in {path})")
+            elif not prune:
+                typer.echo(f"in db but not in {path}: {extra.kind}/{extra.name}")
+
+        typer.echo(
+            f"{counts['added']} added, {counts['updated']} updated, "
+            f"{counts['unchanged']} unchanged, {len(extras)} not declared"
+        )
 
     _with_session(fn)
 

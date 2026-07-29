@@ -68,6 +68,9 @@ def matches(job: JobPosting, rules: RuleSet) -> bool:
 
 SEED_RULES: list[tuple[str, str, str, str]] = [
     # (name, kind, field, pattern)
+    # Posting age and US-only location are NOT here — neither is a regex over a single
+    # field. They run after these rules; see filtering/eligibility.py, tuned with the
+    # MAX_POSTING_AGE_DAYS and US_ONLY settings.
     ("role", "include", "title", r"\bintern(ship)?\b|\bco[-\s]?op\b"),
     (
         "cs",

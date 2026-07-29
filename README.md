@@ -18,9 +18,7 @@ cp .env.example .env                     # fill in at least DATABASE_URL
 
 uv run jobtrack db-upgrade               # apply migrations
 uv run jobtrack rules seed               # default CS-internship filter rules
-uv run jobtrack sources add greenhouse Stripe --slug stripe
-uv run jobtrack sources add lever Plaid --slug plaid
-uv run jobtrack sources add ashby Ramp --slug ramp
+uv run jobtrack sources sync             # apply sources.toml
 
 uv run jobtrack run-once --dry-run       # fetch + filter, print would-be matches, no writes
 uv run jobtrack run-once                 # real run (sends to Discord if configured)
@@ -42,11 +40,34 @@ uv run pytest
 | `jobtrack serve` | Polling loop (what the container runs) |
 | `jobtrack run-once [--dry-run]` | Single run; dry-run writes no dedup state and sends nothing |
 | `jobtrack db-upgrade` | Apply Alembic migrations |
-| `jobtrack sources add/list/enable/disable` | Manage sources (`--slug` for ATS boards, `--url` for scrape) |
+| `jobtrack sources sync [path] [--prune]` | Apply `sources.toml` (the normal way to manage sources) |
+| `jobtrack sources add/list/enable/disable` | One-off source edits (`--slug` for ATS boards, `--url` for scrape) |
 | `jobtrack rules seed/add/list/enable/disable` | Manage regex filter rules |
 
 Filter semantics: rules are grouped by name prefix (`season:*` is one group); a job must
 match every include group (rules within a group are OR'd) and no exclude rule.
+
+## Sources
+
+`sources.toml` is the source of truth for which boards get polled; commit changes to it and
+apply them with `jobtrack sources sync`.
+
+```toml
+[[source]]
+kind = "greenhouse"     # greenhouse | lever | ashby | smartrecruiters | workable | scrape
+name = "Stripe"         # (kind, name) identifies the source — renaming creates a new one
+slug = "stripe"         # board token from the job-board URL; scrape kinds use url instead
+```
+
+Sync adds new entries, updates changed ones, and leaves anything already correct alone. It
+merges into `sources.config` rather than replacing it, so the ETag/Last-Modified validators
+the pipeline stores there survive. `enabled` is only applied when the file states it
+explicitly, so a sync won't resurrect a source the circuit breaker disabled — set
+`enabled = true` to re-enable deliberately. Sources present in the database but absent from
+the file are reported, and disabled (never deleted) with `--prune`.
+
+The file is bind-mounted read-only into the app container, so no rebuild is needed:
+`docker compose run --rm app jobtrack sources sync`.
 
 ## Discord setup
 
@@ -78,10 +99,11 @@ git clone <this repo> jobtrack && cd jobtrack
 cp .env.example .env && $EDITOR .env              # set POSTGRES_PASSWORD, tokens, DSNs
 docker compose up -d --build
 docker compose exec app jobtrack rules seed
-docker compose exec app jobtrack sources add greenhouse Stripe --slug stripe
+docker compose exec app jobtrack sources sync
 ```
 
-Subsequent deploys: `./deploy.sh`.
+Subsequent deploys: `./deploy.sh`, then `docker compose exec app jobtrack sources sync` if
+`sources.toml` changed.
 
 Nightly DB backup (host crontab, `crontab -e`):
 

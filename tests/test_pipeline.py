@@ -113,7 +113,11 @@ async def test_source_failure_is_contained_and_breaker_trips(
 @respx.mock
 async def test_dry_run_writes_nothing(settings: Settings, session_factory: SessionFactory) -> None:
     await seed(session_factory)
-    respx.get(GH_URL).mock(return_value=httpx.Response(200, json={"jobs": [GREENHOUSE_JOB]}))
+    respx.get(GH_URL).mock(
+        return_value=httpx.Response(
+            200, json={"jobs": [GREENHOUSE_JOB]}, headers={"ETag": 'W/"v1"'}
+        )
+    )
 
     summary = await run_pipeline(settings, session_factory, dry_run=True)
     assert summary.jobs_new == 1
@@ -122,6 +126,38 @@ async def test_dry_run_writes_nothing(settings: Settings, session_factory: Sessi
     async with session_factory() as session:
         assert await session.scalar(select(SeenJob)) is None
         assert await session.scalar(select(Candidate)) is None
+        source = await session.scalar(select(Source))
+        assert source is not None
+        # No stored validator, so the next real run still gets a 200 and sends the match.
+        assert "etag" not in source.config
+
+
+@respx.mock
+async def test_dry_run_preview_does_not_suppress_the_next_real_run(
+    settings: Settings, session_factory: SessionFactory
+) -> None:
+    """Previewing a board must not consume its freshness (a dry run used to store the
+    ETag, so the following real run got a 304 and sent nothing)."""
+    settings = settings.model_copy(update={"discord_bot_token": "", "discord_channel_id": ""})
+    await seed(session_factory)
+    route = respx.get(GH_URL).mock(
+        return_value=httpx.Response(
+            200, json={"jobs": [GREENHOUSE_JOB]}, headers={"ETag": 'W/"v1"'}
+        )
+    )
+
+    preview = await run_pipeline(settings, session_factory, dry_run=True)
+    assert preview.jobs_new == 1
+    assert "If-None-Match" not in route.calls.last.request.headers
+
+    real = await run_pipeline(settings, session_factory)
+    assert real.jobs_new == 1  # the previewed job is still delivered
+    async with session_factory() as session:
+        candidate = await session.scalar(select(Candidate))
+        assert candidate is not None
+        source = await session.scalar(select(Source))
+        assert source is not None
+        assert source.config.get("etag") == 'W/"v1"'  # the real run does store it
 
 
 @respx.mock

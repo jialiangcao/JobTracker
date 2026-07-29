@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     healthchecks_url: str = ""  # base ping URL, e.g. https://hc-ping.com/<uuid>
     environment: str = "dev"
 
+    # Post-rule filters (see filtering/eligibility.py — not expressible as regex rules)
+    max_posting_age_days: int = 30  # 0 disables; postings with no date are always kept
+    us_only: bool = True
+
     # Scheduler
     run_interval_seconds: int = 1800
 
