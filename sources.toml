@@ -10,7 +10,12 @@
 #   adapter    = "fallback"
 #   politeness = { max_concurrency = 1, min_delay_ms = 3000, max_delay_ms = 6000 }
 #
-# Every slug below was verified against the live API on 2026-07-28 and returned postings.
+# Every slug below was verified against the live API on 2026-07-29 and returned at least one
+# posting. Boards were collected from the SimplifyJobs Summer2026-Internships and
+# New-Grad-Positions listings (slugs read straight out of real job URLs) plus a hand-built
+# sweep of tech companies, AI labs, quant shops and startups; guessed slugs were kept only
+# when the board's own advertised name matched the company.
+#
 # Before adding one, confirm the board answers:
 #   curl -s "https://boards-api.greenhouse.io/v1/boards/<slug>/jobs" | jq '.jobs | length'
 #   curl -s "https://api.ashbyhq.com/posting-api/job-board/<slug>" | jq '.jobs | length'
@@ -18,72 +23,148 @@
 # A 404 or a count of 0 means the slug is wrong or the board is empty — jobtrack will
 # report a healthy fetch of zero jobs either way, so it fails silently if you skip this.
 
-# --- Greenhouse ---------------------------------------------------------------
+
+# --- Greenhouse ------------------------------------------------------------------
 
 [[source]]
 kind = "greenhouse"
-name = "Stripe"
-slug = "stripe"
+name = "10a Labs"
+slug = "10alabs"
 
 [[source]]
 kind = "greenhouse"
-name = "Databricks"
-slug = "databricks"
+name = "10Beauty"
+slug = "10beauty"
 
 [[source]]
 kind = "greenhouse"
-name = "Anthropic"
-slug = "anthropic"
+name = "10x Genomics"
+slug = "10xgenomics"
 
 [[source]]
 kind = "greenhouse"
-name = "Samsara"
-slug = "samsara"
+name = "2K"
+slug = "2k"
 
 [[source]]
 kind = "greenhouse"
-name = "Brex"
-slug = "brex"
+name = "2U"
+slug = "2u"
 
 [[source]]
 kind = "greenhouse"
-name = "Cloudflare"
-slug = "cloudflare"
+name = "3RedPartners"
+slug = "3redpartners"
 
 [[source]]
 kind = "greenhouse"
-name = "Verkada"
-slug = "verkada"
+name = "84.51 Degrees"
+slug = "8451"
 
 [[source]]
 kind = "greenhouse"
-name = "Roblox"
-slug = "roblox"
+name = "9th Way Insignia"
+slug = "9thwayinsignia"
 
 [[source]]
 kind = "greenhouse"
-name = "Scale AI"
-slug = "scaleai"
+name = "A Thinking Ape"
+slug = "athinkingape"
 
 [[source]]
 kind = "greenhouse"
-name = "Pinterest"
-slug = "pinterest"
+name = "Abacus Insights"
+slug = "abacusinsights"
 
 [[source]]
 kind = "greenhouse"
-name = "Reddit"
-slug = "reddit"
+name = "AbelsonTaylor"
+slug = "abelsontaylor"
 
 [[source]]
 kind = "greenhouse"
-name = "GitLab"
-slug = "gitlab"
+name = "Abnormal"
+slug = "abnormalsecurity"
 
 [[source]]
 kind = "greenhouse"
-name = "Airbnb"
-slug = "airbnb"
+name = "Acadia Pharmaceuticals Inc."
+slug = "acadiapharmaceuticals"
+
+[[source]]
+kind = "greenhouse"
+name = "Accenture"
+slug = "accenturefederalservices"
+
+[[source]]
+kind = "greenhouse"
+name = "AccuWeather"
+slug = "accuweather"
+
+[[source]]
+kind = "greenhouse"
+name = "ACLU Kentucky"
+slug = "acluinternships"
+
+[[source]]
+kind = "greenhouse"
+name = "ActBlue"
+slug = "actblue"
+
+[[source]]
+kind = "greenhouse"
+name = "AcuityMD"
+slug = "acuitymd"
+
+[[source]]
+kind = "greenhouse"
+name = "Ad Council"
+slug = "adcouncil"
+
+[[source]]
+kind = "greenhouse"
+name = "Ada"
+slug = "ada18"
+
+[[source]]
+kind = "greenhouse"
+name = "Addepar"
+slug = "addepar1"
+
+[[source]]
+kind = "greenhouse"
+name = "Adorama"
+slug = "creatorsworkhere"
+
+[[source]]
+kind = "greenhouse"
+name = "Adswerve"
+slug = "adswerveinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Advanced Space"
+slug = "advancedspace"
+
+[[source]]
+kind = "greenhouse"
+name = "Advanced Technology Services"
+slug = "advancedtechnologyservices"
+
+[[source]]
+kind = "greenhouse"
+name = "AdvancedMD"
+slug = "advancedmd"
+
+[[source]]
+kind = "greenhouse"
+name = "Adyen"
+slug = "adyen"
+
+[[source]]
+kind = "greenhouse"
+name = "Aevex Aerospace"
+slug = "aevexaerospace"
 
 [[source]]
 kind = "greenhouse"
@@ -92,68 +173,38 @@ slug = "affirm"
 
 [[source]]
 kind = "greenhouse"
-name = "Figma"
-slug = "figma"
+name = "AffirmedRx"
+slug = "affirmedrxpbc"
 
 [[source]]
 kind = "greenhouse"
-name = "Lyft"
-slug = "lyft"
+name = "Agility Robotics"
+slug = "agilityrobotics"
 
 [[source]]
 kind = "greenhouse"
-name = "Coinbase"
-slug = "coinbase"
+name = "Agoda"
+slug = "agoda"
 
 [[source]]
 kind = "greenhouse"
-name = "Flexport"
-slug = "flexport"
+name = "AgWest Farm Credit"
+slug = "agwestfarmcredit"
 
 [[source]]
 kind = "greenhouse"
-name = "Asana"
-slug = "asana"
+name = "Airbnb"
+slug = "airbnb"
 
 [[source]]
 kind = "greenhouse"
-name = "Twilio"
-slug = "twilio"
+name = "AirCapture"
+slug = "aircapture"
 
 [[source]]
 kind = "greenhouse"
-name = "Robinhood"
-slug = "robinhood"
-
-[[source]]
-kind = "greenhouse"
-name = "Instacart"
-slug = "instacart"
-
-[[source]]
-kind = "greenhouse"
-name = "Chime"
-slug = "chime"
-
-[[source]]
-kind = "greenhouse"
-name = "Duolingo"
-slug = "duolingo"
-
-[[source]]
-kind = "greenhouse"
-name = "SoFi"
-slug = "sofi"
-
-[[source]]
-kind = "greenhouse"
-name = "Amplitude"
-slug = "amplitude"
-
-[[source]]
-kind = "greenhouse"
-name = "Discord"
-slug = "discord"
+name = "Airship"
+slug = "airship"
 
 [[source]]
 kind = "greenhouse"
@@ -162,10 +213,1328 @@ slug = "airtable"
 
 [[source]]
 kind = "greenhouse"
+name = "Akuna Capital"
+slug = "akunacapital"
+
+[[source]]
+kind = "greenhouse"
+name = "Alamar Biosciences"
+slug = "alamarbiosciences"
+
+[[source]]
+kind = "greenhouse"
+name = "Alarm.com"
+slug = "alarmcom"
+
+[[source]]
+kind = "greenhouse"
+name = "AlayaCare"
+slug = "alayacare"
+
+[[source]]
+kind = "greenhouse"
+name = "Alchemer"
+slug = "alchemer"
+
+[[source]]
+kind = "greenhouse"
+name = "AlixPartners"
+slug = "alixpartners"
+
+[[source]]
+kind = "greenhouse"
+name = "ALKU"
+slug = "alku"
+
+[[source]]
+kind = "greenhouse"
+name = "Alloy"
+slug = "alloy"
+
+[[source]]
+kind = "greenhouse"
+name = "Alo Yoga"
+slug = "aloyoga"
+
+[[source]]
+kind = "greenhouse"
+name = "Alpaca"
+slug = "alpaca"
+
+[[source]]
+kind = "greenhouse"
+name = "Alpha FMC"
+slug = "alphafmcroles"
+
+[[source]]
+kind = "greenhouse"
+name = "AlphaSense"
+slug = "alphasense"
+
+[[source]]
+kind = "greenhouse"
+name = "AlphaSights"
+slug = "alphasights"
+
+[[source]]
+kind = "greenhouse"
+name = "Alta Resource Technologies"
+slug = "altaresourcetechnologiesinc"
+
+[[source]]
+kind = "greenhouse"
+name = "ALTEN Technology"
+slug = "altentechnologyusa"
+
+[[source]]
+kind = "greenhouse"
+name = "AMAROK Security"
+slug = "amarok"
+
+[[source]]
+kind = "greenhouse"
+name = "American Institutes for Research"
+slug = "americaninstitutesforresearch"
+
+[[source]]
+kind = "greenhouse"
+name = "Amp Robotics"
+slug = "ampsortation"
+
+[[source]]
+kind = "greenhouse"
+name = "Amplitude"
+slug = "amplitude"
+
+[[source]]
+kind = "greenhouse"
+name = "Amwins"
+slug = "amwins"
+
+[[source]]
+kind = "greenhouse"
+name = "Anaplan"
+slug = "anaplan"
+
+[[source]]
+kind = "greenhouse"
+name = "Andrew Morgan"
+slug = "andrewmorgan"
+
+[[source]]
+kind = "greenhouse"
+name = "Anduril"
+slug = "andurilindustries"
+
+[[source]]
+kind = "greenhouse"
+name = "Anthropic"
+slug = "anthropic"
+
+[[source]]
+kind = "greenhouse"
+name = "Antora Energy"
+slug = "antora"
+
+[[source]]
+kind = "greenhouse"
+name = "Apera AI"
+slug = "aperaaiinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Aperia Technologies"
+slug = "aperiatechnologies"
+
+[[source]]
+kind = "greenhouse"
+name = "Apex Companies"
+slug = "apexcompanies"
+
+[[source]]
+kind = "greenhouse"
+name = "Appian"
+slug = "appian"
+
+[[source]]
+kind = "greenhouse"
+name = "AppLovin"
+slug = "applovin"
+
+[[source]]
+kind = "greenhouse"
+name = "Apptronik"
+slug = "apptronik"
+
+[[source]]
+kind = "greenhouse"
+name = "Aquatic Capital Management"
+slug = "aquaticcapitalmanagement"
+
+[[source]]
+kind = "greenhouse"
+name = "Arc"
+slug = "arcboatcompany"
+
+[[source]]
+kind = "greenhouse"
+name = "Arcana"
+slug = "arcanaanalytics"
+
+[[source]]
+kind = "greenhouse"
+name = "Arcesium"
+slug = "arcesiumllc"
+
+[[source]]
+kind = "greenhouse"
+name = "Archer"
+slug = "archer56"
+
+[[source]]
+kind = "greenhouse"
+name = "Arena Club"
+slug = "arenaclub"
+
+[[source]]
+kind = "greenhouse"
+name = "Argmax"
+slug = "argmax"
+
+[[source]]
+kind = "greenhouse"
+name = "Arize AI"
+slug = "arizeai"
+
+[[source]]
+kind = "greenhouse"
+name = "Armada"
+slug = "armada"
+
+[[source]]
+kind = "greenhouse"
+name = "Array"
+slug = "array"
+
+[[source]]
+kind = "greenhouse"
+name = "Artefact"
+slug = "artefactlinkedin"
+
+[[source]]
+kind = "greenhouse"
+name = "Artisan Partners"
+slug = "artisanpartners"
+
+[[source]]
+kind = "greenhouse"
+name = "Arvinas"
+slug = "arvinas"
+
+[[source]]
+kind = "greenhouse"
+name = "Asana"
+slug = "asana"
+
+[[source]]
+kind = "greenhouse"
+name = "AssemblyAI"
+slug = "assemblyai"
+
+[[source]]
+kind = "greenhouse"
+name = "Asset Living"
+slug = "assetliving"
+
+[[source]]
+kind = "greenhouse"
+name = "Assured Guaranty"
+slug = "assuredguaranty"
+
+[[source]]
+kind = "greenhouse"
+name = "Astera Labs"
+slug = "asteralabs"
+
+[[source]]
+kind = "greenhouse"
+name = "Astranis"
+slug = "astranis"
+
+[[source]]
+kind = "greenhouse"
+name = "Atlas Energy Solutions"
+slug = "atlassand"
+
+[[source]]
+kind = "greenhouse"
+name = "ATLAS SP"
+slug = "atlassp"
+
+[[source]]
+kind = "greenhouse"
+name = "Atomic Machines"
+slug = "atomicmachines"
+
+[[source]]
+kind = "greenhouse"
+name = "Atoms"
+slug = "cssmerge"
+
+[[source]]
+kind = "greenhouse"
+name = "Attain Partners"
+slug = "attainpartners"
+
+[[source]]
+kind = "greenhouse"
+name = "Attention Arc"
+slug = "attentionarc"
+
+[[source]]
+kind = "greenhouse"
+name = "Attentive"
+slug = "attentive"
+
+[[source]]
+kind = "greenhouse"
+name = "Auctane"
+slug = "auctane"
+
+[[source]]
+kind = "greenhouse"
+name = "Audax Group"
+slug = "audaxgroup"
+
+[[source]]
+kind = "greenhouse"
+name = "Aura"
+slug = "aura"
+
+[[source]]
+kind = "greenhouse"
+name = "Aurora Innovation"
+slug = "aurorainnovation"
+
+[[source]]
+kind = "greenhouse"
+name = "Authentic"
+slug = "authenticbrandsgroup"
+
+[[source]]
+kind = "greenhouse"
+name = "Avathon"
+slug = "avathon"
+
+[[source]]
+kind = "greenhouse"
+name = "AvePoint"
+slug = "avepoint"
+
+[[source]]
+kind = "greenhouse"
+name = "Avetta, LLC"
+slug = "avetta"
+
+[[source]]
+kind = "greenhouse"
+name = "Aviatrix"
+slug = "aviatrix"
+
+[[source]]
+kind = "greenhouse"
+name = "AvidXchange"
+slug = "avidxchangeinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Avride"
+slug = "avride"
+
+[[source]]
+kind = "greenhouse"
+name = "Awardco"
+slug = "awardco"
+
+[[source]]
+kind = "greenhouse"
+name = "Awetomaton"
+slug = "awetomaton"
+
+[[source]]
+kind = "greenhouse"
+name = "Axiom"
+slug = "axiom"
+
+[[source]]
+kind = "greenhouse"
+name = "Axiomatic_AI"
+slug = "axiomaticai"
+
+[[source]]
+kind = "greenhouse"
+name = "Axios"
+slug = "axios"
+
+[[source]]
+kind = "greenhouse"
+name = "Axis Automation"
+slug = "axiscompany"
+
+[[source]]
+kind = "greenhouse"
+name = "Axle"
+slug = "axle"
+
+[[source]]
+kind = "greenhouse"
+name = "Axogen"
+slug = "axogen"
+
+[[source]]
+kind = "greenhouse"
+name = "Axon"
+slug = "axon"
+
+[[source]]
+kind = "greenhouse"
+name = "Axonius"
+slug = "axonius"
+
+[[source]]
+kind = "greenhouse"
+name = "AXQ Capital"
+slug = "axq"
+
+[[source]]
+kind = "greenhouse"
+name = "AXS"
+slug = "axs"
+
+[[source]]
+kind = "greenhouse"
+name = "Axsome Therapeutics Inc"
+slug = "axsometherapeutics"
+
+[[source]]
+kind = "greenhouse"
+name = "Axuall"
+slug = "axuall"
+
+[[source]]
+kind = "greenhouse"
+name = "Aypa Power"
+slug = "aypapower"
+
+[[source]]
+kind = "greenhouse"
+name = "Babel Street"
+slug = "babelstreet"
+
+[[source]]
+kind = "greenhouse"
+name = "BambooHR"
+slug = "bamboohr17"
+
+[[source]]
+kind = "greenhouse"
+name = "Bandwidth"
+slug = "bandwidth"
+
+[[source]]
+kind = "greenhouse"
+name = "Baselayer"
+slug = "baselayer"
+
+[[source]]
+kind = "greenhouse"
+name = "Beautiful.ai"
+slug = "beautifulai"
+
+[[source]]
+kind = "greenhouse"
+name = "Benjamin"
+slug = "benjamin"
+
+[[source]]
+kind = "greenhouse"
+name = "BetterHelp"
+slug = "betterhelpcom"
+
+[[source]]
+kind = "greenhouse"
+name = "Betterment"
+slug = "betterment"
+
+[[source]]
+kind = "greenhouse"
+name = "Bevi"
+slug = "bevicareers"
+
+[[source]]
+kind = "greenhouse"
+name = "Beyond"
+slug = "beyond"
+
+[[source]]
+kind = "greenhouse"
+name = "BeyondTrust"
+slug = "beyondtrust"
+
+[[source]]
+kind = "greenhouse"
+name = "BGE"
+slug = "bgeinc"
+
+[[source]]
+kind = "greenhouse"
+name = "BigID"
+slug = "bigid"
+
+[[source]]
+kind = "greenhouse"
+name = "BillionToOne"
+slug = "billiontoone"
+
+[[source]]
+kind = "greenhouse"
+name = "Billtrust US"
+slug = "billtrust"
+
+[[source]]
+kind = "greenhouse"
+name = "BioMed Realty"
+slug = "biomedrealty"
+
+[[source]]
+kind = "greenhouse"
+name = "Bird"
+slug = "bird"
+
+[[source]]
+kind = "greenhouse"
+name = "Birdy Grey"
+slug = "birdygrey"
+
+[[source]]
+kind = "greenhouse"
+name = "Bitwarden"
+slug = "bitwarden"
+
+[[source]]
+kind = "greenhouse"
+name = "BlackEdge Capital"
+slug = "blackedgecapital"
+
+[[source]]
+kind = "greenhouse"
+name = "BlackSky"
+slug = "blacksky"
+
+[[source]]
+kind = "greenhouse"
+name = "Block"
+slug = "block"
+
+[[source]]
+kind = "greenhouse"
+name = "Blockchain.com"
+slug = "blockchain"
+
+[[source]]
+kind = "greenhouse"
+name = "Bloomreach"
+slug = "bloomreach"
+
+[[source]]
+kind = "greenhouse"
+name = "Blue Sky Innovators"
+slug = "blueskyinnovators"
+
+[[source]]
+kind = "greenhouse"
+name = "BlueLabs Analytics"
+slug = "bluelabsanalyticsinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Blueprint Technologies"
+slug = "bpcs"
+
+[[source]]
+kind = "greenhouse"
+name = "Bluestaq"
+slug = "bluestaq"
+
+[[source]]
+kind = "greenhouse"
+name = "Bot Auto"
+slug = "botauto"
+
+[[source]]
+kind = "greenhouse"
+name = "Bottom Line"
+slug = "bottomlinetechnologies"
+
+[[source]]
+kind = "greenhouse"
+name = "Box"
+slug = "boxinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Bracebridge Capital"
+slug = "bracebridgecapital"
+
+[[source]]
+kind = "greenhouse"
+name = "Brave"
+slug = "brave"
+
+[[source]]
+kind = "greenhouse"
+name = "Braze"
+slug = "braze"
+
+[[source]]
+kind = "greenhouse"
+name = "Breeze Airways"
+slug = "breezeairways"
+
+[[source]]
+kind = "greenhouse"
+name = "Breeze.cash"
+slug = "breezecash"
+
+[[source]]
+kind = "greenhouse"
+name = "Brevium"
+slug = "brevium"
+
+[[source]]
+kind = "greenhouse"
+name = "Brex"
+slug = "brex"
+
+[[source]]
+kind = "greenhouse"
+name = "BrightAI"
+slug = "brightai"
+
+[[source]]
+kind = "greenhouse"
+name = "Brooklinen"
+slug = "brooklinen"
+
+[[source]]
+kind = "greenhouse"
+name = "Bugcrowd"
+slug = "bugcrowd"
+
+[[source]]
+kind = "greenhouse"
+name = "Built In"
+slug = "builtin"
+
+[[source]]
+kind = "greenhouse"
+name = "Built Technologies"
+slug = "getbuilt"
+
+[[source]]
+kind = "greenhouse"
+name = "Businessolver"
+slug = "businessolver"
+
+[[source]]
+kind = "greenhouse"
+name = "ButcherBox"
+slug = "butcherbox"
+
+[[source]]
+kind = "greenhouse"
+name = "Butternut Box"
+slug = "butternutbox"
+
+[[source]]
+kind = "greenhouse"
+name = "Buyers Edge Platform"
+slug = "buyersedgeplatformrecruiting"
+
+[[source]]
+kind = "greenhouse"
+name = "Cadwell"
+slug = "cadwell"
+
+[[source]]
+kind = "greenhouse"
+name = "Calendly"
+slug = "calendly"
+
+[[source]]
+kind = "greenhouse"
+name = "Calm.com"
+slug = "calm"
+
+[[source]]
+kind = "greenhouse"
+name = "Calyxo"
+slug = "calyxo"
+
+[[source]]
+kind = "greenhouse"
+name = "Cambridge Mobile Telematics"
+slug = "cmt"
+
+[[source]]
+kind = "greenhouse"
+name = "Candidly"
+slug = "candidly"
+
+[[source]]
+kind = "greenhouse"
+name = "Canonical"
+slug = "canonical"
+
+[[source]]
+kind = "greenhouse"
+name = "Capco"
+slug = "capco"
+
+[[source]]
+kind = "greenhouse"
+name = "Capella"
+slug = "capellaspace"
+
+[[source]]
+kind = "greenhouse"
+name = "Capital on Tap"
+slug = "capitalontap"
+
+[[source]]
+kind = "greenhouse"
+name = "Capital Technology Group"
+slug = "capitaltg"
+
+[[source]]
+kind = "greenhouse"
+name = "Captivation"
+slug = "captivation"
+
+[[source]]
+kind = "greenhouse"
+name = "CaptiveAire"
+slug = "captiveaire"
+
+[[source]]
+kind = "greenhouse"
+name = "Carbon Direct"
+slug = "carbondirect"
+
+[[source]]
+kind = "greenhouse"
+name = "Carbon Robotics"
+slug = "carbonrobotics"
+
+[[source]]
+kind = "greenhouse"
+name = "Carbon, Inc."
+slug = "carbon"
+
+[[source]]
+kind = "greenhouse"
+name = "CarbonChain"
+slug = "carbonchain"
+
+[[source]]
+kind = "greenhouse"
+name = "Carefeed"
+slug = "carefeed"
+
+[[source]]
+kind = "greenhouse"
+name = "CarGurus"
+slug = "cargurus"
+
+[[source]]
+kind = "greenhouse"
+name = "Carta"
+slug = "carta"
+
+[[source]]
+kind = "greenhouse"
+name = "Cartesian"
+slug = "cartesiansystems"
+
+[[source]]
+kind = "greenhouse"
+name = "Carvana"
+slug = "carvana"
+
+[[source]]
+kind = "greenhouse"
+name = "CaseGuard"
+slug = "caseguard"
+
+[[source]]
+kind = "greenhouse"
+name = "Catapult"
+slug = "catapultsports"
+
+[[source]]
+kind = "greenhouse"
+name = "Cato Networks"
+slug = "catonetworks"
+
+[[source]]
+kind = "greenhouse"
+name = "CB Insights"
+slug = "cbinsights"
+
+[[source]]
+kind = "greenhouse"
+name = "Celigo"
+slug = "celigo"
+
+[[source]]
+kind = "greenhouse"
+name = "Cell Signaling Technology"
+slug = "cellsignalingtechnology79"
+
+[[source]]
+kind = "greenhouse"
+name = "CelLink Corporation"
+slug = "cellink"
+
+[[source]]
+kind = "greenhouse"
+name = "Celonis"
+slug = "celonis"
+
+[[source]]
+kind = "greenhouse"
+name = "Censys"
+slug = "censys"
+
+[[source]]
+kind = "greenhouse"
+name = "Centria Autism"
+slug = "centriaautism"
+
+[[source]]
+kind = "greenhouse"
+name = "CGS Immersive"
+slug = "immersive"
+
+[[source]]
+kind = "greenhouse"
+name = "Chainguard"
+slug = "chainguard"
+
+[[source]]
+kind = "greenhouse"
+name = "Chan Zuckerberg Initiative"
+slug = "chanzuckerberginitiative"
+
+[[source]]
+kind = "greenhouse"
+name = "ChargePoint"
+slug = "chargepoint"
+
+[[source]]
+kind = "greenhouse"
+name = "charles"
+slug = "charles"
+
+[[source]]
+kind = "greenhouse"
+name = "Charles River Associates (CRA)"
+slug = "charlesriverassociates"
+
+[[source]]
+kind = "greenhouse"
+name = "CharterUP"
+slug = "charterup"
+
+[[source]]
+kind = "greenhouse"
+name = "Checkr"
+slug = "checkr"
+
+[[source]]
+kind = "greenhouse"
+name = "Chicago Trading Company"
+slug = "chicagotrading"
+
+[[source]]
+kind = "greenhouse"
+name = "Chime"
+slug = "chime"
+
+[[source]]
+kind = "greenhouse"
+name = "CircleCI"
+slug = "circleci"
+
+[[source]]
+kind = "greenhouse"
+name = "Cision"
+slug = "cision"
+
+[[source]]
+kind = "greenhouse"
+name = "Civis Analytics"
+slug = "civisanalytics"
+
+[[source]]
+kind = "greenhouse"
+name = "Clarity Innovations"
+slug = "clarityinnovates"
+
+[[source]]
+kind = "greenhouse"
+name = "CLEAR"
+slug = "clear"
+
+[[source]]
+kind = "greenhouse"
+name = "Clearway Energy"
+slug = "clearwayjobs"
+
+[[source]]
+kind = "greenhouse"
+name = "Clerkie"
+slug = "clerkie"
+
+[[source]]
+kind = "greenhouse"
+name = "Climate Corps"
+slug = "cc"
+
+[[source]]
+kind = "greenhouse"
+name = "ClimateAI"
+slug = "climateai"
+
+[[source]]
+kind = "greenhouse"
+name = "Clinical Architecture"
+slug = "clinicalarchitecture"
+
+[[source]]
+kind = "greenhouse"
+name = "Clockwork Systems"
+slug = "clockworksystems"
+
+[[source]]
+kind = "greenhouse"
+name = "Cloudflare"
+slug = "cloudflare"
+
+[[source]]
+kind = "greenhouse"
+name = "CloudKitchens"
+slug = "css"
+
+[[source]]
+kind = "greenhouse"
+name = "Cobalt"
+slug = "cobaltio"
+
+[[source]]
+kind = "greenhouse"
+name = "Cockroach Labs"
+slug = "cockroachlabs"
+
+[[source]]
+kind = "greenhouse"
+name = "Codal"
+slug = "codalinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Cognitiv"
+slug = "cognitiv"
+
+[[source]]
+kind = "greenhouse"
+name = "Cohere Health"
+slug = "coherehealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Coinbase"
+slug = "coinbase"
+
+[[source]]
+kind = "greenhouse"
+name = "CoLab Software"
+slug = "colabsoftware"
+
+[[source]]
+kind = "greenhouse"
+name = "CommerceIQ"
+slug = "commerceiq"
+
+[[source]]
+kind = "greenhouse"
+name = "Commvault"
+slug = "commvault"
+
+[[source]]
+kind = "greenhouse"
+name = "Comstock Companies"
+slug = "comstock"
+
+[[source]]
+kind = "greenhouse"
+name = "Connections Health Solutions"
+slug = "connectionshealthsolutions"
+
+[[source]]
+kind = "greenhouse"
+name = "Conner Strong & Buckelew"
+slug = "connerstrongbuckelew"
+
+[[source]]
+kind = "greenhouse"
+name = "Constant Contact"
+slug = "constantcontact"
+
+[[source]]
+kind = "greenhouse"
+name = "Constellation"
+slug = "constellationsoftwareinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Construction Resources"
+slug = "constructionresources"
+
+[[source]]
+kind = "greenhouse"
+name = "Consumer Reports"
+slug = "consumerreports"
+
+[[source]]
+kind = "greenhouse"
+name = "Convene"
+slug = "convene"
+
+[[source]]
+kind = "greenhouse"
+name = "Cook Systems"
+slug = "cooksys"
+
+[[source]]
+kind = "greenhouse"
+name = "CookUnity"
+slug = "cookunity"
+
+[[source]]
+kind = "greenhouse"
+name = "Corcept Therapeutics"
+slug = "corcepttherapeutics"
+
+[[source]]
+kind = "greenhouse"
+name = "CoreWeave"
+slug = "coreweave"
+
+[[source]]
+kind = "greenhouse"
+name = "Correlation One"
+slug = "correlationone"
+
+[[source]]
+kind = "greenhouse"
+name = "Cortland"
+slug = "cortland"
+
+[[source]]
+kind = "greenhouse"
+name = "Cottingham & Butler"
+slug = "cottinghambutlerinsuranceservicesinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Coupang"
+slug = "coupang"
+
+[[source]]
+kind = "greenhouse"
+name = "Coursera"
+slug = "coursera"
+
+[[source]]
+kind = "greenhouse"
+name = "Co–Star"
+slug = "costar"
+
+[[source]]
+kind = "greenhouse"
+name = "CPI Security"
+slug = "cpisecurity"
+
+[[source]]
+kind = "greenhouse"
+name = "Credit Union of Colorado"
+slug = "creditunionofcolorado"
+
+[[source]]
+kind = "greenhouse"
+name = "Cresta"
+slug = "cresta"
+
+[[source]]
+kind = "greenhouse"
+name = "Cribl"
+slug = "cribl"
+
+[[source]]
+kind = "greenhouse"
+name = "Critical Mass"
+slug = "criticalmass"
+
+[[source]]
+kind = "greenhouse"
+name = "Cross River"
+slug = "crossriverbank"
+
+[[source]]
+kind = "greenhouse"
+name = "Crunchyroll"
+slug = "crunchyroll"
+
+[[source]]
+kind = "greenhouse"
+name = "Culture Amp"
+slug = "cultureamp"
+
+[[source]]
+kind = "greenhouse"
+name = "Culture Biosciences"
+slug = "culturebiosciences"
+
+[[source]]
+kind = "greenhouse"
+name = "Custom Computer Specialists"
+slug = "customcomputerspecialists"
+
+[[source]]
+kind = "greenhouse"
+name = "Customer.io"
+slug = "customerio"
+
+[[source]]
+kind = "greenhouse"
+name = "Cymulate"
+slug = "cymulate"
+
+[[source]]
+kind = "greenhouse"
+name = "Cypress Creek Renewables"
+slug = "cypresscreekrenewables"
+
+[[source]]
+kind = "greenhouse"
+name = "D2L"
+slug = "d2l"
+
+[[source]]
+kind = "greenhouse"
+name = "D3"
+slug = "d3"
+
+[[source]]
+kind = "greenhouse"
+name = "Da Vinci"
+slug = "davinciderivatives"
+
+[[source]]
+kind = "greenhouse"
+name = "Dark Wolf Solutions"
+slug = "darkwolfsolutions"
+
+[[source]]
+kind = "greenhouse"
+name = "Dashlane"
+slug = "dashlane"
+
+[[source]]
+kind = "greenhouse"
+name = "Data Systems Analysts"
+slug = "datasystemsanalystsinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Databricks"
+slug = "databricks"
+
+[[source]]
+kind = "greenhouse"
+name = "Datadog"
+slug = "datadog"
+
+[[source]]
+kind = "greenhouse"
+name = "DataDome"
+slug = "ddome"
+
+[[source]]
+kind = "greenhouse"
+name = "DataGrail"
+slug = "datagrail"
+
+[[source]]
+kind = "greenhouse"
+name = "DAVID"
+slug = "david"
+
+[[source]]
+kind = "greenhouse"
+name = "Daybreak Games"
+slug = "daybreakgames"
+
+[[source]]
+kind = "greenhouse"
+name = "DB E.C.O. North America"
+slug = "dbeconorthamerica"
+
+[[source]]
+kind = "greenhouse"
+name = "DebtBook"
+slug = "debtbook"
+
+[[source]]
+kind = "greenhouse"
+name = "DeepMind"
+slug = "deepmind"
+
+[[source]]
+kind = "greenhouse"
+name = "Defense Unicorns"
+slug = "defenseunicorns"
+
+[[source]]
+kind = "greenhouse"
+name = "Descope"
+slug = "descope"
+
+[[source]]
+kind = "greenhouse"
+name = "Descript"
+slug = "descript"
+
+[[source]]
+kind = "greenhouse"
+name = "Detroit Lions"
+slug = "detroitlions"
+
+[[source]]
+kind = "greenhouse"
+name = "DevRev"
+slug = "devrev"
+
+[[source]]
+kind = "greenhouse"
+name = "DH Pace"
+slug = "dhpace"
+
+[[source]]
+kind = "greenhouse"
+name = "Dialpad"
+slug = "dialpad"
+
+[[source]]
+kind = "greenhouse"
+name = "DiDi Global"
+slug = "didi"
+
+[[source]]
+kind = "greenhouse"
+name = "DigiCert"
+slug = "digicert"
+
+[[source]]
+kind = "greenhouse"
+name = "Digs"
+slug = "digs"
+
+[[source]]
+kind = "greenhouse"
+name = "Diligent Corporation"
+slug = "diligentcorporation"
+
+[[source]]
+kind = "greenhouse"
+name = "Diligent Robotics"
+slug = "diligentrobotics"
+
+[[source]]
+kind = "greenhouse"
+name = "Discord"
+slug = "discord"
+
+[[source]]
+kind = "greenhouse"
+name = "DLH"
+slug = "dlhcorporation"
+
+[[source]]
+kind = "greenhouse"
+name = "DMC Engineering"
+slug = "dmcengineering"
+
+[[source]]
+kind = "greenhouse"
+name = "dmg::media"
+slug = "dmgmedia"
+
+[[source]]
+kind = "greenhouse"
+name = "Doctors Without Borders"
+slug = "msfcareers"
+
+[[source]]
+kind = "greenhouse"
+name = "Docugami"
+slug = "docugami"
+
+[[source]]
+kind = "greenhouse"
+name = "DoorDash"
+slug = "doordashusa"
+
+[[source]]
+kind = "greenhouse"
+name = "Dorsia"
+slug = "dorsia"
+
+[[source]]
+kind = "greenhouse"
+name = "Double Good"
+slug = "doublegood"
+
+[[source]]
+kind = "greenhouse"
+name = "DoubleVerify"
+slug = "doubleverify"
+
+[[source]]
+kind = "greenhouse"
+name = "Doximity"
+slug = "doximity"
+
+[[source]]
+kind = "greenhouse"
+name = "DriveWealth"
+slug = "drivewealth"
+
+[[source]]
+kind = "greenhouse"
 name = "Dropbox"
 slug = "dropbox"
-
-# Quant / trading — heavy CS internship recruiters.
 
 [[source]]
 kind = "greenhouse"
@@ -174,20 +1543,4516 @@ slug = "drweng"
 
 [[source]]
 kind = "greenhouse"
+name = "dunnhumby"
+slug = "dunnhumby"
+
+[[source]]
+kind = "greenhouse"
+name = "Duolingo"
+slug = "duolingo"
+
+[[source]]
+kind = "greenhouse"
+name = "DV Trading"
+slug = "dvtrading"
+
+[[source]]
+kind = "greenhouse"
+name = "dv01"
+slug = "dv01"
+
+[[source]]
+kind = "greenhouse"
+name = "EarnIn"
+slug = "earnin"
+
+[[source]]
+kind = "greenhouse"
+name = "Echodyne"
+slug = "echodynecorp"
+
+[[source]]
+kind = "greenhouse"
+name = "edmentum"
+slug = "edmentum"
+
+[[source]]
+kind = "greenhouse"
+name = "Efficient Computer"
+slug = "efficientcomputer"
+
+[[source]]
+kind = "greenhouse"
+name = "Eikon Therapeutics"
+slug = "eikontherapeutics"
+
+[[source]]
+kind = "greenhouse"
+name = "Elastic"
+slug = "elastic"
+
+[[source]]
+kind = "greenhouse"
+name = "Element Biosciences"
+slug = "elementbiosciences"
+
+[[source]]
+kind = "greenhouse"
+name = "Elevations Credit Union"
+slug = "elevationscreditunion"
+
+[[source]]
+kind = "greenhouse"
+name = "Elsevier"
+slug = "elsevier"
+
+[[source]]
+kind = "greenhouse"
+name = "Elwood Technologies"
+slug = "elwoodtechnologies"
+
+[[source]]
+kind = "greenhouse"
+name = "Employee Navigator"
+slug = "employeenavigator"
+
+[[source]]
+kind = "greenhouse"
+name = "Encore"
+slug = "encore"
+
+[[source]]
+kind = "greenhouse"
+name = "Energy Solutions"
+slug = "energysolutions"
+
+[[source]]
+kind = "greenhouse"
+name = "EnergyHub"
+slug = "energyhub"
+
+[[source]]
+kind = "greenhouse"
+name = "Engineers Gate"
+slug = "engineersgate"
+
+[[source]]
+kind = "greenhouse"
+name = "Ennoble Care"
+slug = "ennoblecare"
+
+[[source]]
+kind = "greenhouse"
+name = "Enova"
+slug = "enova"
+
+[[source]]
+kind = "greenhouse"
+name = "ENSCO"
+slug = "ensco"
+
+[[source]]
+kind = "greenhouse"
+name = "Ensemble"
+slug = "ensemble"
+
+[[source]]
+kind = "greenhouse"
+name = "Ensono"
+slug = "ensono"
+
+[[source]]
+kind = "greenhouse"
+name = "Entrupy"
+slug = "entrupy"
+
+[[source]]
+kind = "greenhouse"
+name = "EOS"
+slug = "eositsolutions"
+
+[[source]]
+kind = "greenhouse"
+name = "Epic Games"
+slug = "epicgames"
+
+[[source]]
+kind = "greenhouse"
+name = "EPIC Insurance Brokers & Consultants"
+slug = "edgewoodpartnersinsurancecenter"
+
+[[source]]
+kind = "greenhouse"
+name = "Epic Kids"
+slug = "epickids"
+
+[[source]]
+kind = "greenhouse"
+name = "Esri"
+slug = "esri"
+
+[[source]]
+kind = "greenhouse"
+name = "Eucalyptus"
+slug = "eucalyptus"
+
+[[source]]
+kind = "greenhouse"
+name = "Eudia"
+slug = "eudia"
+
+[[source]]
+kind = "greenhouse"
+name = "Eulerity"
+slug = "eulerity"
+
+[[source]]
+kind = "greenhouse"
+name = "Everlaw"
+slug = "everlaw"
+
+[[source]]
+kind = "greenhouse"
+name = "EverQuote"
+slug = "everquote"
+
+[[source]]
+kind = "greenhouse"
+name = "Evolver"
+slug = "evolver"
+
+[[source]]
+kind = "greenhouse"
+name = "Excel Sports Management"
+slug = "excelsportsmanagement"
+
+[[source]]
+kind = "greenhouse"
+name = "Exiger"
+slug = "exiger"
+
+[[source]]
+kind = "greenhouse"
+name = "ExodusPoint"
+slug = "exoduspoint"
+
+[[source]]
+kind = "greenhouse"
+name = "Expedition Medicines"
+slug = "expedition"
+
+[[source]]
+kind = "greenhouse"
+name = "ezCater"
+slug = "ezcaterinc"
+
+[[source]]
+kind = "greenhouse"
+name = "F. Schumacher & Co."
+slug = "fschumacherco"
+
+[[source]]
+kind = "greenhouse"
+name = "Faherty Brand"
+slug = "fahertybrand"
+
+[[source]]
+kind = "greenhouse"
+name = "Faire"
+slug = "faire"
+
+[[source]]
+kind = "greenhouse"
+name = "Fairlife"
+slug = "fairlife"
+
+[[source]]
+kind = "greenhouse"
+name = "FanDuel"
+slug = "fanduel"
+
+[[source]]
+kind = "greenhouse"
+name = "Fashion Nova"
+slug = "fashionnova"
+
+[[source]]
+kind = "greenhouse"
+name = "Fastly"
+slug = "fastly"
+
+[[source]]
+kind = "greenhouse"
+name = "Federato"
+slug = "federato"
+
+[[source]]
+kind = "greenhouse"
+name = "Fellow"
+slug = "fellow"
+
+[[source]]
+kind = "greenhouse"
+name = "FeverUp"
+slug = "feverup"
+
+[[source]]
+kind = "greenhouse"
+name = "Fideres"
+slug = "fideres"
+
+[[source]]
+kind = "greenhouse"
+name = "Figma"
+slug = "figma"
+
+[[source]]
+kind = "greenhouse"
+name = "Figure"
+slug = "figureai"
+
+[[source]]
+kind = "greenhouse"
+name = "Financial Technology Partners"
+slug = "financialtechnologypartners"
+
+[[source]]
+kind = "greenhouse"
+name = "Fireblocks"
+slug = "fireblocks"
+
+[[source]]
+kind = "greenhouse"
+name = "Fireworks AI"
+slug = "fireworksai"
+
+[[source]]
+kind = "greenhouse"
+name = "First Day"
+slug = "firstday"
+
+[[source]]
+kind = "greenhouse"
+name = "Five Rings Capital"
+slug = "fiveringsllc"
+
+[[source]]
+kind = "greenhouse"
+name = "Five9"
+slug = "five9"
+
+[[source]]
+kind = "greenhouse"
+name = "Fivetran"
+slug = "fivetran"
+
+[[source]]
+kind = "greenhouse"
+name = "Flagship Pioneering"
+slug = "flagshippioneeringinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Flatiron Health"
+slug = "flatironhealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Flex"
+slug = "flex"
+
+[[source]]
+kind = "greenhouse"
+name = "Flexport"
+slug = "flexport"
+
+[[source]]
+kind = "greenhouse"
+name = "FlightHub"
+slug = "flighthub"
+
+[[source]]
+kind = "greenhouse"
+name = "Flip"
+slug = "flip"
+
+[[source]]
+kind = "greenhouse"
+name = "Flow Traders"
+slug = "flowtraders"
+
+[[source]]
+kind = "greenhouse"
+name = "Focus Financial Partners"
+slug = "focusfinancialpartners"
+
+[[source]]
+kind = "greenhouse"
+name = "Foley Hoag"
+slug = "foleyhoag"
+
+[[source]]
+kind = "greenhouse"
+name = "Forbes"
+slug = "forbes"
+
+[[source]]
+kind = "greenhouse"
+name = "Formic"
+slug = "formic"
+
+[[source]]
+kind = "greenhouse"
+name = "Formlabs"
+slug = "formlabs"
+
+[[source]]
+kind = "greenhouse"
+name = "Fortera"
+slug = "forteracorporation"
+
+[[source]]
+kind = "greenhouse"
+name = "Forward Networks"
+slug = "forwardnetworks"
+
+[[source]]
+kind = "greenhouse"
+name = "Fospha"
+slug = "fosphamarketing"
+
+[[source]]
+kind = "greenhouse"
+name = "Found Energy"
+slug = "foundenergy"
+
+[[source]]
+kind = "greenhouse"
+name = "Four Hands"
+slug = "fourhands"
+
+[[source]]
+kind = "greenhouse"
+name = "Four Seasons Garage Doors"
+slug = "fourseasons"
+
+[[source]]
+kind = "greenhouse"
+name = "FourKites"
+slug = "fourkites"
+
+[[source]]
+kind = "greenhouse"
+name = "Fox Creek Veterinary Hospital - Wildwood"
+slug = "fox"
+
+[[source]]
+kind = "greenhouse"
+name = "Freedom Technology Solutions Group"
+slug = "freedomconsulting"
+
+[[source]]
+kind = "greenhouse"
+name = "Freeform"
+slug = "freeformfuturecorp"
+
+[[source]]
+kind = "greenhouse"
+name = "Further"
+slug = "furtherearlycareer"
+
+[[source]]
+kind = "greenhouse"
+name = "Fussball Club Cincinnati LLC (“FC Cincinnati”)"
+slug = "fccincinnati"
+
+[[source]]
+kind = "greenhouse"
+name = "Fuze Health"
+slug = "fuzehealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Gain Theory"
+slug = "gaintheory"
+
+[[source]]
+kind = "greenhouse"
+name = "Galaxy"
+slug = "galaxydigitalservices"
+
+[[source]]
+kind = "greenhouse"
+name = "Galileo"
+slug = "galileo"
+
+[[source]]
+kind = "greenhouse"
+name = "Gallup"
+slug = "gallup"
+
+[[source]]
+kind = "greenhouse"
+name = "Gametime"
+slug = "gametimeunited"
+
+[[source]]
+kind = "greenhouse"
+name = "Garda Capital Partners"
+slug = "gardacp"
+
+[[source]]
+kind = "greenhouse"
+name = "Garner Health"
+slug = "garnerhealth"
+
+[[source]]
+kind = "greenhouse"
+name = "GCM Grosvenor"
+slug = "gcmgrosvenor"
+
+[[source]]
+kind = "greenhouse"
+name = "Gelber Group"
+slug = "gelbergroup"
+
+[[source]]
+kind = "greenhouse"
+name = "Gemini"
+slug = "gemini"
+
+[[source]]
+kind = "greenhouse"
+name = "General Atlantic"
+slug = "generalatlantic"
+
+[[source]]
+kind = "greenhouse"
+name = "General Matter"
+slug = "generalmatter"
+
+[[source]]
+kind = "greenhouse"
+name = "Generate Biomedicines"
+slug = "generatebiomedicines"
+
+[[source]]
+kind = "greenhouse"
+name = "Geneva Trading"
+slug = "genevatrading"
+
+[[source]]
+kind = "greenhouse"
+name = "GenScript"
+slug = "genscript"
+
+[[source]]
+kind = "greenhouse"
+name = "Gensyn"
+slug = "gensyn"
+
+[[source]]
+kind = "greenhouse"
+name = "Geotab"
+slug = "geotab"
+
+[[source]]
+kind = "greenhouse"
+name = "Ghost"
+slug = "ghost"
+
+[[source]]
+kind = "greenhouse"
+name = "Giftogram"
+slug = "giftogram"
+
+[[source]]
+kind = "greenhouse"
+name = "Ginkgo Bioworks"
+slug = "ginkgobioworks"
+
+[[source]]
+kind = "greenhouse"
+name = "GitLab"
+slug = "gitlab"
+
+[[source]]
+kind = "greenhouse"
+name = "Givelify"
+slug = "givelify"
+
+[[source]]
+kind = "greenhouse"
+name = "Glean"
+slug = "gleanwork"
+
+[[source]]
+kind = "greenhouse"
+name = "Global Relay"
+slug = "globalrelay"
+
+[[source]]
+kind = "greenhouse"
+name = "Globalization Partners"
+slug = "globalizationpartners"
+
+[[source]]
+kind = "greenhouse"
+name = "GlossGenius"
+slug = "glossgenius"
+
+[[source]]
+kind = "greenhouse"
+name = "Glydways"
+slug = "glydways"
+
+[[source]]
+kind = "greenhouse"
+name = "GoDaddy"
+slug = "godaddy"
+
+[[source]]
+kind = "greenhouse"
+name = "GoFundMe"
+slug = "gofundme"
+
+[[source]]
+kind = "greenhouse"
+name = "Golden Hippo"
+slug = "goldenhippo"
+
+[[source]]
+kind = "greenhouse"
+name = "Golden Pet Brands"
+slug = "goldenpetbrands"
+
+[[source]]
+kind = "greenhouse"
+name = "Goodnotes"
+slug = "goodnotes"
+
+[[source]]
+kind = "greenhouse"
+name = "Goodway Group"
+slug = "goodwaygroup"
+
+[[source]]
+kind = "greenhouse"
+name = "Goodwin"
+slug = "goodwin"
+
+[[source]]
+kind = "greenhouse"
+name = "Gore Mutual Insurance"
+slug = "goremutualinsurance"
+
+[[source]]
+kind = "greenhouse"
+name = "Gotion"
+slug = "gotion"
+
+[[source]]
+kind = "greenhouse"
+name = "Gradial"
+slug = "gradial"
+
+[[source]]
+kind = "greenhouse"
+name = "Grafana Labs"
+slug = "grafanalabs"
+
+[[source]]
+kind = "greenhouse"
+name = "Graham Capital Management"
+slug = "grahamcapitalmanagement"
+
+[[source]]
+kind = "greenhouse"
+name = "Graphcore"
+slug = "graphcore"
+
+[[source]]
+kind = "greenhouse"
+name = "Grasshopper"
+slug = "grasshopperasia"
+
+[[source]]
+kind = "greenhouse"
+name = "Grassroots Analytics"
+slug = "grassrootsanalytics"
+
+[[source]]
+kind = "greenhouse"
+name = "Greenhouse"
+slug = "greenhouse"
+
+[[source]]
+kind = "greenhouse"
+name = "Greenworks"
+slug = "greenworkssunriseglobalmarketing"
+
+[[source]]
+kind = "greenhouse"
+name = "Groupon"
+slug = "groupon"
+
+[[source]]
+kind = "greenhouse"
+name = "GrowthLoop"
+slug = "growthloop"
+
+[[source]]
+kind = "greenhouse"
+name = "GRVTY"
+slug = "grvty"
+
+[[source]]
+kind = "greenhouse"
+name = "Guardz"
+slug = "guardz"
+
+[[source]]
+kind = "greenhouse"
+name = "Guidepoint"
+slug = "guidepoint"
+
+[[source]]
+kind = "greenhouse"
+name = "GuidePoint Security"
+slug = "guidepointsecurity"
+
+[[source]]
+kind = "greenhouse"
+name = "Guild"
+slug = "guild"
+
+[[source]]
+kind = "greenhouse"
+name = "GumGum"
+slug = "gumgum"
+
+[[source]]
+kind = "greenhouse"
+name = "Gusto"
+slug = "gusto"
+
+[[source]]
+kind = "greenhouse"
+name = "HackerRank"
+slug = "hackerrank"
+
+[[source]]
+kind = "greenhouse"
+name = "Haize Labs"
+slug = "haizelabs"
+
+[[source]]
+kind = "greenhouse"
+name = "Hankook Tire America"
+slug = "hankooktireamericacorp"
+
+[[source]]
+kind = "greenhouse"
+name = "Harbinger Motors"
+slug = "harbingermotors"
+
+[[source]]
+kind = "greenhouse"
+name = "Harbor"
+slug = "harborglobal"
+
+[[source]]
+kind = "greenhouse"
+name = "Haven Studios"
+slug = "haven"
+
+[[source]]
+kind = "greenhouse"
+name = "Headlands Tech Holdings"
+slug = "headlandstechnologiesllc"
+
+[[source]]
+kind = "greenhouse"
+name = "Health-E Commerce"
+slug = "fsastorecom"
+
+[[source]]
+kind = "greenhouse"
+name = "Healthesystems"
+slug = "healthesystems"
+
+[[source]]
+kind = "greenhouse"
+name = "Hearst"
+slug = "hearst"
+
+[[source]]
+kind = "greenhouse"
+name = "HeartFlow"
+slug = "heartflowinc"
+
+[[source]]
+kind = "greenhouse"
+name = "HELLBENDER"
+slug = "hellbenderinc"
+
+[[source]]
+kind = "greenhouse"
+name = "HelloFresh"
+slug = "hellofresh"
+
+[[source]]
+kind = "greenhouse"
+name = "Helsing"
+slug = "helsing"
+
+[[source]]
+kind = "greenhouse"
+name = "HeyGen"
+slug = "heygen"
+
+[[source]]
+kind = "greenhouse"
+name = "HiddenLayer"
+slug = "hiddenlayer"
+
+[[source]]
+kind = "greenhouse"
+name = "Higher Logic"
+slug = "higherlogic"
+
+[[source]]
+kind = "greenhouse"
+name = "Highnote"
+slug = "highnote"
+
+[[source]]
+kind = "greenhouse"
+name = "HighRadius"
+slug = "highradius"
+
+[[source]]
+kind = "greenhouse"
+name = "Hightouch"
+slug = "hightouch"
+
+[[source]]
+kind = "greenhouse"
+name = "Hive Financial Systems"
+slug = "hivefinancialsystems"
+
+[[source]]
+kind = "greenhouse"
+name = "Home Solutions"
+slug = "homesolutions"
+
+[[source]]
+kind = "greenhouse"
+name = "Hone Health"
+slug = "honehealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Honeycomb.io"
+slug = "honeycomb"
+
+[[source]]
+kind = "greenhouse"
+name = "Hootsuite"
+slug = "hootsuite"
+
+[[source]]
+kind = "greenhouse"
+name = "Horace Mann"
+slug = "horacemannservicecorporation"
+
+[[source]]
+kind = "greenhouse"
+name = "Horizon Industries"
+slug = "horizonindustrieslimited"
+
+[[source]]
+kind = "greenhouse"
+name = "Horizon Surgical Systems"
+slug = "horizonsurgicalsystems"
+
+[[source]]
+kind = "greenhouse"
+name = "Housecall Pro"
+slug = "housecall"
+
+[[source]]
+kind = "greenhouse"
+name = "HPR (Hyannis Port Research)"
+slug = "hyannisportresearch"
+
+[[source]]
+kind = "greenhouse"
+name = "HubSpot"
+slug = "hubspotjobs"
+
+[[source]]
+kind = "greenhouse"
+name = "Hudl"
+slug = "hudl"
+
+[[source]]
+kind = "greenhouse"
+name = "Hudson River Trading"
+slug = "hrttalentcommunity"
+
+[[source]]
+kind = "greenhouse"
+name = "HumanSignal"
+slug = "humansignal"
+
+[[source]]
+kind = "greenhouse"
+name = "Hunter Douglas"
+slug = "hunterdouglas"
+
+[[source]]
+kind = "greenhouse"
+name = "Huntress"
+slug = "huntress"
+
+[[source]]
+kind = "greenhouse"
+name = "Hyperproof"
+slug = "hyperproof"
+
+[[source]]
+kind = "greenhouse"
+name = "iCapital Network"
+slug = "icapitalnetwork"
+
+[[source]]
+kind = "greenhouse"
+name = "ID.me"
+slug = "idmeuniversityrecruiting"
+
+[[source]]
+kind = "greenhouse"
+name = "IEM"
+slug = "industrialelectricmanufacturing"
+
+[[source]]
+kind = "greenhouse"
+name = "IEQ Capital"
+slug = "ieqcapital"
+
+[[source]]
+kind = "greenhouse"
+name = "iHerb"
+slug = "iherb"
+
+[[source]]
+kind = "greenhouse"
+name = "Imbue"
+slug = "imbue"
+
+[[source]]
+kind = "greenhouse"
 name = "IMC Trading"
 slug = "imc"
 
 [[source]]
 kind = "greenhouse"
-name = "Akuna Capital"
-slug = "akunacapital"
+name = "impact.com"
+slug = "impact"
 
-# --- Ashby --------------------------------------------------------------------
+[[source]]
+kind = "greenhouse"
+name = "Impinj"
+slug = "impinjexternal"
+
+[[source]]
+kind = "greenhouse"
+name = "Impiricus"
+slug = "impiricus"
+
+[[source]]
+kind = "greenhouse"
+name = "Imply"
+slug = "imply"
+
+[[source]]
+kind = "greenhouse"
+name = "Inflection"
+slug = "inflectionai"
+
+[[source]]
+kind = "greenhouse"
+name = "Inizio"
+slug = "ashfieldadvisory"
+
+[[source]]
+kind = "greenhouse"
+name = "Innodata"
+slug = "innodatainc"
+
+[[source]]
+kind = "greenhouse"
+name = "Insomniac Games"
+slug = "insomniac"
+
+[[source]]
+kind = "greenhouse"
+name = "Inspire Medical Systems"
+slug = "inspiremedicalsystemsinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Instabase"
+slug = "instabase"
+
+[[source]]
+kind = "greenhouse"
+name = "Instacart"
+slug = "instacart"
+
+[[source]]
+kind = "greenhouse"
+name = "InstaLILY"
+slug = "instalilyai"
+
+[[source]]
+kind = "greenhouse"
+name = "Instawork"
+slug = "instawork"
+
+[[source]]
+kind = "greenhouse"
+name = "Instead"
+slug = "instead"
+
+[[source]]
+kind = "greenhouse"
+name = "Insurify"
+slug = "insurify"
+
+[[source]]
+kind = "greenhouse"
+name = "Integra FEC"
+slug = "integra"
+
+[[source]]
+kind = "greenhouse"
+name = "Interstates"
+slug = "interstates"
+
+[[source]]
+kind = "greenhouse"
+name = "InterSystems"
+slug = "intersystems"
+
+[[source]]
+kind = "greenhouse"
+name = "Interwell Health"
+slug = "interwellhealth"
+
+[[source]]
+kind = "greenhouse"
+name = "InterWorks"
+slug = "interworks"
+
+[[source]]
+kind = "greenhouse"
+name = "Intrinsic"
+slug = "intrinsicrobotics"
+
+[[source]]
+kind = "greenhouse"
+name = "Inversion Space"
+slug = "inversionspace"
+
+[[source]]
+kind = "greenhouse"
+name = "Invisible General Opportunities"
+slug = "invisible"
+
+[[source]]
+kind = "greenhouse"
+name = "InvoiceCloud"
+slug = "invoicecloud"
+
+[[source]]
+kind = "greenhouse"
+name = "Iovance Biotherapeutics"
+slug = "iovancebiotherapeutics"
+
+[[source]]
+kind = "greenhouse"
+name = "iSpot.tv"
+slug = "ispottv"
+
+[[source]]
+kind = "greenhouse"
+name = "Iterable"
+slug = "iterable"
+
+[[source]]
+kind = "greenhouse"
+name = "ITHAKA"
+slug = "ithaka"
+
+[[source]]
+kind = "greenhouse"
+name = "ITS Logistics"
+slug = "itslogisticsllc"
+
+[[source]]
+kind = "greenhouse"
+name = "Ivalua"
+slug = "ivalua"
+
+[[source]]
+kind = "greenhouse"
+name = "Ivanti"
+slug = "a3c41b8b71eff8c4"
+
+[[source]]
+kind = "greenhouse"
+name = "IVX Health"
+slug = "ivxhealth"
+
+[[source]]
+kind = "greenhouse"
+name = "IXL Learning"
+slug = "ixllearning"
+
+[[source]]
+kind = "greenhouse"
+name = "Jamf"
+slug = "jamf"
+
+[[source]]
+kind = "greenhouse"
+name = "Jane Street"
+slug = "janestreet"
+
+[[source]]
+kind = "greenhouse"
+name = "JCDecaux Australia"
+slug = "jcdecaux"
+
+[[source]]
+kind = "greenhouse"
+name = "Jellyvision"
+slug = "jellyvision"
+
+[[source]]
+kind = "greenhouse"
+name = "Jencap"
+slug = "jencapinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Jensen Hughes"
+slug = "jensenhughes"
+
+[[source]]
+kind = "greenhouse"
+name = "JetBrains"
+slug = "jetbrains"
+
+[[source]]
+kind = "greenhouse"
+name = "Judi Health"
+slug = "judihealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Jumio"
+slug = "jumio"
+
+[[source]]
+kind = "greenhouse"
+name = "Jump Crypto"
+slug = "jumpcrypto"
+
+[[source]]
+kind = "greenhouse"
+name = "Jump Trading"
+slug = "jumptrading"
+
+[[source]]
+kind = "greenhouse"
+name = "Justworks"
+slug = "justworks"
+
+[[source]]
+kind = "greenhouse"
+name = "Juvare"
+slug = "juvare"
+
+[[source]]
+kind = "greenhouse"
+name = "Kairos Power"
+slug = "kairospower"
+
+[[source]]
+kind = "greenhouse"
+name = "Kaluza"
+slug = "kaluza"
+
+[[source]]
+kind = "greenhouse"
+name = "Kapitus"
+slug = "kapitus"
+
+[[source]]
+kind = "greenhouse"
+name = "Karat"
+slug = "karat"
+
+[[source]]
+kind = "greenhouse"
+name = "Kargo"
+slug = "kargo"
+
+[[source]]
+kind = "greenhouse"
+name = "Kaseya"
+slug = "kaseya"
+
+[[source]]
+kind = "greenhouse"
+name = "Katalyst Space Technologies"
+slug = "katalyst"
+
+[[source]]
+kind = "greenhouse"
+name = "KEEN Footwear"
+slug = "keenfootwear"
+
+[[source]]
+kind = "greenhouse"
+name = "Kelso Industries"
+slug = "kelsoindustries"
+
+[[source]]
+kind = "greenhouse"
+name = "Kensington"
+slug = "kensingtontours"
+
+[[source]]
+kind = "greenhouse"
+name = "Keystone"
+slug = "keystone"
+
+[[source]]
+kind = "greenhouse"
+name = "Kikoff"
+slug = "kikoff"
+
+[[source]]
+kind = "greenhouse"
+name = "Klaviyo"
+slug = "klaviyo"
+
+[[source]]
+kind = "greenhouse"
+name = "KnowBe4"
+slug = "knowbe4"
+
+[[source]]
+kind = "greenhouse"
+name = "Koalafi"
+slug = "koalafi"
+
+[[source]]
+kind = "greenhouse"
+name = "KoBold Metals"
+slug = "koboldmetals"
+
+[[source]]
+kind = "greenhouse"
+name = "Koddi"
+slug = "koddi"
+
+[[source]]
+kind = "greenhouse"
+name = "Kodiak Robotics"
+slug = "kodiak"
+
+[[source]]
+kind = "greenhouse"
+name = "Komodo Health"
+slug = "komodohealth"
+
+[[source]]
+kind = "greenhouse"
+name = "KRAFTON"
+slug = "studiokraftonboard"
+
+[[source]]
+kind = "greenhouse"
+name = "Kroll Bond Rating Agency"
+slug = "krollbondratingagency"
+
+[[source]]
+kind = "greenhouse"
+name = "Kymera Therapeutics"
+slug = "kymeratherapeutics"
+
+[[source]]
+kind = "greenhouse"
+name = "Labelbox"
+slug = "labelbox"
+
+[[source]]
+kind = "greenhouse"
+name = "LAIKA"
+slug = "laika"
+
+[[source]]
+kind = "greenhouse"
+name = "Lasko Products"
+slug = "laskoproducts"
+
+[[source]]
+kind = "greenhouse"
+name = "LastPass"
+slug = "lastpass"
+
+[[source]]
+kind = "greenhouse"
+name = "Later"
+slug = "later"
+
+[[source]]
+kind = "greenhouse"
+name = "Latitude AI"
+slug = "latitude"
+
+[[source]]
+kind = "greenhouse"
+name = "Lattice"
+slug = "lattice"
+
+[[source]]
+kind = "greenhouse"
+name = "LaunchDarkly"
+slug = "launchdarkly"
+
+[[source]]
+kind = "greenhouse"
+name = "Layer Health"
+slug = "layerhealth"
+
+[[source]]
+kind = "greenhouse"
+name = "LayerZero Labs"
+slug = "layerzerolabs"
+
+[[source]]
+kind = "greenhouse"
+name = "League"
+slug = "leagueinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Legend Biotech"
+slug = "legendcareers"
+
+[[source]]
+kind = "greenhouse"
+name = "LeoLabs"
+slug = "leolabsinc"
+
+[[source]]
+kind = "greenhouse"
+name = "LetsGetChecked"
+slug = "letsgetchecked"
+
+[[source]]
+kind = "greenhouse"
+name = "Lexington Medical"
+slug = "lexingtonmedical"
+
+[[source]]
+kind = "greenhouse"
+name = "LG Electronics"
+slug = "lgelectronics"
+
+[[source]]
+kind = "greenhouse"
+name = "Liaison International"
+slug = "liaisoninternational"
+
+[[source]]
+kind = "greenhouse"
+name = "Liberis"
+slug = "liberis"
+
+[[source]]
+kind = "greenhouse"
+name = "Life360"
+slug = "life360"
+
+[[source]]
+kind = "greenhouse"
+name = "Liftoff"
+slug = "liftoff"
+
+[[source]]
+kind = "greenhouse"
+name = "Lightmatter"
+slug = "lightmatter"
+
+[[source]]
+kind = "greenhouse"
+name = "Lightspeed Systems"
+slug = "lightspeedsystems"
+
+[[source]]
+kind = "greenhouse"
+name = "Lila Sciences"
+slug = "lilasciences"
+
+[[source]]
+kind = "greenhouse"
+name = "Lithic"
+slug = "lithic"
+
+[[source]]
+kind = "greenhouse"
+name = "Locus Robotics"
+slug = "locusrobotics"
+
+[[source]]
+kind = "greenhouse"
+name = "LogicGate"
+slug = "logicgate"
+
+[[source]]
+kind = "greenhouse"
+name = "LOTTE BIOLOGICS"
+slug = "lottebiologicsusallc"
+
+[[source]]
+kind = "greenhouse"
+name = "Lucid Bots"
+slug = "lucidbots"
+
+[[source]]
+kind = "greenhouse"
+name = "Lucid Motors"
+slug = "lucidmotors"
+
+[[source]]
+kind = "greenhouse"
+name = "Luminate"
+slug = "luminate"
+
+[[source]]
+kind = "greenhouse"
+name = "Lumos"
+slug = "lumosfiber"
+
+[[source]]
+kind = "greenhouse"
+name = "Lunar Energy"
+slug = "lunarenergy"
+
+[[source]]
+kind = "greenhouse"
+name = "LVT"
+slug = "liveviewtechnologiesinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Lyft"
+slug = "lyft"
+
+[[source]]
+kind = "greenhouse"
+name = "M3"
+slug = "m3"
+
+[[source]]
+kind = "greenhouse"
+name = "Madison Energy Infrastructure"
+slug = "madisonenergyinfrastructure"
+
+[[source]]
+kind = "greenhouse"
+name = "Make"
+slug = "make"
+
+[[source]]
+kind = "greenhouse"
+name = "Mammoth Brands"
+slug = "mammothbrands"
+
+[[source]]
+kind = "greenhouse"
+name = "Man Group"
+slug = "mangroup"
+
+[[source]]
+kind = "greenhouse"
+name = "Mark43"
+slug = "mark43"
+
+[[source]]
+kind = "greenhouse"
+name = "Markforged"
+slug = "markforged"
+
+[[source]]
+kind = "greenhouse"
+name = "Marqeta"
+slug = "mqreferrals"
+
+[[source]]
+kind = "greenhouse"
+name = "Marshall Wace"
+slug = "mwinternshipprogram"
+
+[[source]]
+kind = "greenhouse"
+name = "MatX"
+slug = "matx"
+
+[[source]]
+kind = "greenhouse"
+name = "Maven Clinic"
+slug = "mavenclinic"
+
+[[source]]
+kind = "greenhouse"
+name = "Maven Securities"
+slug = "mavensecuritiesholdingltd"
+
+[[source]]
+kind = "greenhouse"
+name = "May Mobility"
+slug = "maymobility"
+
+[[source]]
+kind = "greenhouse"
+name = "Maybell Quantum Industries"
+slug = "maybellquantum"
+
+[[source]]
+kind = "greenhouse"
+name = "McAdams"
+slug = "mcadams"
+
+[[source]]
+kind = "greenhouse"
+name = "McAfee Heating and Air Conditioning"
+slug = "mcafee"
+
+[[source]]
+kind = "greenhouse"
+name = "MCG Health"
+slug = "mcghealth"
+
+[[source]]
+kind = "greenhouse"
+name = "McKinney"
+slug = "jobsmckinneycom"
+
+[[source]]
+kind = "greenhouse"
+name = "McMaster-Carr"
+slug = "mcmastercarr"
+
+[[source]]
+kind = "greenhouse"
+name = "MedElite"
+slug = "medelitellc"
+
+[[source]]
+kind = "greenhouse"
+name = "Medical Informatics Engineering"
+slug = "medicalinformaticsengineering"
+
+[[source]]
+kind = "greenhouse"
+name = "Medium"
+slug = "medium"
+
+[[source]]
+kind = "greenhouse"
+name = "Mejuri"
+slug = "mejuri"
+
+[[source]]
+kind = "greenhouse"
+name = "MEMIC"
+slug = "memic"
+
+[[source]]
+kind = "greenhouse"
+name = "Mercury"
+slug = "mercury"
+
+[[source]]
+kind = "greenhouse"
+name = "MERGE"
+slug = "mergeworld"
+
+[[source]]
+kind = "greenhouse"
+name = "Meridian Partners"
+slug = "meridianpartners"
+
+[[source]]
+kind = "greenhouse"
+name = "Meriton"
+slug = "meriton"
+
+[[source]]
+kind = "greenhouse"
+name = "MerQube"
+slug = "merqube"
+
+[[source]]
+kind = "greenhouse"
+name = "Method"
+slug = "method"
+
+[[source]]
+kind = "greenhouse"
+name = "MetOx International"
+slug = "metoxinternationalinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Metron"
+slug = "metron"
+
+[[source]]
+kind = "greenhouse"
+name = "Minitab"
+slug = "minitab"
+
+[[source]]
+kind = "greenhouse"
+name = "Mintel"
+slug = "mintel"
+
+[[source]]
+kind = "greenhouse"
+name = "Mitratech"
+slug = "mitratech"
+
+[[source]]
+kind = "greenhouse"
+name = "Mixpanel"
+slug = "mixpanel"
+
+[[source]]
+kind = "greenhouse"
+name = "Mizzen+Main"
+slug = "mizzenandmain"
+
+[[source]]
+kind = "greenhouse"
+name = "Mobilityware"
+slug = "mobilityware"
+
+[[source]]
+kind = "greenhouse"
+name = "Mobius"
+slug = "mobius"
+
+[[source]]
+kind = "greenhouse"
+name = "Moloco"
+slug = "moloco"
+
+[[source]]
+kind = "greenhouse"
+name = "Moment Energy"
+slug = "momentenergy"
+
+[[source]]
+kind = "greenhouse"
+name = "Momentum"
+slug = "momentumcompany3"
+
+[[source]]
+kind = "greenhouse"
+name = "Momentus Space"
+slug = "momentus"
+
+[[source]]
+kind = "greenhouse"
+name = "MongoDB"
+slug = "mongodb"
+
+[[source]]
+kind = "greenhouse"
+name = "Monster Energy"
+slug = "monsterenergy"
+
+[[source]]
+kind = "greenhouse"
+name = "Moon Creative Lab"
+slug = "moon"
+
+[[source]]
+kind = "greenhouse"
+name = "MORSE Corp"
+slug = "morsecorp"
+
+[[source]]
+kind = "greenhouse"
+name = "Motional"
+slug = "motional"
+
+[[source]]
+kind = "greenhouse"
+name = "Mozilla"
+slug = "mozilla"
+
+[[source]]
+kind = "greenhouse"
+name = "MrBeast"
+slug = "mrbeastyoutube"
+
+[[source]]
+kind = "greenhouse"
+name = "mthree"
+slug = "mthreerecruitingportal"
+
+[[source]]
+kind = "greenhouse"
+name = "Muon Space"
+slug = "muonspace"
+
+[[source]]
+kind = "greenhouse"
+name = "Murj"
+slug = "murj"
+
+[[source]]
+kind = "greenhouse"
+name = "Nasuni"
+slug = "nasuni"
+
+[[source]]
+kind = "greenhouse"
+name = "Natera"
+slug = "natera"
+
+[[source]]
+kind = "greenhouse"
+name = "NATIONAL"
+slug = "national"
+
+[[source]]
+kind = "greenhouse"
+name = "National Information Solutions Cooperative (NISC)"
+slug = "nisc"
+
+[[source]]
+kind = "greenhouse"
+name = "National Life"
+slug = "nationallifeinsurancecompany"
+
+[[source]]
+kind = "greenhouse"
+name = "Nebius"
+slug = "nebius"
+
+[[source]]
+kind = "greenhouse"
+name = "Neo4j"
+slug = "neo4j"
+
+[[source]]
+kind = "greenhouse"
+name = "Neros Technologies"
+slug = "nerostechnologies"
+
+[[source]]
+kind = "greenhouse"
+name = "Netlify"
+slug = "netlify"
+
+[[source]]
+kind = "greenhouse"
+name = "Netskope"
+slug = "netskope"
+
+[[source]]
+kind = "greenhouse"
+name = "Neuralink"
+slug = "neuralink"
+
+[[source]]
+kind = "greenhouse"
+name = "New Relic"
+slug = "newrelic"
+
+[[source]]
+kind = "greenhouse"
+name = "NewsBreak"
+slug = "newsbreak"
+
+[[source]]
+kind = "greenhouse"
+name = "Newsela"
+slug = "newsela"
+
+[[source]]
+kind = "greenhouse"
+name = "Newton Research"
+slug = "newtonresearch"
+
+[[source]]
+kind = "greenhouse"
+name = "Nex"
+slug = "nex"
+
+[[source]]
+kind = "greenhouse"
+name = "NexHealth"
+slug = "nexhealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Next Insurance"
+slug = "nextinsurance66"
+
+[[source]]
+kind = "greenhouse"
+name = "Nextdoor"
+slug = "nextdoor"
+
+[[source]]
+kind = "greenhouse"
+name = "Nextiva"
+slug = "nextiva"
+
+[[source]]
+kind = "greenhouse"
+name = "ngrok"
+slug = "ngrokinc"
+
+[[source]]
+kind = "greenhouse"
+name = "NICE"
+slug = "nice"
+
+[[source]]
+kind = "greenhouse"
+name = "Nimble Gravity"
+slug = "nimblegravity"
+
+[[source]]
+kind = "greenhouse"
+name = "Nimble Robotics"
+slug = "nimblerobotics"
+
+[[source]]
+kind = "greenhouse"
+name = "NinjaTrader"
+slug = "ninjatrader"
+
+[[source]]
+kind = "greenhouse"
+name = "NMI"
+slug = "nmi"
+
+[[source]]
+kind = "greenhouse"
+name = "Nooks"
+slug = "nooks"
+
+[[source]]
+kind = "greenhouse"
+name = "Northspyre"
+slug = "northspyre"
+
+[[source]]
+kind = "greenhouse"
+name = "Notability"
+slug = "gingerlabsinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Nozomi Networks"
+slug = "nozominetworks"
+
+[[source]]
+kind = "greenhouse"
+name = "NPR"
+slug = "nationalpublicradioinc"
+
+[[source]]
+kind = "greenhouse"
+name = "NT Concepts"
+slug = "ntconcepts"
+
+[[source]]
+kind = "greenhouse"
+name = "Numerix"
+slug = "numerix"
+
+[[source]]
+kind = "greenhouse"
+name = "Nuro"
+slug = "nuro"
+
+[[source]]
+kind = "greenhouse"
+name = "OBE"
+slug = "oldcastlebuildingenvelope"
+
+[[source]]
+kind = "greenhouse"
+name = "Observe.AI"
+slug = "observeai"
+
+[[source]]
+kind = "greenhouse"
+name = "Obsidian Security"
+slug = "obsidiansecurity"
+
+[[source]]
+kind = "greenhouse"
+name = "OceanX"
+slug = "oceanx"
+
+[[source]]
+kind = "greenhouse"
+name = "Octaura"
+slug = "octaura"
+
+[[source]]
+kind = "greenhouse"
+name = "OfferUp"
+slug = "offerup"
+
+[[source]]
+kind = "greenhouse"
+name = "OH.io"
+slug = "ohio"
+
+[[source]]
+kind = "greenhouse"
+name = "Oklo"
+slug = "oklo"
+
+[[source]]
+kind = "greenhouse"
+name = "Okta"
+slug = "okta"
+
+[[source]]
+kind = "greenhouse"
+name = "Old Mission"
+slug = "oldmissioncapital"
+
+[[source]]
+kind = "greenhouse"
+name = "Olsson"
+slug = "olsson"
+
+[[source]]
+kind = "greenhouse"
+name = "Omada Health"
+slug = "omadahealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Omnicom Health"
+slug = "omnicomhealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Onapsis"
+slug = "onapsis"
+
+[[source]]
+kind = "greenhouse"
+name = "OnBoard"
+slug = "onboardmeetings"
+
+[[source]]
+kind = "greenhouse"
+name = "OneOncology"
+slug = "oneoncology"
+
+[[source]]
+kind = "greenhouse"
+name = "OneTrust"
+slug = "onetrust"
+
+[[source]]
+kind = "greenhouse"
+name = "onXmaps"
+slug = "onxmaps"
+
+[[source]]
+kind = "greenhouse"
+name = "Oodle Financial Services"
+slug = "oodlefinance"
+
+[[source]]
+kind = "greenhouse"
+name = "Ooma"
+slug = "ooma"
+
+[[source]]
+kind = "greenhouse"
+name = "Open Farm Pet"
+slug = "openfarminc"
+
+[[source]]
+kind = "greenhouse"
+name = "OpenEye"
+slug = "openeye"
+
+[[source]]
+kind = "greenhouse"
+name = "OpenSesame"
+slug = "opensesame"
+
+[[source]]
+kind = "greenhouse"
+name = "OpenTable"
+slug = "opentable"
+
+[[source]]
+kind = "greenhouse"
+name = "Ophelia"
+slug = "ophelia"
+
+[[source]]
+kind = "greenhouse"
+name = "Optimove"
+slug = "optimove"
+
+[[source]]
+kind = "greenhouse"
+name = "Optiver"
+slug = "optiverus"
+
+[[source]]
+kind = "greenhouse"
+name = "Opto Investments"
+slug = "optoinvest"
+
+[[source]]
+kind = "greenhouse"
+name = "Orca Security"
+slug = "orcasecurity"
+
+[[source]]
+kind = "greenhouse"
+name = "Orennia"
+slug = "orennia"
+
+[[source]]
+kind = "greenhouse"
+name = "Origis Energy"
+slug = "origisenergy"
+
+[[source]]
+kind = "greenhouse"
+name = "Orion Innovation"
+slug = "orioninnovation"
+
+[[source]]
+kind = "greenhouse"
+name = "Osano"
+slug = "osano"
+
+[[source]]
+kind = "greenhouse"
+name = "Oscar Health"
+slug = "oscar"
+
+[[source]]
+kind = "greenhouse"
+name = "OTR Solutions"
+slug = "otrcapital1"
+
+[[source]]
+kind = "greenhouse"
+name = "Otter"
+slug = "otter"
+
+[[source]]
+kind = "greenhouse"
+name = "Otter.ai"
+slug = "otterai"
+
+[[source]]
+kind = "greenhouse"
+name = "Otto Aviation"
+slug = "ottoaviation"
+
+[[source]]
+kind = "greenhouse"
+name = "Oura"
+slug = "oura"
+
+[[source]]
+kind = "greenhouse"
+name = "Outset Medical"
+slug = "outsetmedical"
+
+[[source]]
+kind = "greenhouse"
+name = "OVO Energy"
+slug = "ovoenergy"
+
+[[source]]
+kind = "greenhouse"
+name = "Pacvue"
+slug = "pacvue"
+
+[[source]]
+kind = "greenhouse"
+name = "Pagaya Investments"
+slug = "pagaya"
+
+[[source]]
+kind = "greenhouse"
+name = "PagerDuty"
+slug = "pagerduty"
+
+[[source]]
+kind = "greenhouse"
+name = "Pallet"
+slug = "pallet"
+
+[[source]]
+kind = "greenhouse"
+name = "Palmetto Clean Technology"
+slug = "palmettocleantech"
+
+[[source]]
+kind = "greenhouse"
+name = "Panthalassa"
+slug = "panthalassa"
+
+[[source]]
+kind = "greenhouse"
+name = "Pantheon Ventures"
+slug = "pantheonpublic"
+
+[[source]]
+kind = "greenhouse"
+name = "Papa"
+slug = "papa"
+
+[[source]]
+kind = "greenhouse"
+name = "Parachute Health"
+slug = "parachutehealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Parallel Systems"
+slug = "parallel"
+
+[[source]]
+kind = "greenhouse"
+name = "Path Robotics"
+slug = "pathrobotics"
+
+[[source]]
+kind = "greenhouse"
+name = "PathAI"
+slug = "pathai"
+
+[[source]]
+kind = "greenhouse"
+name = "Pathward"
+slug = "pathward"
+
+[[source]]
+kind = "greenhouse"
+name = "PatientPoint"
+slug = "patientpoint"
+
+[[source]]
+kind = "greenhouse"
+name = "Pattern Data"
+slug = "patterndata"
+
+[[source]]
+kind = "greenhouse"
+name = "PDT Partners"
+slug = "pdtpartners"
+
+[[source]]
+kind = "greenhouse"
+name = "Peak Energy"
+slug = "peakenergy"
+
+[[source]]
+kind = "greenhouse"
+name = "Peloton"
+slug = "peloton"
+
+[[source]]
+kind = "greenhouse"
+name = "Pendar Technologies"
+slug = "pendartechnologies"
+
+[[source]]
+kind = "greenhouse"
+name = "Penn Interactive"
+slug = "penninteractive"
+
+[[source]]
+kind = "greenhouse"
+name = "Per Scholas"
+slug = "perscholashires"
+
+[[source]]
+kind = "greenhouse"
+name = "Peregrine"
+slug = "peregrinetechnologies"
+
+[[source]]
+kind = "greenhouse"
+name = "Perpay"
+slug = "perpay"
+
+[[source]]
+kind = "greenhouse"
+name = "Perry Ellis International"
+slug = "perryellisinternational"
+
+[[source]]
+kind = "greenhouse"
+name = "Personalis"
+slug = "personalisinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Phaidra"
+slug = "phaidra"
+
+[[source]]
+kind = "greenhouse"
+name = "Phamily"
+slug = "jobsatphamily"
+
+[[source]]
+kind = "greenhouse"
+name = "Pharo Management"
+slug = "pharomanagement"
+
+[[source]]
+kind = "greenhouse"
+name = "Phoenix Contact"
+slug = "phoenixcontact"
+
+[[source]]
+kind = "greenhouse"
+name = "PhysicsX"
+slug = "physicsx"
+
+[[source]]
+kind = "greenhouse"
+name = "Piaggio Fast Forward"
+slug = "piaggiofastforward"
+
+[[source]]
+kind = "greenhouse"
+name = "Pico"
+slug = "picoquantitativetrading"
+
+[[source]]
+kind = "greenhouse"
+name = "Pine"
+slug = "pine"
+
+[[source]]
+kind = "greenhouse"
+name = "Ping Identity"
+slug = "pingidentity"
+
+[[source]]
+kind = "greenhouse"
+name = "Pinterest"
+slug = "pinterest"
+
+[[source]]
+kind = "greenhouse"
+name = "Pinwheel"
+slug = "pinwheelapi"
+
+[[source]]
+kind = "greenhouse"
+name = "PitchBook"
+slug = "pitchbookdata"
+
+[[source]]
+kind = "greenhouse"
+name = "Planet"
+slug = "planetlabs"
+
+[[source]]
+kind = "greenhouse"
+name = "PlanetScale"
+slug = "planetscale"
+
+[[source]]
+kind = "greenhouse"
+name = "PlayStation"
+slug = "naughtydog"
+
+[[source]]
+kind = "greenhouse"
+name = "PLS"
+slug = "plscareers"
+
+[[source]]
+kind = "greenhouse"
+name = "PMG"
+slug = "pmg"
+
+[[source]]
+kind = "greenhouse"
+name = "Podium"
+slug = "podium81"
+
+[[source]]
+kind = "greenhouse"
+name = "Point C"
+slug = "pointc"
+
+[[source]]
+kind = "greenhouse"
+name = "Point72"
+slug = "point72"
+
+[[source]]
+kind = "greenhouse"
+name = "Polaris"
+slug = "polaris"
+
+[[source]]
+kind = "greenhouse"
+name = "PolyAI"
+slug = "polyai"
+
+[[source]]
+kind = "greenhouse"
+name = "Postscript"
+slug = "postscript"
+
+[[source]]
+kind = "greenhouse"
+name = "Practising Law Institute"
+slug = "practisinglawinstitute"
+
+[[source]]
+kind = "greenhouse"
+name = "Praetorian"
+slug = "praetorian"
+
+[[source]]
+kind = "greenhouse"
+name = "Praxent"
+slug = "praxent"
+
+[[source]]
+kind = "greenhouse"
+name = "Precision AQ"
+slug = "precisionaq"
+
+[[source]]
+kind = "greenhouse"
+name = "Premier Automation"
+slug = "premierautomation"
+
+[[source]]
+kind = "greenhouse"
+name = "Premier Truck Rental"
+slug = "premiertruckrental"
+
+[[source]]
+kind = "greenhouse"
+name = "Presence"
+slug = "presencelearning"
+
+[[source]]
+kind = "greenhouse"
+name = "Princeton University"
+slug = "princetonuniversity"
+
+[[source]]
+kind = "greenhouse"
+name = "Prisma"
+slug = "prisma"
+
+[[source]]
+kind = "greenhouse"
+name = "PrizePicks"
+slug = "prizepicks"
+
+[[source]]
+kind = "greenhouse"
+name = "Proconex"
+slug = "proconex"
+
+[[source]]
+kind = "greenhouse"
+name = "Profluent"
+slug = "profluent"
+
+[[source]]
+kind = "greenhouse"
+name = "Prolaio"
+slug = "prolaio"
+
+[[source]]
+kind = "greenhouse"
+name = "Prolific"
+slug = "prolific"
+
+[[source]]
+kind = "greenhouse"
+name = "Proton"
+slug = "proton"
+
+[[source]]
+kind = "greenhouse"
+name = "PsiQuantum"
+slug = "psiquantum"
+
+[[source]]
+kind = "greenhouse"
+name = "Public"
+slug = "public"
+
+[[source]]
+kind = "greenhouse"
+name = "Pure Storage"
+slug = "purestorage"
+
+[[source]]
+kind = "greenhouse"
+name = "QGenda"
+slug = "qgenda"
+
+[[source]]
+kind = "greenhouse"
+name = "Qualtrics"
+slug = "qualtrics"
+
+[[source]]
+kind = "greenhouse"
+name = "Quantifind"
+slug = "quantifind"
+
+[[source]]
+kind = "greenhouse"
+name = "Qube Research & Technologies"
+slug = "quberesearchandtechnologies"
+
+[[source]]
+kind = "greenhouse"
+name = "QuEra Computing"
+slug = "queracomputinginc"
+
+[[source]]
+kind = "greenhouse"
+name = "Quince"
+slug = "quince"
+
+[[source]]
+kind = "greenhouse"
+name = "QuinStreet"
+slug = "quinstreet"
+
+[[source]]
+kind = "greenhouse"
+name = "RA Capital Management"
+slug = "racapitalmanagementllc"
+
+[[source]]
+kind = "greenhouse"
+name = "RAB Lighting"
+slug = "rab"
+
+[[source]]
+kind = "greenhouse"
+name = "Rackner"
+slug = "rackner"
+
+[[source]]
+kind = "greenhouse"
+name = "RADAR"
+slug = "radar"
+
+[[source]]
+kind = "greenhouse"
+name = "Radix Trading"
+slug = "radixuniversity"
+
+[[source]]
+kind = "greenhouse"
+name = "RAPP"
+slug = "rapp"
+
+[[source]]
+kind = "greenhouse"
+name = "Raven"
+slug = "raven"
+
+[[source]]
+kind = "greenhouse"
+name = "Re:Build Manufacturing"
+slug = "rebuildmanufacturing"
+
+[[source]]
+kind = "greenhouse"
+name = "Reach Financial"
+slug = "reach"
+
+[[source]]
+kind = "greenhouse"
+name = "Real Chemistry"
+slug = "realchemistry"
+
+[[source]]
+kind = "greenhouse"
+name = "Realtor.com"
+slug = "rdccareers"
+
+[[source]]
+kind = "greenhouse"
+name = "Recorded Future"
+slug = "recordedfuture"
+
+[[source]]
+kind = "greenhouse"
+name = "Red Ventures"
+slug = "redventures"
+
+[[source]]
+kind = "greenhouse"
+name = "Reddit"
+slug = "reddit"
+
+[[source]]
+kind = "greenhouse"
+name = "Redwood Materials"
+slug = "redwoodmaterials"
+
+[[source]]
+kind = "greenhouse"
+name = "Relativity Space"
+slug = "relativity"
+
+[[source]]
+kind = "greenhouse"
+name = "Relay"
+slug = "relaypro"
+
+[[source]]
+kind = "greenhouse"
+name = "RELEX Solutions"
+slug = "relex"
+
+[[source]]
+kind = "greenhouse"
+name = "Reltio"
+slug = "reltio"
+
+[[source]]
+kind = "greenhouse"
+name = "Remedy"
+slug = "remedy"
+
+[[source]]
+kind = "greenhouse"
+name = "Remodel Health"
+slug = "remodelhealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Renaissance"
+slug = "renaissancelearning-nam"
+
+[[source]]
+kind = "greenhouse"
+name = "Resonate"
+slug = "resonate"
+
+[[source]]
+kind = "greenhouse"
+name = "Revance"
+slug = "revance"
+
+[[source]]
+kind = "greenhouse"
+name = "Rexford Industrial"
+slug = "rexfordindustrial"
+
+[[source]]
+kind = "greenhouse"
+name = "RF-SMART"
+slug = "rfsmart"
+
+[[source]]
+kind = "greenhouse"
+name = "Rhombus Power"
+slug = "rhombuspower"
+
+[[source]]
+kind = "greenhouse"
+name = "Riot Games"
+slug = "riotgames"
+
+[[source]]
+kind = "greenhouse"
+name = "Ripple"
+slug = "ripple"
+
+[[source]]
+kind = "greenhouse"
+name = "Rise8"
+slug = "rise8"
+
+[[source]]
+kind = "greenhouse"
+name = "RoadRunner Recycling"
+slug = "roadrunner"
+
+[[source]]
+kind = "greenhouse"
+name = "Robinhood"
+slug = "robinhood"
+
+[[source]]
+kind = "greenhouse"
+name = "Roblox"
+slug = "roblox"
+
+[[source]]
+kind = "greenhouse"
+name = "RoboForce"
+slug = "roboforce"
+
+[[source]]
+kind = "greenhouse"
+name = "Rocket EMS"
+slug = "rocketems"
+
+[[source]]
+kind = "greenhouse"
+name = "Rocket Lab USA"
+slug = "rocketlab"
+
+[[source]]
+kind = "greenhouse"
+name = "Rocket Lawyer"
+slug = "rocketlawyer"
+
+[[source]]
+kind = "greenhouse"
+name = "Rockstar Games"
+slug = "rockstargames"
+
+[[source]]
+kind = "greenhouse"
+name = "Roku"
+slug = "roku"
+
+[[source]]
+kind = "greenhouse"
+name = "RPA"
+slug = "rpa"
+
+[[source]]
+kind = "greenhouse"
+name = "RTW Investments"
+slug = "rtwinvestments"
+
+[[source]]
+kind = "greenhouse"
+name = "Rubrik Job Board"
+slug = "rubrik"
+
+[[source]]
+kind = "greenhouse"
+name = "Rugged Robotics"
+slug = "ruggedrobotics"
+
+[[source]]
+kind = "greenhouse"
+name = "runZero"
+slug = "runzero"
+
+[[source]]
+kind = "greenhouse"
+name = "S.H.I.E.L.D."
+slug = "shield"
+
+[[source]]
+kind = "greenhouse"
+name = "SafeBreach"
+slug = "safebreach"
+
+[[source]]
+kind = "greenhouse"
+name = "SageSure"
+slug = "sagesure"
+
+[[source]]
+kind = "greenhouse"
+name = "Salient Motion"
+slug = "salientmotion"
+
+[[source]]
+kind = "greenhouse"
+name = "SALT XC"
+slug = "saltxc"
+
+[[source]]
+kind = "greenhouse"
+name = "Samaya"
+slug = "samayaai"
+
+[[source]]
+kind = "greenhouse"
+name = "Samsara"
+slug = "samsara"
+
+[[source]]
+kind = "greenhouse"
+name = "Samsung"
+slug = "samsungsemiconductor"
+
+[[source]]
+kind = "greenhouse"
+name = "Samsung Research America"
+slug = "samsungresearchamericainternship"
+
+[[source]]
+kind = "greenhouse"
+name = "Sandstone Care"
+slug = "sandstonecare"
+
+[[source]]
+kind = "greenhouse"
+name = "SanMar"
+slug = "sanmar"
+
+[[source]]
+kind = "greenhouse"
+name = "Sayari"
+slug = "sayari"
+
+[[source]]
+kind = "greenhouse"
+name = "Scale AI"
+slug = "scaleai"
+
+[[source]]
+kind = "greenhouse"
+name = "Scandit"
+slug = "scandit"
+
+[[source]]
+kind = "greenhouse"
+name = "Schonfeld"
+slug = "schonfeld"
+
+[[source]]
+kind = "greenhouse"
+name = "Scopely"
+slug = "scopely"
+
+[[source]]
+kind = "greenhouse"
+name = "Scotch"
+slug = "scotch"
+
+[[source]]
+kind = "greenhouse"
+name = "Scout AI"
+slug = "scoutai"
+
+[[source]]
+kind = "greenhouse"
+name = "Scout Motors"
+slug = "scoutmotors"
+
+[[source]]
+kind = "greenhouse"
+name = "Scout Space"
+slug = "scoutspace"
+
+[[source]]
+kind = "greenhouse"
+name = "SeatGeek"
+slug = "seatgeek"
+
+[[source]]
+kind = "greenhouse"
+name = "Seattle Sounders FC"
+slug = "seattlesoundersfc"
+
+[[source]]
+kind = "greenhouse"
+name = "Secretariat"
+slug = "secretariatadvisorsllc"
+
+[[source]]
+kind = "greenhouse"
+name = "SEI"
+slug = "sei"
+
+[[source]]
+kind = "greenhouse"
+name = "Seurat Technologies"
+slug = "seurat"
+
+[[source]]
+kind = "greenhouse"
+name = "Seven Research"
+slug = "sevenresearch"
+
+[[source]]
+kind = "greenhouse"
+name = "Sezzle"
+slug = "sezzle"
+
+[[source]]
+kind = "greenhouse"
+name = "SharkNinja"
+slug = "sharkninjaoperatingllc"
+
+[[source]]
+kind = "greenhouse"
+name = "Sharp Electronics"
+slug = "sharpelectronics"
+
+[[source]]
+kind = "greenhouse"
+name = "SHEIN"
+slug = "shein"
+
+[[source]]
+kind = "greenhouse"
+name = "Shields Health Solutions"
+slug = "shieldshealthsolutions"
+
+[[source]]
+kind = "greenhouse"
+name = "Shift"
+slug = "shifttechnology"
+
+[[source]]
+kind = "greenhouse"
+name = "ShipBob"
+slug = "shipbobinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Sigma Computing"
+slug = "sigmacomputing"
+
+[[source]]
+kind = "greenhouse"
+name = "Signifyd"
+slug = "signifyd95"
+
+[[source]]
+kind = "greenhouse"
+name = "Sila Nanotechnologies"
+slug = "silananotechnologies"
+
+[[source]]
+kind = "greenhouse"
+name = "Silvus Technologies"
+slug = "silvus"
+
+[[source]]
+kind = "greenhouse"
+name = "Simple Technology Solutions"
+slug = "simpletechnologysolutions"
+
+[[source]]
+kind = "greenhouse"
+name = "SimpliSafe"
+slug = "simplisafe"
+
+[[source]]
+kind = "greenhouse"
+name = "SingleStore"
+slug = "singlestore"
+
+[[source]]
+kind = "greenhouse"
+name = "Sitreps"
+slug = "sitrepsllc"
+
+[[source]]
+kind = "greenhouse"
+name = "SixGen"
+slug = "sixgeninc"
+
+[[source]]
+kind = "greenhouse"
+name = "SK hynix"
+slug = "skhynixamerica"
+
+[[source]]
+kind = "greenhouse"
+name = "Skild AI"
+slug = "skildai-careers"
+
+[[source]]
+kind = "greenhouse"
+name = "Skyryse"
+slug = "skyryse"
+
+[[source]]
+kind = "greenhouse"
+name = "Skyscanner"
+slug = "skyscanner"
+
+[[source]]
+kind = "greenhouse"
+name = "Sleep Doctor"
+slug = "sleepdoctor"
+
+[[source]]
+kind = "greenhouse"
+name = "Slice"
+slug = "slice"
+
+[[source]]
+kind = "greenhouse"
+name = "Smartly.io"
+slug = "smartlyio"
+
+[[source]]
+kind = "greenhouse"
+name = "Smartsheet"
+slug = "smartsheet"
+
+[[source]]
+kind = "greenhouse"
+name = "Snorkel AI"
+slug = "snorkelai"
+
+[[source]]
+kind = "greenhouse"
+name = "SOCi"
+slug = "soci"
+
+[[source]]
+kind = "greenhouse"
+name = "SoFi"
+slug = "sofi"
+
+[[source]]
+kind = "greenhouse"
+name = "SolarWinds"
+slug = "solarwinds"
+
+[[source]]
+kind = "greenhouse"
+name = "Solid Power"
+slug = "solidpower"
+
+[[source]]
+kind = "greenhouse"
+name = "Sonatus"
+slug = "sonatus"
+
+[[source]]
+kind = "greenhouse"
+name = "Sono Bello"
+slug = "sonobello"
+
+[[source]]
+kind = "greenhouse"
+name = "SonoThera"
+slug = "sonothera"
+
+[[source]]
+kind = "greenhouse"
+name = "Sony Interactive Entertainment"
+slug = "sonyinteractiveentertainmentglobal"
+
+[[source]]
+kind = "greenhouse"
+name = "Sony Pictures Imageworks"
+slug = "sonypicturesimageworks"
+
+[[source]]
+kind = "greenhouse"
+name = "Sourcegraph"
+slug = "sourcegraph91"
+
+[[source]]
+kind = "greenhouse"
+name = "Space Kinetic"
+slug = "spacekinetic"
+
+[[source]]
+kind = "greenhouse"
+name = "SpaceX"
+slug = "spacex"
+
+[[source]]
+kind = "greenhouse"
+name = "Sparksoft"
+slug = "sparksoftcorporation"
+
+[[source]]
+kind = "greenhouse"
+name = "SpecterOps"
+slug = "specterops"
+
+[[source]]
+kind = "greenhouse"
+name = "Speechify"
+slug = "speechify"
+
+[[source]]
+kind = "greenhouse"
+name = "Speechmatics"
+slug = "speechmatics"
+
+[[source]]
+kind = "greenhouse"
+name = "Sphere Entertainment Group, LLC"
+slug = "sphereentertainment"
+
+[[source]]
+kind = "greenhouse"
+name = "Sphinx Defense"
+slug = "sphinxdefense"
+
+[[source]]
+kind = "greenhouse"
+name = "SpotHero"
+slug = "spothero"
+
+[[source]]
+kind = "greenhouse"
+name = "Sprocket Security"
+slug = "sprocketsecurity"
+
+[[source]]
+kind = "greenhouse"
+name = "SpyCloud"
+slug = "spycloud"
+
+[[source]]
+kind = "greenhouse"
+name = "Squarepoint Capital"
+slug = "squarepointcapital"
+
+[[source]]
+kind = "greenhouse"
+name = "Squarespace"
+slug = "squarespace"
+
+[[source]]
+kind = "greenhouse"
+name = "SRS Acquiom"
+slug = "srsacquiom"
+
+[[source]]
+kind = "greenhouse"
+name = "Stability AI"
+slug = "stabilityai"
+
+[[source]]
+kind = "greenhouse"
+name = "StackAdapt"
+slug = "stackadapt"
+
+[[source]]
+kind = "greenhouse"
+name = "StackAV"
+slug = "stackav"
+
+[[source]]
+kind = "greenhouse"
+name = "Stackline"
+slug = "stackline"
+
+[[source]]
+kind = "greenhouse"
+name = "Starburst"
+slug = "starburst"
+
+[[source]]
+kind = "greenhouse"
+name = "StarTree"
+slug = "startree"
+
+[[source]]
+kind = "greenhouse"
+name = "State Affairs"
+slug = "stateaffairs"
+
+[[source]]
+kind = "greenhouse"
+name = "STEM Healthcare"
+slug = "stemhealthcare"
+
+[[source]]
+kind = "greenhouse"
+name = "StepStone Group"
+slug = "stepstone"
+
+[[source]]
+kind = "greenhouse"
+name = "Stevens Capital Management"
+slug = "scm"
+
+[[source]]
+kind = "greenhouse"
+name = "StockX"
+slug = "stockx"
+
+[[source]]
+kind = "greenhouse"
+name = "STR"
+slug = "systemstechnologyresearch"
+
+[[source]]
+kind = "greenhouse"
+name = "Strand Therapeutics"
+slug = "strandtherapeutics"
+
+[[source]]
+kind = "greenhouse"
+name = "Strata Decision Technology"
+slug = "stratacareers"
+
+[[source]]
+kind = "greenhouse"
+name = "Stratolaunch"
+slug = "stratolaunch"
+
+[[source]]
+kind = "greenhouse"
+name = "Striim"
+slug = "striiminc"
+
+[[source]]
+kind = "greenhouse"
+name = "Stripe"
+slug = "stripe"
+
+[[source]]
+kind = "greenhouse"
+name = "Subsplash"
+slug = "subsplash"
+
+[[source]]
+kind = "greenhouse"
+name = "Summit Partners"
+slug = "summitpartnerslp"
+
+[[source]]
+kind = "greenhouse"
+name = "Sumo Logic"
+slug = "sumologic"
+
+[[source]]
+kind = "greenhouse"
+name = "SumUp"
+slug = "sumup"
+
+[[source]]
+kind = "greenhouse"
+name = "Super Technologies"
+slug = "super"
+
+[[source]]
+kind = "greenhouse"
+name = "SupplyHouse.com"
+slug = "supplyhouse"
+
+[[source]]
+kind = "greenhouse"
+name = "Sustainable Talent"
+slug = "sustainabletalent"
+
+[[source]]
+kind = "greenhouse"
+name = "Suvoda"
+slug = "suvoda"
+
+[[source]]
+kind = "greenhouse"
+name = "Sweet Security"
+slug = "sweetsecurity"
+
+[[source]]
+kind = "greenhouse"
+name = "sweetgreen"
+slug = "sweetgreen"
+
+[[source]]
+kind = "greenhouse"
+name = "Symmetry"
+slug = "symmetry"
+
+[[source]]
+kind = "greenhouse"
+name = "System"
+slug = "system"
+
+[[source]]
+kind = "greenhouse"
+name = "T-Rex Solutions"
+slug = "trexsolutions"
+
+[[source]]
+kind = "greenhouse"
+name = "Taboola"
+slug = "taboola"
+
+[[source]]
+kind = "greenhouse"
+name = "Tailscale"
+slug = "tailscale"
+
+[[source]]
+kind = "greenhouse"
+name = "Take Two"
+slug = "taketwo"
+
+[[source]]
+kind = "greenhouse"
+name = "Talkspace Corporate"
+slug = "talkspace"
+
+[[source]]
+kind = "greenhouse"
+name = "Talroo"
+slug = "talroo"
+
+[[source]]
+kind = "greenhouse"
+name = "Tanium"
+slug = "tanium"
+
+[[source]]
+kind = "greenhouse"
+name = "Tastylive"
+slug = "tastylive"
+
+[[source]]
+kind = "greenhouse"
+name = "tastytrade"
+slug = "tastytrade"
+
+[[source]]
+kind = "greenhouse"
+name = "Tatari"
+slug = "tatari"
+
+[[source]]
+kind = "greenhouse"
+name = "Tax Relief Advocates"
+slug = "taxreliefadvocates"
+
+[[source]]
+kind = "greenhouse"
+name = "Technergetics"
+slug = "technergetics"
+
+[[source]]
+kind = "greenhouse"
+name = "Tecovas"
+slug = "tecovas"
+
+[[source]]
+kind = "greenhouse"
+name = "TEGNA"
+slug = "tegnainc"
+
+[[source]]
+kind = "greenhouse"
+name = "Tekion"
+slug = "tekion"
+
+[[source]]
+kind = "greenhouse"
+name = "Temporal Technologies"
+slug = "temporaltechnologies"
+
+[[source]]
+kind = "greenhouse"
+name = "Tenon"
+slug = "tenon"
+
+[[source]]
+kind = "greenhouse"
+name = "Tenstorrent"
+slug = "tenstorrent"
+
+[[source]]
+kind = "greenhouse"
+name = "Terran Orbital"
+slug = "terranorbitalcorporation"
+
+[[source]]
+kind = "greenhouse"
+name = "Testlio"
+slug = "testlio"
+
+[[source]]
+kind = "greenhouse"
+name = "The Allen Institute for AI"
+slug = "thealleninstitute"
+
+[[source]]
+kind = "greenhouse"
+name = "The Brattle Group"
+slug = "thebrattlegroup"
+
+[[source]]
+kind = "greenhouse"
+name = "The Health Management Academy"
+slug = "thehealthmanagementacademy"
+
+[[source]]
+kind = "greenhouse"
+name = "The National Football League"
+slug = "nflcareers"
+
+[[source]]
+kind = "greenhouse"
+name = "The New York Times"
+slug = "thenewyorktimes"
+
+[[source]]
+kind = "greenhouse"
+name = "The Nuclear Company"
+slug = "thenuclearcompany"
+
+[[source]]
+kind = "greenhouse"
+name = "The Pharmacy Hub"
+slug = "thepharmacyhub"
+
+[[source]]
+kind = "greenhouse"
+name = "The Pokémon Company"
+slug = "pokemoncareers"
+
+[[source]]
+kind = "greenhouse"
+name = "The Scion Group"
+slug = "thesciongroupllc"
+
+[[source]]
+kind = "greenhouse"
+name = "The Trade Desk"
+slug = "thetradedesk"
+
+[[source]]
+kind = "greenhouse"
+name = "The Weather Company"
+slug = "theweathercompany"
+
+[[source]]
+kind = "greenhouse"
+name = "Think Academy International Education"
+slug = "thinkacademyus"
+
+[[source]]
+kind = "greenhouse"
+name = "Thoughtworks"
+slug = "thoughtworksreferral"
+
+[[source]]
+kind = "greenhouse"
+name = "Threatlocker"
+slug = "threatlocker"
+
+[[source]]
+kind = "greenhouse"
+name = "TIFIN"
+slug = "tifin"
+
+[[source]]
+kind = "greenhouse"
+name = "Tigera"
+slug = "tigera"
+
+[[source]]
+kind = "greenhouse"
+name = "TigerGraph"
+slug = "tigergraph"
+
+[[source]]
+kind = "greenhouse"
+name = "Toast"
+slug = "toast"
+
+[[source]]
+kind = "greenhouse"
+name = "Together AI"
+slug = "togetherai"
+
+[[source]]
+kind = "greenhouse"
+name = "Togetherwork"
+slug = "togetherwork"
+
+[[source]]
+kind = "greenhouse"
+name = "Topsort"
+slug = "topsort"
+
+[[source]]
+kind = "greenhouse"
+name = "Torc Robotics"
+slug = "torcrobotics"
+
+[[source]]
+kind = "greenhouse"
+name = "Toshiba Global Commerce"
+slug = "toshibaglobalcommercesolutions"
+
+[[source]]
+kind = "greenhouse"
+name = "Tower Research Capital"
+slug = "towerresearchcapital"
+
+[[source]]
+kind = "greenhouse"
+name = "Townsquare Media"
+slug = "townsquaremedia"
+
+[[source]]
+kind = "greenhouse"
+name = "Trace3"
+slug = "trace3"
+
+[[source]]
+kind = "greenhouse"
+name = "Transcend"
+slug = "transcendinc"
+
+[[source]]
+kind = "greenhouse"
+name = "TransMarket Group"
+slug = "transmarketgroup"
+
+[[source]]
+kind = "greenhouse"
+name = "Transmit Security"
+slug = "transmitsecurity"
+
+[[source]]
+kind = "greenhouse"
+name = "Treasury Prime"
+slug = "treasuryprime"
+
+[[source]]
+kind = "greenhouse"
+name = "Trepp"
+slug = "trepp"
+
+[[source]]
+kind = "greenhouse"
+name = "Trexon"
+slug = "tpcengineeringholdingsllc"
+
+[[source]]
+kind = "greenhouse"
+name = "TribalScale"
+slug = "tribalscale"
+
+[[source]]
+kind = "greenhouse"
+name = "Trinity Park Talent"
+slug = "trinityparktalent"
+
+[[source]]
+kind = "greenhouse"
+name = "TripAdvisor"
+slug = "tripadvisor"
+
+[[source]]
+kind = "greenhouse"
+name = "TripArc"
+slug = "triparc"
+
+[[source]]
+kind = "greenhouse"
+name = "True Anomaly"
+slug = "trueanomalyinc"
+
+[[source]]
+kind = "greenhouse"
+name = "TRULAND Equipment"
+slug = "trulandequipment"
+
+[[source]]
+kind = "greenhouse"
+name = "Trumid"
+slug = "trumid"
+
+[[source]]
+kind = "greenhouse"
+name = "Trustpilot"
+slug = "trustpilot"
+
+[[source]]
+kind = "greenhouse"
+name = "Truveta"
+slug = "truveta"
+
+[[source]]
+kind = "greenhouse"
+name = "Tubi"
+slug = "tubitv"
+
+[[source]]
+kind = "greenhouse"
+name = "Tuesday Health"
+slug = "tuesdayhealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Turing"
+slug = "turing"
+
+[[source]]
+kind = "greenhouse"
+name = "Twilio"
+slug = "twilio"
+
+[[source]]
+kind = "greenhouse"
+name = "Twist Bioscience"
+slug = "twistbioscience"
+
+[[source]]
+kind = "greenhouse"
+name = "Twitch"
+slug = "twitch"
+
+[[source]]
+kind = "greenhouse"
+name = "Two Six Technologies"
+slug = "twosixtechnologies"
+
+[[source]]
+kind = "greenhouse"
+name = "Typeface"
+slug = "typeface"
+
+[[source]]
+kind = "greenhouse"
+name = "Typeform"
+slug = "typeform"
+
+[[source]]
+kind = "greenhouse"
+name = "Uare.ai"
+slug = "uareai"
+
+[[source]]
+kind = "greenhouse"
+name = "Uber Freight"
+slug = "uberfreight"
+
+[[source]]
+kind = "greenhouse"
+name = "Udemy"
+slug = "udemybedi"
+
+[[source]]
+kind = "greenhouse"
+name = "UDig"
+slug = "udig"
+
+[[source]]
+kind = "greenhouse"
+name = "Udio"
+slug = "udio"
+
+[[source]]
+kind = "greenhouse"
+name = "UJET"
+slug = "ujet"
+
+[[source]]
+kind = "greenhouse"
+name = "Ultima Genomics"
+slug = "ultimagenomics"
+
+[[source]]
+kind = "greenhouse"
+name = "Ultimate Heating & Air, Inc"
+slug = "ultimate"
+
+[[source]]
+kind = "greenhouse"
+name = "Unanet"
+slug = "unanet"
+
+[[source]]
+kind = "greenhouse"
+name = "Underdog Fantasy"
+slug = "underdogfantasy"
+
+[[source]]
+kind = "greenhouse"
+name = "UnitedMasters"
+slug = "unitedmasterstranslation"
+
+[[source]]
+kind = "greenhouse"
+name = "Universal"
+slug = "universal"
+
+[[source]]
+kind = "greenhouse"
+name = "Unlimited Technology"
+slug = "unlimitedtechnology"
+
+[[source]]
+kind = "greenhouse"
+name = "Upstart"
+slug = "upstart"
+
+[[source]]
+kind = "greenhouse"
+name = "Upstream USA"
+slug = "upstreamusa"
+
+[[source]]
+kind = "greenhouse"
+name = "Upwork"
+slug = "upwork"
+
+[[source]]
+kind = "greenhouse"
+name = "Ursa Major"
+slug = "ursamajor"
+
+[[source]]
+kind = "greenhouse"
+name = "US Conec"
+slug = "usconec"
+
+[[source]]
+kind = "greenhouse"
+name = "Vacasa"
+slug = "vacasa"
+
+[[source]]
+kind = "greenhouse"
+name = "Varda Space"
+slug = "vardaspace"
+
+[[source]]
+kind = "greenhouse"
+name = "VAST"
+slug = "vast"
+
+[[source]]
+kind = "greenhouse"
+name = "Vatic Labs"
+slug = "vaticlabs"
+
+[[source]]
+kind = "greenhouse"
+name = "VaynerMedia LLC"
+slug = "vaynermedia"
+
+[[source]]
+kind = "greenhouse"
+name = "Veeam Software"
+slug = "veeamsoftware"
+
+[[source]]
+kind = "greenhouse"
+name = "VEGA Americas"
+slug = "vegaamericas"
+
+[[source]]
+kind = "greenhouse"
+name = "Vera Institute of Justice"
+slug = "verainstituteofjustice"
+
+[[source]]
+kind = "greenhouse"
+name = "Veracode"
+slug = "veracode"
+
+[[source]]
+kind = "greenhouse"
+name = "Veracyte"
+slug = "veracyte"
+
+[[source]]
+kind = "greenhouse"
+name = "Vercel"
+slug = "vercel"
+
+[[source]]
+kind = "greenhouse"
+name = "Verisign"
+slug = "verisign"
+
+[[source]]
+kind = "greenhouse"
+name = "Verkada"
+slug = "verkada"
+
+[[source]]
+kind = "greenhouse"
+name = "Vermont Information Processing"
+slug = "vipvermontinformationprocessing2"
+
+[[source]]
+kind = "greenhouse"
+name = "Versaterm"
+slug = "versaterm"
+
+[[source]]
+kind = "greenhouse"
+name = "Vestmark"
+slug = "vestmark"
+
+[[source]]
+kind = "greenhouse"
+name = "Vestwell"
+slug = "vestwell"
+
+[[source]]
+kind = "greenhouse"
+name = "Viking Global"
+slug = "vikingglobalinvestors"
+
+[[source]]
+kind = "greenhouse"
+name = "Virtru"
+slug = "virtru"
+
+[[source]]
+kind = "greenhouse"
+name = "Virtu Financial"
+slug = "virtu"
+
+[[source]]
+kind = "greenhouse"
+name = "Vise"
+slug = "viseai"
+
+[[source]]
+kind = "greenhouse"
+name = "Visier Solutions"
+slug = "visiersolutionsinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Vixxo"
+slug = "vixxo"
+
+[[source]]
+kind = "greenhouse"
+name = "Voloridge"
+slug = "voloridgeinvestmentmanagement"
+
+[[source]]
+kind = "greenhouse"
+name = "Vonage"
+slug = "vonage"
+
+[[source]]
+kind = "greenhouse"
+name = "Voyager Technologies"
+slug = "voyagertechnologiesinc"
+
+[[source]]
+kind = "greenhouse"
+name = "VSC Fire & Security"
+slug = "vscfiresecurityinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Vulcan Elements"
+slug = "vulcanelements"
+
+[[source]]
+kind = "greenhouse"
+name = "Walleye Capital"
+slug = "walleyecapital-external-students"
+
+[[source]]
+kind = "greenhouse"
+name = "Wasabi Technologies"
+slug = "wasabi"
+
+[[source]]
+kind = "greenhouse"
+name = "Waymark"
+slug = "waymark"
+
+[[source]]
+kind = "greenhouse"
+name = "Waymo"
+slug = "waymo"
+
+[[source]]
+kind = "greenhouse"
+name = "Wayve"
+slug = "wayve"
+
+[[source]]
+kind = "greenhouse"
+name = "Webflow"
+slug = "webflow"
+
+[[source]]
+kind = "greenhouse"
+name = "Weedmaps"
+slug = "weedmaps77"
+
+[[source]]
+kind = "greenhouse"
+name = "Weiss Asset Management"
+slug = "weissassetmanagement"
+
+[[source]]
+kind = "greenhouse"
+name = "Western Union"
+slug = "westernunion"
+
+[[source]]
+kind = "greenhouse"
+name = "Wheely"
+slug = "wheely"
+
+[[source]]
+kind = "greenhouse"
+name = "WhiteWater Midstream"
+slug = "whitewatermidstream"
+
+[[source]]
+kind = "greenhouse"
+name = "William Blair"
+slug = "williamblair"
+
+[[source]]
+kind = "greenhouse"
+name = "Wilson Elser"
+slug = "wilsonelser"
+
+[[source]]
+kind = "greenhouse"
+name = "Wing"
+slug = "wing"
+
+[[source]]
+kind = "greenhouse"
+name = "Wonderschool"
+slug = "wonderschool"
+
+[[source]]
+kind = "greenhouse"
+name = "Woolpert"
+slug = "woolpert"
+
+[[source]]
+kind = "greenhouse"
+name = "Workato"
+slug = "workato"
+
+[[source]]
+kind = "greenhouse"
+name = "WorkBoard"
+slug = "workboard"
+
+[[source]]
+kind = "greenhouse"
+name = "Workstream"
+slug = "workstream"
+
+[[source]]
+kind = "greenhouse"
+name = "World Surf League"
+slug = "worldsurfleague"
+
+[[source]]
+kind = "greenhouse"
+name = "WPP"
+slug = "wpp"
+
+[[source]]
+kind = "greenhouse"
+name = "WPP Media"
+slug = "wppmedia"
+
+[[source]]
+kind = "greenhouse"
+name = "Wrike"
+slug = "wrike"
+
+[[source]]
+kind = "greenhouse"
+name = "Wurl"
+slug = "wurljobs"
+
+[[source]]
+kind = "greenhouse"
+name = "xAI"
+slug = "xai"
+
+[[source]]
+kind = "greenhouse"
+name = "Xaira Therapeutics"
+slug = "xairatherapeutics"
+
+[[source]]
+kind = "greenhouse"
+name = "Xebia"
+slug = "xebiausa"
+
+[[source]]
+kind = "greenhouse"
+name = "Xometry"
+slug = "xometry"
+
+[[source]]
+kind = "greenhouse"
+name = "XPENG Motors"
+slug = "xpengmotors"
+
+[[source]]
+kind = "greenhouse"
+name = "XTX Markets"
+slug = "xtxmarketstechnologies"
+
+[[source]]
+kind = "greenhouse"
+name = "Yes Energy"
+slug = "yesenergy"
+
+[[source]]
+kind = "greenhouse"
+name = "Yext"
+slug = "yext"
+
+[[source]]
+kind = "greenhouse"
+name = "Yotpo"
+slug = "yotpo"
+
+[[source]]
+kind = "greenhouse"
+name = "YOU.com"
+slug = "youcom"
+
+[[source]]
+kind = "greenhouse"
+name = "Yubico Inc."
+slug = "yubico"
+
+[[source]]
+kind = "greenhouse"
+name = "YugabyteDB"
+slug = "yugabyte"
+
+[[source]]
+kind = "greenhouse"
+name = "Zeta Global"
+slug = "zetaglobal"
+
+[[source]]
+kind = "greenhouse"
+name = "ZipRecruiter"
+slug = "ziprecruiter"
+
+[[source]]
+kind = "greenhouse"
+name = "Zocdoc"
+slug = "zocdoc"
+
+[[source]]
+kind = "greenhouse"
+name = "Zola"
+slug = "zola"
+
+[[source]]
+kind = "greenhouse"
+name = "Zone 5 Technologies"
+slug = "zone5technologies"
+
+[[source]]
+kind = "greenhouse"
+name = "ZoomInfo Technologies LLC"
+slug = "zoominfo"
+
+[[source]]
+kind = "greenhouse"
+name = "Zoro"
+slug = "zoro"
+
+[[source]]
+kind = "greenhouse"
+name = "Zscaler"
+slug = "zscaler"
+
+
+# --- Ashby -----------------------------------------------------------------------
 
 [[source]]
 kind = "ashby"
-name = "OpenAI"
-slug = "openai"
+name = "1Password"
+slug = "1password"
+
+[[source]]
+kind = "ashby"
+name = "1X"
+slug = "1x"
+
+[[source]]
+kind = "ashby"
+name = "8VC"
+slug = "8vc"
+
+[[source]]
+kind = "ashby"
+name = "9fin"
+slug = "9fin"
+
+[[source]]
+kind = "ashby"
+name = "Abby Care"
+slug = "abby-care"
+
+[[source]]
+kind = "ashby"
+name = "Abound"
+slug = "abound"
+
+[[source]]
+kind = "ashby"
+name = "Abridge"
+slug = "abridge"
+
+[[source]]
+kind = "ashby"
+name = "Acorns"
+slug = "acorns"
+
+[[source]]
+kind = "ashby"
+name = "Adaption Labs"
+slug = "adaption"
+
+[[source]]
+kind = "ashby"
+name = "Adaptive Security"
+slug = "adaptivesecurity"
+
+[[source]]
+kind = "ashby"
+name = "Aditude"
+slug = "aditude"
+
+[[source]]
+kind = "ashby"
+name = "AeroVect"
+slug = "aerovect"
+
+[[source]]
+kind = "ashby"
+name = "AfterQuery"
+slug = "afterquery"
+
+[[source]]
+kind = "ashby"
+name = "Agentis Capital"
+slug = "agentis-capital-advisors"
+
+[[source]]
+kind = "ashby"
+name = "AI Intern to the CEO"
+slug = "cyvl"
+
+[[source]]
+kind = "ashby"
+name = "Airbyte"
+slug = "airbyte"
+
+[[source]]
+kind = "ashby"
+name = "Airspace Intelligence"
+slug = "airspace-intelligence.com"
+
+[[source]]
+kind = "ashby"
+name = "Airwallex"
+slug = "airwallex"
+
+[[source]]
+kind = "ashby"
+name = "Alchemy"
+slug = "alchemy"
+
+[[source]]
+kind = "ashby"
+name = "algo1"
+slug = "algo1"
+
+[[source]]
+kind = "ashby"
+name = "Allen Control Systems"
+slug = "allen-control-systems"
+
+[[source]]
+kind = "ashby"
+name = "Allica Bank"
+slug = "allica-bank"
+
+[[source]]
+kind = "ashby"
+name = "AlphaLife Sciences"
+slug = "alphalifesci"
+
+[[source]]
+kind = "ashby"
+name = "ALSO"
+slug = "ridealso"
+
+[[source]]
+kind = "ashby"
+name = "Alta Ares"
+slug = "alta-ares"
+
+[[source]]
+kind = "ashby"
+name = "Amigo AI"
+slug = "amigo"
+
+[[source]]
+kind = "ashby"
+name = "Ampersand"
+slug = "ampersand"
+
+[[source]]
+kind = "ashby"
+name = "Amplify"
+slug = "amplify"
+
+[[source]]
+kind = "ashby"
+name = "Andela"
+slug = "andela"
+
+[[source]]
+kind = "ashby"
+name = "Ando"
+slug = "ando"
+
+[[source]]
+kind = "ashby"
+name = "Angle Health"
+slug = "anglehealth"
+
+[[source]]
+kind = "ashby"
+name = "Antares Nuclear"
+slug = "antares"
+
+[[source]]
+kind = "ashby"
+name = "Anterior"
+slug = "anterior"
+
+[[source]]
+kind = "ashby"
+name = "Anthelion Capital"
+slug = "anthelioncap"
+
+[[source]]
+kind = "ashby"
+name = "Anything"
+slug = "anything"
+
+[[source]]
+kind = "ashby"
+name = "Apex"
+slug = "apex-technology-inc"
+
+[[source]]
+kind = "ashby"
+name = "Apify Technologies s.r.o."
+slug = "apify"
+
+[[source]]
+kind = "ashby"
+name = "Apiphany"
+slug = "apiphany"
+
+[[source]]
+kind = "ashby"
+name = "Applied Intuition"
+slug = "applied"
+
+[[source]]
+kind = "ashby"
+name = "Apron"
+slug = "apron"
+
+[[source]]
+kind = "ashby"
+name = "Aptura"
+slug = "aptura"
+
+[[source]]
+kind = "ashby"
+name = "Arch"
+slug = "arch"
+
+[[source]]
+kind = "ashby"
+name = "Architect Labs"
+slug = "architect"
+
+[[source]]
+kind = "ashby"
+name = "Archy"
+slug = "archy"
+
+[[source]]
+kind = "ashby"
+name = "Arlo"
+slug = "arlo"
+
+[[source]]
+kind = "ashby"
+name = "ARQ"
+slug = "arq"
+
+[[source]]
+kind = "ashby"
+name = "Artisan"
+slug = "artisan"
+
+[[source]]
+kind = "ashby"
+name = "Ashby"
+slug = "ashby"
+
+[[source]]
+kind = "ashby"
+name = "Assembled"
+slug = "assembledhq"
+
+[[source]]
+kind = "ashby"
+name = "Astera"
+slug = "astera"
+
+[[source]]
+kind = "ashby"
+name = "Astro Mechanica"
+slug = "astro-mechanica"
+
+[[source]]
+kind = "ashby"
+name = "Astronomer"
+slug = "astronomer"
+
+[[source]]
+kind = "ashby"
+name = "Atlas"
+slug = "atlas"
+
+[[source]]
+kind = "ashby"
+name = "Atomic"
+slug = "atomic"
+
+[[source]]
+kind = "ashby"
+name = "Atomic Invest (AtomicVest)"
+slug = "atomic-invest"
+
+[[source]]
+kind = "ashby"
+name = "Auctor"
+slug = "auctor"
+
+[[source]]
+kind = "ashby"
+name = "Augmodo"
+slug = "augmodo"
+
+[[source]]
+kind = "ashby"
+name = "Aurelian"
+slug = "aurelian"
+
+[[source]]
+kind = "ashby"
+name = "Aurelius Systems"
+slug = "aureliussystems"
+
+[[source]]
+kind = "ashby"
+name = "Authorium"
+slug = "authorium"
+
+[[source]]
+kind = "ashby"
+name = "Backbone Systems"
+slug = "backbone"
+
+[[source]]
+kind = "ashby"
+name = "Base Power"
+slug = "base-power"
+
+[[source]]
+kind = "ashby"
+name = "Baseten"
+slug = "baseten"
+
+[[source]]
+kind = "ashby"
+name = "Basis Research Institute"
+slug = "basis-research"
+
+[[source]]
+kind = "ashby"
+name = "Baton Corporation"
+slug = "batoncorporation"
+
+[[source]]
+kind = "ashby"
+name = "Beacon AI"
+slug = "beaconai"
+
+[[source]]
+kind = "ashby"
+name = "Beacon Software"
+slug = "beaconsoftware"
+
+[[source]]
+kind = "ashby"
+name = "Benchling"
+slug = "benchling"
+
+[[source]]
+kind = "ashby"
+name = "Bild AI"
+slug = "bild-ai"
+
+[[source]]
+kind = "ashby"
+name = "Binance"
+slug = "binance.us"
+
+[[source]]
+kind = "ashby"
+name = "Blackbird Labs"
+slug = "blackbird-labs-inc"
+
+[[source]]
+kind = "ashby"
+name = "Blissway"
+slug = "blissway"
+
+[[source]]
+kind = "ashby"
+name = "Blitzy"
+slug = "blitzy"
+
+[[source]]
+kind = "ashby"
+name = "Blockhouse"
+slug = "blockhouse"
+
+[[source]]
+kind = "ashby"
+name = "Bloxd"
+slug = "bloxd"
+
+[[source]]
+kind = "ashby"
+name = "Boom"
+slug = "boom"
+
+[[source]]
+kind = "ashby"
+name = "Brain Co."
+slug = "brainco"
+
+[[source]]
+kind = "ashby"
+name = "Brainbase Labs"
+slug = "brainbaselabs"
+
+[[source]]
+kind = "ashby"
+name = "Braintrust"
+slug = "braintrust"
+
+[[source]]
+kind = "ashby"
+name = "Bree"
+slug = "bree"
+
+[[source]]
+kind = "ashby"
+name = "Bridger"
+slug = "bridger"
+
+[[source]]
+kind = "ashby"
+name = "BRINC Drones"
+slug = "brinc"
+
+[[source]]
+kind = "ashby"
+name = "Broccoli AI"
+slug = "broccoli"
+
+[[source]]
+kind = "ashby"
+name = "Browserbase"
+slug = "browserbase"
+
+[[source]]
+kind = "ashby"
+name = "Bubble"
+slug = "bubble"
+
+[[source]]
+kind = "ashby"
+name = "Bunny"
+slug = "bunny"
+
+[[source]]
+kind = "ashby"
+name = "Cambium"
+slug = "cambium"
+
+[[source]]
+kind = "ashby"
+name = "candidate fyi"
+slug = "candidate.fyi"
+
+[[source]]
+kind = "ashby"
+name = "Cantina"
+slug = "cantina"
+
+[[source]]
+kind = "ashby"
+name = "Capy"
+slug = "capy"
+
+[[source]]
+kind = "ashby"
+name = "Cartesia"
+slug = "cartesia"
+
+[[source]]
+kind = "ashby"
+name = "Carwow"
+slug = "carwow"
+
+[[source]]
+kind = "ashby"
+name = "Castle"
+slug = "castle"
+
+[[source]]
+kind = "ashby"
+name = "Cedar"
+slug = "cedar"
+
+[[source]]
+kind = "ashby"
+name = "Centerfield"
+slug = "centerfield"
+
+[[source]]
+kind = "ashby"
+name = "Cerebras"
+slug = "cerebras"
+
+[[source]]
+kind = "ashby"
+name = "Chamber Cardio"
+slug = "chambercardio"
+
+[[source]]
+kind = "ashby"
+name = "Character.AI"
+slug = "character"
+
+[[source]]
+kind = "ashby"
+name = "Charge Robotics"
+slug = "charge-robotics"
+
+[[source]]
+kind = "ashby"
+name = "Checkout.com"
+slug = "checkout.com"
+
+[[source]]
+kind = "ashby"
+name = "Circleback"
+slug = "circleback"
+
+[[source]]
+kind = "ashby"
+name = "Citizen Health"
+slug = "citizen"
+
+[[source]]
+kind = "ashby"
+name = "CivilGrid"
+slug = "civilgrid"
+
+[[source]]
+kind = "ashby"
+name = "ClaimSorted"
+slug = "claimsorted"
+
+[[source]]
+kind = "ashby"
+name = "Clarium"
+slug = "clarium"
+
+[[source]]
+kind = "ashby"
+name = "Clasp"
+slug = "clasp-group"
+
+[[source]]
+kind = "ashby"
+name = "Clay"
+slug = "claylabs"
+
+[[source]]
+kind = "ashby"
+name = "Clera"
+slug = "clera"
 
 [[source]]
 kind = "ashby"
@@ -196,13 +6061,1293 @@ slug = "clickhouse"
 
 [[source]]
 kind = "ashby"
-name = "Ramp"
-slug = "ramp"
+name = "ClickUp"
+slug = "clickup"
 
 [[source]]
 kind = "ashby"
-name = "Replit"
-slug = "replit"
+name = "Clipboard Health"
+slug = "clipboard"
+
+[[source]]
+kind = "ashby"
+name = "Close"
+slug = "close"
+
+[[source]]
+kind = "ashby"
+name = "Coder"
+slug = "coder"
+
+[[source]]
+kind = "ashby"
+name = "Cogent Security"
+slug = "cogent-security"
+
+[[source]]
+kind = "ashby"
+name = "Cognition"
+slug = "cognition"
+
+[[source]]
+kind = "ashby"
+name = "Cohere"
+slug = "cohere"
+
+[[source]]
+kind = "ashby"
+name = "Cohort AI Inc."
+slug = "cohort"
+
+[[source]]
+kind = "ashby"
+name = "Collaborative Robotics"
+slug = "cobot"
+
+[[source]]
+kind = "ashby"
+name = "Collective"
+slug = "collective"
+
+[[source]]
+kind = "ashby"
+name = "Color"
+slug = "color-health"
+
+[[source]]
+kind = "ashby"
+name = "Column"
+slug = "column"
+
+[[source]]
+kind = "ashby"
+name = "Commure"
+slug = "commure"
+
+[[source]]
+kind = "ashby"
+name = "Compa"
+slug = "compa"
+
+[[source]]
+kind = "ashby"
+name = "Composio"
+slug = "composio"
+
+[[source]]
+kind = "ashby"
+name = "Concourse"
+slug = "concourse"
+
+[[source]]
+kind = "ashby"
+name = "Confido"
+slug = "confido"
+
+[[source]]
+kind = "ashby"
+name = "Confluent"
+slug = "confluent"
+
+[[source]]
+kind = "ashby"
+name = "Constellation Space"
+slug = "constellationspace"
+
+[[source]]
+kind = "ashby"
+name = "Context"
+slug = "context"
+
+[[source]]
+kind = "ashby"
+name = "Contra"
+slug = "contra"
+
+[[source]]
+kind = "ashby"
+name = "Corvus Robotics"
+slug = "corvus-robotics"
+
+[[source]]
+kind = "ashby"
+name = "Coverdash"
+slug = "coverdash"
+
+[[source]]
+kind = "ashby"
+name = "Creatify"
+slug = "embedding-vc"
+
+[[source]]
+kind = "ashby"
+name = "Creatify Lab"
+slug = "creatify"
+
+[[source]]
+kind = "ashby"
+name = "Crosby"
+slug = "crosby"
+
+[[source]]
+kind = "ashby"
+name = "Crusoe"
+slug = "crusoe"
+
+[[source]]
+kind = "ashby"
+name = "CTGT"
+slug = "ctgt"
+
+[[source]]
+kind = "ashby"
+name = "Cubist"
+slug = "cubist"
+
+[[source]]
+kind = "ashby"
+name = "Cursor"
+slug = "cursor"
+
+[[source]]
+kind = "ashby"
+name = "CuspAI"
+slug = "cuspai"
+
+[[source]]
+kind = "ashby"
+name = "Cybernetic Labs"
+slug = "netic"
+
+[[source]]
+kind = "ashby"
+name = "Cylake"
+slug = "cylake-inc"
+
+[[source]]
+kind = "ashby"
+name = "d-Matrix"
+slug = "d-matrix"
+
+[[source]]
+kind = "ashby"
+name = "DailyPay"
+slug = "dailypay"
+
+[[source]]
+kind = "ashby"
+name = "Dave"
+slug = "dave"
+
+[[source]]
+kind = "ashby"
+name = "Decagon"
+slug = "decagon"
+
+[[source]]
+kind = "ashby"
+name = "Deepgram"
+slug = "deepgram"
+
+[[source]]
+kind = "ashby"
+name = "Delinea"
+slug = "delinea"
+
+[[source]]
+kind = "ashby"
+name = "Deliveroo"
+slug = "deliveroo"
+
+[[source]]
+kind = "ashby"
+name = "Denari"
+slug = "denari"
+
+[[source]]
+kind = "ashby"
+name = "Dexmate"
+slug = "dexmate"
+
+[[source]]
+kind = "ashby"
+name = "Dimensional"
+slug = "dimensional"
+
+[[source]]
+kind = "ashby"
+name = "Distyl AI"
+slug = "distyl"
+
+[[source]]
+kind = "ashby"
+name = "Ditto"
+slug = "ditto"
+
+[[source]]
+kind = "ashby"
+name = "Ditto AI"
+slug = "dittoai"
+
+[[source]]
+kind = "ashby"
+name = "Docker"
+slug = "docker"
+
+[[source]]
+kind = "ashby"
+name = "Doppler"
+slug = "doppler"
+
+[[source]]
+kind = "ashby"
+name = "Drata"
+slug = "drata"
+
+[[source]]
+kind = "ashby"
+name = "Droyd Robotics"
+slug = "droyd"
+
+[[source]]
+kind = "ashby"
+name = "Dryft"
+slug = "dryft"
+
+[[source]]
+kind = "ashby"
+name = "Dust"
+slug = "dust"
+
+[[source]]
+kind = "ashby"
+name = "Dyna Robotics"
+slug = "dyna-robotics"
+
+[[source]]
+kind = "ashby"
+name = "E2B"
+slug = "e2b"
+
+[[source]]
+kind = "ashby"
+name = "Egra"
+slug = "egra"
+
+[[source]]
+kind = "ashby"
+name = "Eigen Labs"
+slug = "eigen-labs"
+
+[[source]]
+kind = "ashby"
+name = "Eight Sleep"
+slug = "eightsleep"
+
+[[source]]
+kind = "ashby"
+name = "Ekho"
+slug = "ekho"
+
+[[source]]
+kind = "ashby"
+name = "Electric"
+slug = "electric"
+
+[[source]]
+kind = "ashby"
+name = "ElevenLabs"
+slug = "elevenlabs"
+
+[[source]]
+kind = "ashby"
+name = "EliseAI"
+slug = "eliseai"
+
+[[source]]
+kind = "ashby"
+name = "Eliza"
+slug = "eliza"
+
+[[source]]
+kind = "ashby"
+name = "Ellipsis Labs"
+slug = "ellipsislabs"
+
+[[source]]
+kind = "ashby"
+name = "Eloquent AI"
+slug = "eloquentai"
+
+[[source]]
+kind = "ashby"
+name = "Encord"
+slug = "encord"
+
+[[source]]
+kind = "ashby"
+name = "endeavorai.com"
+slug = "endeavorai"
+
+[[source]]
+kind = "ashby"
+name = "Envision Horizons LLC"
+slug = "envision-horizons"
+
+[[source]]
+kind = "ashby"
+name = "Equip Health"
+slug = "equip"
+
+[[source]]
+kind = "ashby"
+name = "Eragon"
+slug = "eragon"
+
+[[source]]
+kind = "ashby"
+name = "Espa AI"
+slug = "espa"
+
+[[source]]
+kind = "ashby"
+name = "Etched"
+slug = "etched"
+
+[[source]]
+kind = "ashby"
+name = "ether.fi"
+slug = "ether.fi"
+
+[[source]]
+kind = "ashby"
+name = "Exa Labs"
+slug = "exa"
+
+[[source]]
+kind = "ashby"
+name = "Eyebot"
+slug = "eyebot"
+
+[[source]]
+kind = "ashby"
+name = "Fab2"
+slug = "fab2"
+
+[[source]]
+kind = "ashby"
+name = "Faculte"
+slug = "faculty-fellowship"
+
+[[source]]
+kind = "ashby"
+name = "Faculty AI"
+slug = "faculty"
+
+[[source]]
+kind = "ashby"
+name = "Faros AI"
+slug = "faros-ai"
+
+[[source]]
+kind = "ashby"
+name = "Farsight"
+slug = "farsight"
+
+[[source]]
+kind = "ashby"
+name = "Feathery"
+slug = "feathery"
+
+[[source]]
+kind = "ashby"
+name = "Felicity"
+slug = "felicity"
+
+[[source]]
+kind = "ashby"
+name = "Fig"
+slug = "fig"
+
+[[source]]
+kind = "ashby"
+name = "Firecrawl"
+slug = "firecrawl"
+
+[[source]]
+kind = "ashby"
+name = "Firetiger"
+slug = "firetiger"
+
+[[source]]
+kind = "ashby"
+name = "Flagright"
+slug = "flagright.com"
+
+[[source]]
+kind = "ashby"
+name = "Flashpoint"
+slug = "flashpoint.io"
+
+[[source]]
+kind = "ashby"
+name = "Flock Safety"
+slug = "flock"
+
+[[source]]
+kind = "ashby"
+name = "Fluency"
+slug = "fluency"
+
+[[source]]
+kind = "ashby"
+name = "FluidStack"
+slug = "fluidstack"
+
+[[source]]
+kind = "ashby"
+name = "FlutterFlow"
+slug = "flutterflow"
+
+[[source]]
+kind = "ashby"
+name = "Focal"
+slug = "focal"
+
+[[source]]
+kind = "ashby"
+name = "Foley"
+slug = "foley"
+
+[[source]]
+kind = "ashby"
+name = "Forerunner"
+slug = "forerunner"
+
+[[source]]
+kind = "ashby"
+name = "Formula"
+slug = "formula"
+
+[[source]]
+kind = "ashby"
+name = "Foundation"
+slug = "foundation"
+
+[[source]]
+kind = "ashby"
+name = "Foxglove"
+slug = "foxglove"
+
+[[source]]
+kind = "ashby"
+name = "Fractional AI"
+slug = "fractional-ai"
+
+[[source]]
+kind = "ashby"
+name = "Frec Markets, Inc."
+slug = "frec"
+
+[[source]]
+kind = "ashby"
+name = "Frontier Health"
+slug = "frontier-health"
+
+[[source]]
+kind = "ashby"
+name = "Fundamental Research Labs"
+slug = "fundamentalresearchlabs"
+
+[[source]]
+kind = "ashby"
+name = "Funding Circle"
+slug = "fundingcircle"
+
+[[source]]
+kind = "ashby"
+name = "Fundwell"
+slug = "fundwell"
+
+[[source]]
+kind = "ashby"
+name = "Fuse Energy"
+slug = "fuse"
+
+[[source]]
+kind = "ashby"
+name = "G2"
+slug = "g2"
+
+[[source]]
+kind = "ashby"
+name = "Gallatin AI"
+slug = "gallatin"
+
+[[source]]
+kind = "ashby"
+name = "Gamechanger"
+slug = "gamechanger"
+
+[[source]]
+kind = "ashby"
+name = "Gamma"
+slug = "gamma"
+
+[[source]]
+kind = "ashby"
+name = "Gecko Robotics"
+slug = "gecko-robotics"
+
+[[source]]
+kind = "ashby"
+name = "Gen Digital"
+slug = "gen-digital"
+
+[[source]]
+kind = "ashby"
+name = "Generalist"
+slug = "generalist"
+
+[[source]]
+kind = "ashby"
+name = "Generate"
+slug = "generate"
+
+[[source]]
+kind = "ashby"
+name = "Genesis"
+slug = "genesis"
+
+[[source]]
+kind = "ashby"
+name = "Genies"
+slug = "genies"
+
+[[source]]
+kind = "ashby"
+name = "GenMD"
+slug = "genmd"
+
+[[source]]
+kind = "ashby"
+name = "Georgian Partners Growth"
+slug = "georgian"
+
+[[source]]
+kind = "ashby"
+name = "Giga AI"
+slug = "gigaml"
+
+[[source]]
+kind = "ashby"
+name = "Gimlet Labs"
+slug = "gimlet"
+
+[[source]]
+kind = "ashby"
+name = "Glia"
+slug = "glia"
+
+[[source]]
+kind = "ashby"
+name = "Glimpse Engineering"
+slug = "glimp-se"
+
+[[source]]
+kind = "ashby"
+name = "GoLinks"
+slug = "golinks"
+
+[[source]]
+kind = "ashby"
+name = "GoodShip"
+slug = "goodship"
+
+[[source]]
+kind = "ashby"
+name = "Gorgias"
+slug = "gorgias"
+
+[[source]]
+kind = "ashby"
+name = "GovSignals"
+slug = "govsignals"
+
+[[source]]
+kind = "ashby"
+name = "GovWell"
+slug = "govwell"
+
+[[source]]
+kind = "ashby"
+name = "Gradient Robotics"
+slug = "gradientrobotics"
+
+[[source]]
+kind = "ashby"
+name = "Gravie"
+slug = "gravie"
+
+[[source]]
+kind = "ashby"
+name = "Great Question"
+slug = "greatquestion"
+
+[[source]]
+kind = "ashby"
+name = "GreenLite"
+slug = "greenlitecareers"
+
+[[source]]
+kind = "ashby"
+name = "GridCARE"
+slug = "gridcare"
+
+[[source]]
+kind = "ashby"
+name = "Gritt Robotics Inc"
+slug = "gritt"
+
+[[source]]
+kind = "ashby"
+name = "Guild.ai"
+slug = "guild"
+
+[[source]]
+kind = "ashby"
+name = "Gumloop"
+slug = "gumloop"
+
+[[source]]
+kind = "ashby"
+name = "H3X Technologies"
+slug = "h3x-technologies"
+
+[[source]]
+kind = "ashby"
+name = "HackerOne"
+slug = "hackerone"
+
+[[source]]
+kind = "ashby"
+name = "Hadrian"
+slug = "hadrian-automation"
+
+[[source]]
+kind = "ashby"
+name = "Handshake"
+slug = "handshake"
+
+[[source]]
+kind = "ashby"
+name = "Harvey"
+slug = "harvey"
+
+[[source]]
+kind = "ashby"
+name = "HavocAI"
+slug = "havocai"
+
+[[source]]
+kind = "ashby"
+name = "Hawk-Eye Innovations"
+slug = "hawkeyeinnovations"
+
+[[source]]
+kind = "ashby"
+name = "Hayden AI"
+slug = "haydenai"
+
+[[source]]
+kind = "ashby"
+name = "HCompany"
+slug = "hcompany"
+
+[[source]]
+kind = "ashby"
+name = "Headway"
+slug = "headway"
+
+[[source]]
+kind = "ashby"
+name = "Healf"
+slug = "healf"
+
+[[source]]
+kind = "ashby"
+name = "Heidi Health"
+slug = "heidihealth.com.au"
+
+[[source]]
+kind = "ashby"
+name = "Heron Data"
+slug = "herondata"
+
+[[source]]
+kind = "ashby"
+name = "Heron Power"
+slug = "heron-power"
+
+[[source]]
+kind = "ashby"
+name = "Higharc"
+slug = "higharc"
+
+[[source]]
+kind = "ashby"
+name = "Highbeam"
+slug = "highbeam"
+
+[[source]]
+kind = "ashby"
+name = "Hightouch - Analytics [old]"
+slug = "hightouch"
+
+[[source]]
+kind = "ashby"
+name = "Hiive"
+slug = "hiive"
+
+[[source]]
+kind = "ashby"
+name = "Hilbert"
+slug = "hilberts"
+
+[[source]]
+kind = "ashby"
+name = "Hinge Health"
+slug = "hinge-health"
+
+[[source]]
+kind = "ashby"
+name = "Hipp Health"
+slug = "hipp"
+
+[[source]]
+kind = "ashby"
+name = "Hire Hangar"
+slug = "hirehangar"
+
+[[source]]
+kind = "ashby"
+name = "Hiverge"
+slug = "hiverge"
+
+[[source]]
+kind = "ashby"
+name = "Homebase"
+slug = "homebase"
+
+[[source]]
+kind = "ashby"
+name = "Hubs.is"
+slug = "hubs.is"
+
+[[source]]
+kind = "ashby"
+name = "HUMAN"
+slug = "human"
+
+[[source]]
+kind = "ashby"
+name = "Human Computer Lab"
+slug = "human-computer-lab"
+
+[[source]]
+kind = "ashby"
+name = "hyperexponential"
+slug = "hyperexponential"
+
+[[source]]
+kind = "ashby"
+name = "Iambic Therapeutics"
+slug = "iambic-therapeutics"
+
+[[source]]
+kind = "ashby"
+name = "ibotta"
+slug = "ibotta"
+
+[[source]]
+kind = "ashby"
+name = "Icon"
+slug = "icon"
+
+[[source]]
+kind = "ashby"
+name = "Ideogram"
+slug = "ideogram"
+
+[[source]]
+kind = "ashby"
+name = "Illumio"
+slug = "illumio"
+
+[[source]]
+kind = "ashby"
+name = "Imprint"
+slug = "imprint"
+
+[[source]]
+kind = "ashby"
+name = "Impulse Labs"
+slug = "impulse"
+
+[[source]]
+kind = "ashby"
+name = "Inclined Technologies"
+slug = "inclined"
+
+[[source]]
+kind = "ashby"
+name = "Infisical"
+slug = "infisical"
+
+[[source]]
+kind = "ashby"
+name = "Inngest"
+slug = "inngest"
+
+[[source]]
+kind = "ashby"
+name = "Insitro"
+slug = "insitro"
+
+[[source]]
+kind = "ashby"
+name = "Internship"
+slug = "interplay"
+
+[[source]]
+kind = "ashby"
+name = "Ironclad"
+slug = "ironcladhq"
+
+[[source]]
+kind = "ashby"
+name = "iwoca"
+slug = "iwoca.co.uk"
+
+[[source]]
+kind = "ashby"
+name = "Jerry"
+slug = "jerry.ai"
+
+[[source]]
+kind = "ashby"
+name = "Jigsaw"
+slug = "jigsaw"
+
+[[source]]
+kind = "ashby"
+name = "Julius AI"
+slug = "julius"
+
+[[source]]
+kind = "ashby"
+name = "Jump"
+slug = "jump"
+
+[[source]]
+kind = "ashby"
+name = "Junior AI"
+slug = "junior"
+
+[[source]]
+kind = "ashby"
+name = "Juniper Square"
+slug = "junipersquare"
+
+[[source]]
+kind = "ashby"
+name = "k-ID"
+slug = "k-id"
+
+[[source]]
+kind = "ashby"
+name = "KAYAK"
+slug = "kayak"
+
+[[source]]
+kind = "ashby"
+name = "Kestra Technologies"
+slug = "kestra"
+
+[[source]]
+kind = "ashby"
+name = "Keyrock"
+slug = "keyrock"
+
+[[source]]
+kind = "ashby"
+name = "Kinetic Systems"
+slug = "kineticsystems"
+
+[[source]]
+kind = "ashby"
+name = "Kira"
+slug = "kira"
+
+[[source]]
+kind = "ashby"
+name = "Kirin"
+slug = "kirin"
+
+[[source]]
+kind = "ashby"
+name = "Klarity"
+slug = "klarity-ai"
+
+[[source]]
+kind = "ashby"
+name = "Klue"
+slug = "klue"
+
+[[source]]
+kind = "ashby"
+name = "Kognitos"
+slug = "kognitos"
+
+[[source]]
+kind = "ashby"
+name = "KOHO"
+slug = "koho"
+
+[[source]]
+kind = "ashby"
+name = "Kong"
+slug = "kong"
+
+[[source]]
+kind = "ashby"
+name = "kos.ai"
+slug = "kos.ai"
+
+[[source]]
+kind = "ashby"
+name = "Kustomer"
+slug = "kustomer"
+
+[[source]]
+kind = "ashby"
+name = "Ladder"
+slug = "ladder"
+
+[[source]]
+kind = "ashby"
+name = "Lambda"
+slug = "lambda"
+
+[[source]]
+kind = "ashby"
+name = "LangChain"
+slug = "langchain"
+
+[[source]]
+kind = "ashby"
+name = "Latitude.io"
+slug = "latitude"
+
+[[source]]
+kind = "ashby"
+name = "LawDepot"
+slug = "lawdepot"
+
+[[source]]
+kind = "ashby"
+name = "Layer Financial Technologies"
+slug = "layerfi"
+
+[[source]]
+kind = "ashby"
+name = "Leapsome"
+slug = "leapsome"
+
+[[source]]
+kind = "ashby"
+name = "Leavitt Group"
+slug = "leavitt"
+
+[[source]]
+kind = "ashby"
+name = "Leland"
+slug = "leland"
+
+[[source]]
+kind = "ashby"
+name = "Lendable"
+slug = "lendable"
+
+[[source]]
+kind = "ashby"
+name = "Levels Technologies"
+slug = "levels"
+
+[[source]]
+kind = "ashby"
+name = "LG Ad Solutions"
+slug = "lgads"
+
+[[source]]
+kind = "ashby"
+name = "Light"
+slug = "light"
+
+[[source]]
+kind = "ashby"
+name = "Lightfield"
+slug = "lightfield"
+
+[[source]]
+kind = "ashby"
+name = "Lightspark"
+slug = "lightspark"
+
+[[source]]
+kind = "ashby"
+name = "Limble CMMS"
+slug = "limble"
+
+[[source]]
+kind = "ashby"
+name = "Linear"
+slug = "linear"
+
+[[source]]
+kind = "ashby"
+name = "LINQ"
+slug = "linqapp"
+
+[[source]]
+kind = "ashby"
+name = "Liquid"
+slug = "liquid"
+
+[[source]]
+kind = "ashby"
+name = "LiveFlow"
+slug = "liveflow"
+
+[[source]]
+kind = "ashby"
+name = "LiveKit"
+slug = "livekit"
+
+[[source]]
+kind = "ashby"
+name = "LlamaIndex"
+slug = "llamaindex"
+
+[[source]]
+kind = "ashby"
+name = "Logiqal"
+slug = "logiqal"
+
+[[source]]
+kind = "ashby"
+name = "Logos Space"
+slug = "logos-space"
+
+[[source]]
+kind = "ashby"
+name = "Lovable"
+slug = "lovable"
+
+[[source]]
+kind = "ashby"
+name = "loveholidays"
+slug = "loveholidays"
+
+[[source]]
+kind = "ashby"
+name = "Luma"
+slug = "lumaai"
+
+[[source]]
+kind = "ashby"
+name = "Lumin Digital"
+slug = "lumin-digital"
+
+[[source]]
+kind = "ashby"
+name = "Lunon"
+slug = "lunon"
+
+[[source]]
+kind = "ashby"
+name = "Lydian"
+slug = "lydian"
+
+[[source]]
+kind = "ashby"
+name = "Lynk"
+slug = "lynk"
+
+[[source]]
+kind = "ashby"
+name = "m13"
+slug = "m13"
+
+[[source]]
+kind = "ashby"
+name = "Mach Industries"
+slug = "mach"
+
+[[source]]
+kind = "ashby"
+name = "Mach9"
+slug = "mach9"
+
+[[source]]
+kind = "ashby"
+name = "Magical"
+slug = "magical"
+
+[[source]]
+kind = "ashby"
+name = "Maigrate"
+slug = "maigrate"
+
+[[source]]
+kind = "ashby"
+name = "MaintainX"
+slug = "maintainx"
+
+[[source]]
+kind = "ashby"
+name = "Makai Labs"
+slug = "makai-labs"
+
+[[source]]
+kind = "ashby"
+name = "Mandolin"
+slug = "mandolin"
+
+[[source]]
+kind = "ashby"
+name = "Maple AI"
+slug = "maple"
+
+[[source]]
+kind = "ashby"
+name = "Mariana Minerals"
+slug = "marianaminerals"
+
+[[source]]
+kind = "ashby"
+name = "Material Group"
+slug = "material"
+
+[[source]]
+kind = "ashby"
+name = "Material Security"
+slug = "materialsecurity"
+
+[[source]]
+kind = "ashby"
+name = "Materialize"
+slug = "materialize"
+
+[[source]]
+kind = "ashby"
+name = "Matic"
+slug = "maticrobots"
+
+[[source]]
+kind = "ashby"
+name = "Matterworks"
+slug = "matterworks"
+
+[[source]]
+kind = "ashby"
+name = "Maven"
+slug = "maven"
+
+[[source]]
+kind = "ashby"
+name = "Maxima"
+slug = "maxima"
+
+[[source]]
+kind = "ashby"
+name = "Maya HTT"
+slug = "maya-htt"
+
+[[source]]
+kind = "ashby"
+name = "Mechanize"
+slug = "mechanize"
+
+[[source]]
+kind = "ashby"
+name = "Medra"
+slug = "medraai"
+
+[[source]]
+kind = "ashby"
+name = "Melotech"
+slug = "melotech"
+
+[[source]]
+kind = "ashby"
+name = "Mercor"
+slug = "mercor"
+
+[[source]]
+kind = "ashby"
+name = "Meridian Link"
+slug = "meridianlink"
+
+[[source]]
+kind = "ashby"
+name = "Meshy"
+slug = "meshy"
+
+[[source]]
+kind = "ashby"
+name = "Meticulous"
+slug = "meticulous"
+
+[[source]]
+kind = "ashby"
+name = "Middesk"
+slug = "middesk"
+
+[[source]]
+kind = "ashby"
+name = "Midjourney Inc"
+slug = "midjourney"
+
+[[source]]
+kind = "ashby"
+name = "Mintlify"
+slug = "mintlify"
+
+[[source]]
+kind = "ashby"
+name = "Miovision"
+slug = "miovision"
+
+[[source]]
+kind = "ashby"
+name = "Mirage"
+slug = "mirage"
+
+[[source]]
+kind = "ashby"
+name = "Miro"
+slug = "miro"
+
+[[source]]
+kind = "ashby"
+name = "Mistral AI"
+slug = "mistral.ai"
+
+[[source]]
+kind = "ashby"
+name = "Moab"
+slug = "moab"
 
 [[source]]
 kind = "ashby"
@@ -211,19 +7356,4104 @@ slug = "modal"
 
 [[source]]
 kind = "ashby"
-name = "Linear"
-slug = "linear"
+name = "Modern Treasury"
+slug = "moderntreasury"
 
-# --- Lever --------------------------------------------------------------------
+[[source]]
+kind = "ashby"
+name = "Monarch Money"
+slug = "monarchmoney"
+
+[[source]]
+kind = "ashby"
+name = "Monogram"
+slug = "monogram"
+
+[[source]]
+kind = "ashby"
+name = "Mosaic"
+slug = "mosaic"
+
+[[source]]
+kind = "ashby"
+name = "Moss"
+slug = "moss"
+
+[[source]]
+kind = "ashby"
+name = "Motorway"
+slug = "motorway"
+
+[[source]]
+kind = "ashby"
+name = "MUBI"
+slug = "mubi"
+
+[[source]]
+kind = "ashby"
+name = "Mudflap"
+slug = "mudflap"
+
+[[source]]
+kind = "ashby"
+name = "Mux"
+slug = "mux"
+
+[[source]]
+kind = "ashby"
+name = "N1"
+slug = "n1"
+
+[[source]]
+kind = "ashby"
+name = "n8n"
+slug = "n8n"
+
+[[source]]
+kind = "ashby"
+name = "Nascent"
+slug = "nascent"
+
+[[source]]
+kind = "ashby"
+name = "Nash"
+slug = "nash"
+
+[[source]]
+kind = "ashby"
+name = "NationGraph"
+slug = "nationgraph"
+
+[[source]]
+kind = "ashby"
+name = "Nectar Social"
+slug = "nectar-social"
+
+[[source]]
+kind = "ashby"
+name = "NeoCognition"
+slug = "neocognition"
+
+[[source]]
+kind = "ashby"
+name = "Neon"
+slug = "neon"
+
+[[source]]
+kind = "ashby"
+name = "Neon Health"
+slug = "neon-health"
+
+[[source]]
+kind = "ashby"
+name = "New Lantern"
+slug = "newlantern"
+
+[[source]]
+kind = "ashby"
+name = "Nexxen"
+slug = "nexxen"
+
+[[source]]
+kind = "ashby"
+name = "Niural"
+slug = "niural"
+
+[[source]]
+kind = "ashby"
+name = "nomic"
+slug = "nomic"
+
+[[source]]
+kind = "ashby"
+name = "Nord Security"
+slug = "nord-security"
+
+[[source]]
+kind = "ashby"
+name = "Northslope Technologies"
+slug = "northslope-technologies"
+
+[[source]]
+kind = "ashby"
+name = "Northwood Space"
+slug = "northwoodspace"
+
+[[source]]
+kind = "ashby"
+name = "Notion"
+slug = "notion"
+
+[[source]]
+kind = "ashby"
+name = "NOX METALS"
+slug = "nox-metals"
+
+[[source]]
+kind = "ashby"
+name = "Nuclear Promise X"
+slug = "npx"
+
+[[source]]
+kind = "ashby"
+name = "Numeral"
+slug = "numeral"
+
+[[source]]
+kind = "ashby"
+name = "NumerixS Quant"
+slug = "numerixs-quant"
+
+[[source]]
+kind = "ashby"
+name = "Nylas"
+slug = "nylas"
+
+[[source]]
+kind = "ashby"
+name = "Observable Space"
+slug = "observable-space"
+
+[[source]]
+kind = "ashby"
+name = "Obvious"
+slug = "obvious"
+
+[[source]]
+kind = "ashby"
+name = "Ocean"
+slug = "ocean"
+
+[[source]]
+kind = "ashby"
+name = "Odin Dynamics, Inc"
+slug = "odin-dynamics"
+
+[[source]]
+kind = "ashby"
+name = "Odyssey"
+slug = "odysseyml"
+
+[[source]]
+kind = "ashby"
+name = "Old Mission Capital"
+slug = "old-mission-capital"
+
+[[source]]
+kind = "ashby"
+name = "Oligo Space"
+slug = "oligo"
+
+[[source]]
+kind = "ashby"
+name = "One Brief"
+slug = "onebrief"
+
+[[source]]
+kind = "ashby"
+name = "Ontic"
+slug = "ontic"
+
+[[source]]
+kind = "ashby"
+name = "Onyx"
+slug = "onyx"
+
+[[source]]
+kind = "ashby"
+name = "OpenAI"
+slug = "openai"
+
+[[source]]
+kind = "ashby"
+name = "OpenEvidence"
+slug = "openevidence"
+
+[[source]]
+kind = "ashby"
+name = "OpenGov"
+slug = "opengov"
+
+[[source]]
+kind = "ashby"
+name = "OpusClip"
+slug = "opusclip"
+
+[[source]]
+kind = "ashby"
+name = "Orb"
+slug = "orb"
+
+[[source]]
+kind = "ashby"
+name = "Orbital"
+slug = "orbital"
+
+[[source]]
+kind = "ashby"
+name = "Orbital Industries"
+slug = "orbitalindustries"
+
+[[source]]
+kind = "ashby"
+name = "Orca"
+slug = "orca"
+
+[[source]]
+kind = "ashby"
+name = "Orchard"
+slug = "orchard"
+
+[[source]]
+kind = "ashby"
+name = "Osmo"
+slug = "osmo"
+
+[[source]]
+kind = "ashby"
+name = "Outmarket AI"
+slug = "outmarket"
+
+[[source]]
+kind = "ashby"
+name = "Outpost Technologies"
+slug = "outpostnow"
+
+[[source]]
+kind = "ashby"
+name = "Output Biosciences"
+slug = "output"
+
+[[source]]
+kind = "ashby"
+name = "Overview Energy"
+slug = "overviewenergy"
+
+[[source]]
+kind = "ashby"
+name = "Oyster"
+slug = "oyster"
+
+[[source]]
+kind = "ashby"
+name = "Packz"
+slug = "packz"
+
+[[source]]
+kind = "ashby"
+name = "Paradigm"
+slug = "paradigm"
+
+[[source]]
+kind = "ashby"
+name = "Parallel Web Systems"
+slug = "parallel"
+
+[[source]]
+kind = "ashby"
+name = "Pariveda Solutions"
+slug = "pariveda"
+
+[[source]]
+kind = "ashby"
+name = "Parspec"
+slug = "parspec"
+
+[[source]]
+kind = "ashby"
+name = "Passage"
+slug = "passage"
+
+[[source]]
+kind = "ashby"
+name = "Patreon"
+slug = "patreon"
+
+[[source]]
+kind = "ashby"
+name = "Pearl Health"
+slug = "pearlhealth"
+
+[[source]]
+kind = "ashby"
+name = "Pebl"
+slug = "pebl"
+
+[[source]]
+kind = "ashby"
+name = "People Culture Talent"
+slug = "people-culture-talent"
+
+[[source]]
+kind = "ashby"
+name = "Perchwell"
+slug = "perchwell"
+
+[[source]]
+kind = "ashby"
+name = "Periodic Labs"
+slug = "periodic-labs"
+
+[[source]]
+kind = "ashby"
+name = "PermitFlow"
+slug = "permitflow"
+
+[[source]]
+kind = "ashby"
+name = "Perplexity AI"
+slug = "perplexity"
+
+[[source]]
+kind = "ashby"
+name = "Persona"
+slug = "persona"
+
+[[source]]
+kind = "ashby"
+name = "Persona AI"
+slug = "persona.ai"
+
+[[source]]
+kind = "ashby"
+name = "Phia"
+slug = "phia"
+
+[[source]]
+kind = "ashby"
+name = "Phil"
+slug = "phil"
+
+[[source]]
+kind = "ashby"
+name = "Phlair"
+slug = "phlair"
+
+[[source]]
+kind = "ashby"
+name = "Phoenix"
+slug = "phoenix"
+
+[[source]]
+kind = "ashby"
+name = "Phonely"
+slug = "phonely"
+
+[[source]]
+kind = "ashby"
+name = "Phonic"
+slug = "phonic"
+
+[[source]]
+kind = "ashby"
+name = "Physical Intelligence"
+slug = "physicalintelligence"
+
+[[source]]
+kind = "ashby"
+name = "Picogrid"
+slug = "picogrid"
+
+[[source]]
+kind = "ashby"
+name = "Pika"
+slug = "pika"
+
+[[source]]
+kind = "ashby"
+name = "Pinecone"
+slug = "pinecone"
+
+[[source]]
+kind = "ashby"
+name = "Plaid"
+slug = "plaid"
+
+[[source]]
+kind = "ashby"
+name = "Pogo Technologies, Inc."
+slug = "joinpogo"
+
+[[source]]
+kind = "ashby"
+name = "PointOne"
+slug = "pointone"
+
+[[source]]
+kind = "ashby"
+name = "Polar"
+slug = "polar"
+
+[[source]]
+kind = "ashby"
+name = "Polymarket"
+slug = "polymarket"
+
+[[source]]
+kind = "ashby"
+name = "Polymath"
+slug = "polymath"
+
+[[source]]
+kind = "ashby"
+name = "Poolside"
+slug = "poolside"
+
+[[source]]
+kind = "ashby"
+name = "Poshmark"
+slug = "poshmark"
+
+[[source]]
+kind = "ashby"
+name = "Prefect"
+slug = "prefect"
+
+[[source]]
+kind = "ashby"
+name = "Preference Model"
+slug = "preference-model"
+
+[[source]]
+kind = "ashby"
+name = "Prime Intellect"
+slug = "primeintellect"
+
+[[source]]
+kind = "ashby"
+name = "Prior Labs"
+slug = "prior-labs"
+
+[[source]]
+kind = "ashby"
+name = "Probook"
+slug = "probook"
+
+[[source]]
+kind = "ashby"
+name = "Profound"
+slug = "profound"
+
+[[source]]
+kind = "ashby"
+name = "Proxima"
+slug = "proxima"
+
+[[source]]
+kind = "ashby"
+name = "Pure"
+slug = "pure"
+
+[[source]]
+kind = "ashby"
+name = "Pylon"
+slug = "pylon-labs"
+
+[[source]]
+kind = "ashby"
+name = "Quadrillion"
+slug = "quadrillion-labs"
+
+[[source]]
+kind = "ashby"
+name = "Quanta"
+slug = "quanta"
+
+[[source]]
+kind = "ashby"
+name = "Quantcast"
+slug = "quantcast"
+
+[[source]]
+kind = "ashby"
+name = "Quantexa"
+slug = "quantexa"
+
+[[source]]
+kind = "ashby"
+name = "Quantum"
+slug = "quantum"
+
+[[source]]
+kind = "ashby"
+name = "Quora"
+slug = "quora"
+
+[[source]]
+kind = "ashby"
+name = "Railway"
+slug = "railway"
+
+[[source]]
+kind = "ashby"
+name = "Rain"
+slug = "rain"
+
+[[source]]
+kind = "ashby"
+name = "Ramp"
+slug = "ramp"
+
+[[source]]
+kind = "ashby"
+name = "Range"
+slug = "range"
+
+[[source]]
+kind = "ashby"
+name = "Rasa"
+slug = "rasa"
+
+[[source]]
+kind = "ashby"
+name = "Reality Defender"
+slug = "realitydefender"
+
+[[source]]
+kind = "ashby"
+name = "Realm"
+slug = "realmalliance"
+
+[[source]]
+kind = "ashby"
+name = "Redis"
+slug = "redis"
+
+[[source]]
+kind = "ashby"
+name = "Reflect Orbital"
+slug = "reflect-orbital"
+
+[[source]]
+kind = "ashby"
+name = "Reka"
+slug = "reka"
+
+[[source]]
+kind = "ashby"
+name = "Relation Therapeutics"
+slug = "relationrx"
+
+[[source]]
+kind = "ashby"
+name = "Relay Financial"
+slug = "relayfi"
+
+[[source]]
+kind = "ashby"
+name = "Relay Technologies"
+slug = "relay"
+
+[[source]]
+kind = "ashby"
+name = "Remarcable"
+slug = "remarcable-inc"
+
+[[source]]
+kind = "ashby"
+name = "Render"
+slug = "render"
+
+[[source]]
+kind = "ashby"
+name = "Replit"
+slug = "replit"
+
+[[source]]
+kind = "ashby"
+name = "Resend"
+slug = "resend"
+
+[[source]]
+kind = "ashby"
+name = "Restate"
+slug = "restate"
+
+[[source]]
+kind = "ashby"
+name = "Retell AI"
+slug = "retell-ai"
+
+[[source]]
+kind = "ashby"
+name = "Revel"
+slug = "revel"
+
+[[source]]
+kind = "ashby"
+name = "RevenueCat"
+slug = "revenuecat"
+
+[[source]]
+kind = "ashby"
+name = "Revise Robotics"
+slug = "reviserobotics"
+
+[[source]]
+kind = "ashby"
+name = "Rho"
+slug = "rho"
+
+[[source]]
+kind = "ashby"
+name = "Rhoda AI"
+slug = "rhoda-ai"
+
+[[source]]
+kind = "ashby"
+name = "Rivet Industries"
+slug = "rivet"
+
+[[source]]
+kind = "ashby"
+name = "Rivian and Volkswagen Group Technologies"
+slug = "rivianvw.tech"
+
+[[source]]
+kind = "ashby"
+name = "Roadrunner"
+slug = "roadrunner"
+
+[[source]]
+kind = "ashby"
+name = "Roam"
+slug = "tryroam"
+
+[[source]]
+kind = "ashby"
+name = "Roboflow"
+slug = "roboflow"
+
+[[source]]
+kind = "ashby"
+name = "Rocket Science Group"
+slug = "rocketsciencegg"
+
+[[source]]
+kind = "ashby"
+name = "Root Access"
+slug = "root-access"
+
+[[source]]
+kind = "ashby"
+name = "Ropes"
+slug = "ropes"
+
+[[source]]
+kind = "ashby"
+name = "Rundoo"
+slug = "rundoo"
+
+[[source]]
+kind = "ashby"
+name = "Runpod"
+slug = "runpod"
+
+[[source]]
+kind = "ashby"
+name = "RunSybil"
+slug = "runsybil-jobs"
+
+[[source]]
+kind = "ashby"
+name = "Sanctuary"
+slug = "sanctuary"
+
+[[source]]
+kind = "ashby"
+name = "SandboxAQ"
+slug = "sandboxaq"
+
+[[source]]
+kind = "ashby"
+name = "Sardine"
+slug = "sardine"
+
+[[source]]
+kind = "ashby"
+name = "Saronic"
+slug = "saronic"
+
+[[source]]
+kind = "ashby"
+name = "Sauna"
+slug = "sauna.ai"
+
+[[source]]
+kind = "ashby"
+name = "Semgrep"
+slug = "semgrep"
+
+[[source]]
+kind = "ashby"
+name = "Sensor Tower"
+slug = "sensor-tower"
+
+[[source]]
+kind = "ashby"
+name = "SentiLink"
+slug = "sentilink"
+
+[[source]]
+kind = "ashby"
+name = "Sentra"
+slug = "sentra"
+
+[[source]]
+kind = "ashby"
+name = "Sentry"
+slug = "sentry"
+
+[[source]]
+kind = "ashby"
+name = "Sereact"
+slug = "sereact"
+
+[[source]]
+kind = "ashby"
+name = "Serval"
+slug = "serval"
+
+[[source]]
+kind = "ashby"
+name = "Serve Robotics"
+slug = "serverobotics"
+
+[[source]]
+kind = "ashby"
+name = "SewerAI"
+slug = "sewer-ai"
+
+[[source]]
+kind = "ashby"
+name = "Shepherd"
+slug = "shepherd"
+
+[[source]]
+kind = "ashby"
+name = "Shiftsmart"
+slug = "shiftsmart"
+
+[[source]]
+kind = "ashby"
+name = "Sierra"
+slug = "sierra"
+
+[[source]]
+kind = "ashby"
+name = "Sieve"
+slug = "sieve"
+
+[[source]]
+kind = "ashby"
+name = "Silna Health"
+slug = "silnahealth.com"
+
+[[source]]
+kind = "ashby"
+name = "Simile"
+slug = "simile"
+
+[[source]]
+kind = "ashby"
+name = "Simple AI"
+slug = "simple-ai"
+
+[[source]]
+kind = "ashby"
+name = "Simplify"
+slug = "simplify"
+
+[[source]]
+kind = "ashby"
+name = "Simular"
+slug = "simular"
+
+[[source]]
+kind = "ashby"
+name = "Skydio"
+slug = "skydio"
+
+[[source]]
+kind = "ashby"
+name = "Slate"
+slug = "slate"
+
+[[source]]
+kind = "ashby"
+name = "Slingshot AI"
+slug = "slingshotai"
+
+[[source]]
+kind = "ashby"
+name = "Smarkets"
+slug = "smarkets"
+
+[[source]]
+kind = "ashby"
+name = "Snowflake"
+slug = "snowflake"
+
+[[source]]
+kind = "ashby"
+name = "Socket"
+slug = "socket"
+
+[[source]]
+kind = "ashby"
+name = "Socure"
+slug = "socure"
+
+[[source]]
+kind = "ashby"
+name = "Solace Health"
+slug = "solace"
+
+[[source]]
+kind = "ashby"
+name = "Solink"
+slug = "solink"
+
+[[source]]
+kind = "ashby"
+name = "Spacial AI"
+slug = "spacial"
+
+[[source]]
+kind = "ashby"
+name = "SPAICE Technology"
+slug = "spaice-tech"
+
+[[source]]
+kind = "ashby"
+name = "Span"
+slug = "span"
+
+[[source]]
+kind = "ashby"
+name = "Specter"
+slug = "specter"
+
+[[source]]
+kind = "ashby"
+name = "Sphere, Inc."
+slug = "sphere"
+
+[[source]]
+kind = "ashby"
+name = "SpotOn"
+slug = "spoton"
+
+[[source]]
+kind = "ashby"
+name = "Sprinter Health"
+slug = "sprinter-health"
+
+[[source]]
+kind = "ashby"
+name = "Squint"
+slug = "squint.ai"
+
+[[source]]
+kind = "ashby"
+name = "Standard Fleet"
+slug = "standardfleet"
+
+[[source]]
+kind = "ashby"
+name = "Starbridge"
+slug = "starbridge"
+
+[[source]]
+kind = "ashby"
+name = "Starpath Robotics"
+slug = "starpath.space"
+
+[[source]]
+kind = "ashby"
+name = "Steel"
+slug = "steel"
+
+[[source]]
+kind = "ashby"
+name = "Strada"
+slug = "stradahq"
+
+[[source]]
+kind = "ashby"
+name = "Strala Group"
+slug = "strala-ai"
+
+[[source]]
+kind = "ashby"
+name = "Strava"
+slug = "strava"
+
+[[source]]
+kind = "ashby"
+name = "Stytch"
+slug = "stytch"
+
+[[source]]
+kind = "ashby"
+name = "Substack"
+slug = "substack"
+
+[[source]]
+kind = "ashby"
+name = "Sunday Robotics"
+slug = "sunday"
+
+[[source]]
+kind = "ashby"
+name = "Suno"
+slug = "suno"
+
+[[source]]
+kind = "ashby"
+name = "Supabase"
+slug = "supabase"
+
+[[source]]
+kind = "ashby"
+name = "Super"
+slug = "super.com"
+
+[[source]]
+kind = "ashby"
+name = "SurveyMonkey"
+slug = "surveymonkey"
+
+[[source]]
+kind = "ashby"
+name = "Sylvera"
+slug = "sylvera"
+
+[[source]]
+kind = "ashby"
+name = "Symmetry AI"
+slug = "symmetry"
+
+[[source]]
+kind = "ashby"
+name = "Synthesia"
+slug = "synthesia"
+
+[[source]]
+kind = "ashby"
+name = "Taara"
+slug = "taaraconnect"
+
+[[source]]
+kind = "ashby"
+name = "Talos"
+slug = "talos-trading"
+
+[[source]]
+kind = "ashby"
+name = "Tandem PV"
+slug = "tandempv"
+
+[[source]]
+kind = "ashby"
+name = "Tavily"
+slug = "tavily"
+
+[[source]]
+kind = "ashby"
+name = "Teamworks"
+slug = "teamworks"
+
+[[source]]
+kind = "ashby"
+name = "Teleskope"
+slug = "teleskope"
+
+[[source]]
+kind = "ashby"
+name = "TELUS Digital"
+slug = "telus-digital"
+
+[[source]]
+kind = "ashby"
+name = "Tempo"
+slug = "tempo-io"
+
+[[source]]
+kind = "ashby"
+name = "TensorWave"
+slug = "tensorwave"
+
+[[source]]
+kind = "ashby"
+name = "Terranova"
+slug = "terranova"
+
+[[source]]
+kind = "ashby"
+name = "Tessera Labs"
+slug = "tessera-labs"
+
+[[source]]
+kind = "ashby"
+name = "Teza Technologies"
+slug = "teza-technologies"
+
+[[source]]
+kind = "ashby"
+name = "The Exploration Company"
+slug = "the-exploration-company"
+
+[[source]]
+kind = "ashby"
+name = "The Voleon Group"
+slug = "voleon"
+
+[[source]]
+kind = "ashby"
+name = "Thumbtack"
+slug = "thumbtack"
+
+[[source]]
+kind = "ashby"
+name = "Tilde Research"
+slug = "tilderesearch"
+
+[[source]]
+kind = "ashby"
+name = "Titan"
+slug = "titan-msp"
+
+[[source]]
+kind = "ashby"
+name = "tldraw"
+slug = "tldraw"
+
+[[source]]
+kind = "ashby"
+name = "Tolan"
+slug = "tolan"
+
+[[source]]
+kind = "ashby"
+name = "Tonal"
+slug = "tonal"
+
+[[source]]
+kind = "ashby"
+name = "Traba"
+slug = "traba"
+
+[[source]]
+kind = "ashby"
+name = "Tracebit"
+slug = "tracebit"
+
+[[source]]
+kind = "ashby"
+name = "Trading212"
+slug = "trading212"
+
+[[source]]
+kind = "ashby"
+name = "Trainline"
+slug = "trainline"
+
+[[source]]
+kind = "ashby"
+name = "Treefera"
+slug = "treefera"
+
+[[source]]
+kind = "ashby"
+name = "Treeswift"
+slug = "treeswift"
+
+[[source]]
+kind = "ashby"
+name = "Trigger.dev"
+slug = "triggerdev"
+
+[[source]]
+kind = "ashby"
+name = "Triumph"
+slug = "triumph-arcade"
+
+[[source]]
+kind = "ashby"
+name = "TRM Labs"
+slug = "trm-labs"
+
+[[source]]
+kind = "ashby"
+name = "Turion Space"
+slug = "turion-space"
+
+[[source]]
+kind = "ashby"
+name = "Turn/River Capital"
+slug = "turn-river"
+
+[[source]]
+kind = "ashby"
+name = "Twelve"
+slug = "twelve"
+
+[[source]]
+kind = "ashby"
+name = "TwelveLabs"
+slug = "twelve-labs"
+
+[[source]]
+kind = "ashby"
+name = "Two Dots"
+slug = "two-dots"
+
+[[source]]
+kind = "ashby"
+name = "UiPath"
+slug = "uipath"
+
+[[source]]
+kind = "ashby"
+name = "Uncountable"
+slug = "uncountable"
+
+[[source]]
+kind = "ashby"
+name = "Uniswap Labs"
+slug = "uniswap"
+
+[[source]]
+kind = "ashby"
+name = "Unit"
+slug = "unit"
+
+[[source]]
+kind = "ashby"
+name = "United Talent Agency"
+slug = "united-talent-agency"
+
+[[source]]
+kind = "ashby"
+name = "Unlikely AI"
+slug = "unlikelyai"
+
+[[source]]
+kind = "ashby"
+name = "Unstructured Technologies Inc."
+slug = "unstructured"
+
+[[source]]
+kind = "ashby"
+name = "Unwrap"
+slug = "unwrap"
+
+[[source]]
+kind = "ashby"
+name = "Upvest"
+slug = "upvest"
+
+[[source]]
+kind = "ashby"
+name = "Valinor"
+slug = "valinor"
+
+[[source]]
+kind = "ashby"
+name = "Valon"
+slug = "valon"
+
+[[source]]
+kind = "ashby"
+name = "Vanta"
+slug = "vanta"
+
+[[source]]
+kind = "ashby"
+name = "Vantage"
+slug = "vantage"
+
+[[source]]
+kind = "ashby"
+name = "Varick Agents"
+slug = "varick-agents"
+
+[[source]]
+kind = "ashby"
+name = "Vector"
+slug = "vector"
+
+[[source]]
+kind = "ashby"
+name = "Veeda AI"
+slug = "veeda-labs"
+
+[[source]]
+kind = "ashby"
+name = "Vega Investment Technologies"
+slug = "vega"
+
+[[source]]
+kind = "ashby"
+name = "Vellum"
+slug = "vellum"
+
+[[source]]
+kind = "ashby"
+name = "Velocity"
+slug = "velocity"
+
+[[source]]
+kind = "ashby"
+name = "Vendelux"
+slug = "vendelux"
+
+[[source]]
+kind = "ashby"
+name = "Verse Medical"
+slug = "versemedical"
+
+[[source]]
+kind = "ashby"
+name = "Vital Lyfe"
+slug = "vital-lyfe"
+
+[[source]]
+kind = "ashby"
+name = "Vmax AI Corp"
+slug = "vmax"
+
+[[source]]
+kind = "ashby"
+name = "Voldex"
+slug = "voldex"
+
+[[source]]
+kind = "ashby"
+name = "Voxel"
+slug = "voxel"
+
+[[source]]
+kind = "ashby"
+name = "Warp"
+slug = "warp"
+
+[[source]]
+kind = "ashby"
+name = "Watney"
+slug = "watney"
+
+[[source]]
+kind = "ashby"
+name = "Wealth.com"
+slug = "wealth-com"
+
+[[source]]
+kind = "ashby"
+name = "Wealthsimple"
+slug = "wealthsimple"
+
+[[source]]
+kind = "ashby"
+name = "Weaviate"
+slug = "weaviate"
+
+[[source]]
+kind = "ashby"
+name = "WebAI"
+slug = "webai"
+
+[[source]]
+kind = "ashby"
+name = "Whoop"
+slug = "whoop"
+
+[[source]]
+kind = "ashby"
+name = "WindBorne Systems"
+slug = "windborne-systems"
+
+[[source]]
+kind = "ashby"
+name = "Windmill"
+slug = "windmill"
+
+[[source]]
+kind = "ashby"
+name = "WorkOS"
+slug = "workos"
+
+[[source]]
+kind = "ashby"
+name = "Worldly"
+slug = "worldly"
+
+[[source]]
+kind = "ashby"
+name = "Zapier"
+slug = "zapier"
+
+[[source]]
+kind = "ashby"
+name = "Zed"
+slug = "zed"
+
+[[source]]
+kind = "ashby"
+name = "Zello"
+slug = "zello"
+
+[[source]]
+kind = "ashby"
+name = "ZeroMark"
+slug = "zeromark"
+
+[[source]]
+kind = "ashby"
+name = "Zettabyte"
+slug = "zettabyte-space"
+
+[[source]]
+kind = "ashby"
+name = "Zilch"
+slug = "zilch"
+
+[[source]]
+kind = "ashby"
+name = "Zip"
+slug = "zip"
+
+[[source]]
+kind = "ashby"
+name = "Zuru"
+slug = "zuru"
+
+
+# --- Lever -----------------------------------------------------------------------
+
+[[source]]
+kind = "lever"
+name = "15Five"
+slug = "15five"
+
+[[source]]
+kind = "lever"
+name = "3PillarGlobal"
+slug = "3pillarglobal"
+
+[[source]]
+kind = "lever"
+name = "Acceldata"
+slug = "acceldata"
+
+[[source]]
+kind = "lever"
+name = "Achievers"
+slug = "achievers"
+
+[[source]]
+kind = "lever"
+name = "Actian"
+slug = "actian"
+
+[[source]]
+kind = "lever"
+name = "Advocate"
+slug = "advocate"
+
+[[source]]
+kind = "lever"
+name = "Aera Technology"
+slug = "aeratechnology"
+
+[[source]]
+kind = "lever"
+name = "Agile Defense"
+slug = "agile-defense"
+
+[[source]]
+kind = "lever"
+name = "Agtonomy"
+slug = "agtonomy"
+
+[[source]]
+kind = "lever"
+name = "AHEAD"
+slug = "thinkahead"
+
+[[source]]
+kind = "lever"
+name = "Aircall"
+slug = "aircall"
+
+[[source]]
+kind = "lever"
+name = "Aledade"
+slug = "aledade"
+
+[[source]]
+kind = "lever"
+name = "Alertus Technologies"
+slug = "alertus"
+
+[[source]]
+kind = "lever"
+name = "Allegiant Air"
+slug = "allegiantair"
+
+[[source]]
+kind = "lever"
+name = "Alloy.ai"
+slug = "alloy"
+
+[[source]]
+kind = "lever"
+name = "AllTrails"
+slug = "alltrails"
+
+[[source]]
+kind = "lever"
+name = "AltaML"
+slug = "altaml"
+
+[[source]]
+kind = "lever"
+name = "Analytic Partners"
+slug = "analyticpartners"
+
+[[source]]
+kind = "lever"
+name = "Anchorage"
+slug = "anchorage"
+
+[[source]]
+kind = "lever"
+name = "AngelList"
+slug = "angellist"
+
+[[source]]
+kind = "lever"
+name = "Anomali"
+slug = "anomali"
+
+[[source]]
+kind = "lever"
+name = "Appen"
+slug = "appen-2"
+
+[[source]]
+kind = "lever"
+name = "Aquabyte"
+slug = "aquabyte"
+
+[[source]]
+kind = "lever"
+name = "Arable"
+slug = "arable"
+
+[[source]]
+kind = "lever"
+name = "Arc'teryx Equipment"
+slug = "arcteryx.com"
+
+[[source]]
+kind = "lever"
+name = "Arrive Logistics"
+slug = "arrivelogistics"
+
+[[source]]
+kind = "lever"
+name = "ArteraAI"
+slug = "artera"
+
+[[source]]
+kind = "lever"
+name = "Autoroboto"
+slug = "autoroboto"
+
+[[source]]
+kind = "lever"
+name = "Avia Health"
+slug = "aviahealth"
+
+[[source]]
+kind = "lever"
+name = "Bazaarvoice"
+slug = "bazaarvoice"
+
+[[source]]
+kind = "lever"
+name = "Beghou Consulting"
+slug = "beghouconsulting"
+
+[[source]]
+kind = "lever"
+name = "Behaviour Interactive"
+slug = "bhvr"
+
+[[source]]
+kind = "lever"
+name = "Bellese"
+slug = "bellese"
+
+[[source]]
+kind = "lever"
+name = "Bellwether"
+slug = "bellwetheram-2"
+
+[[source]]
+kind = "lever"
+name = "Belvedere Trading"
+slug = "belvederetrading"
+
+[[source]]
+kind = "lever"
+name = "BenchSci"
+slug = "benchsci"
+
+[[source]]
+kind = "lever"
+name = "BioAgilytix"
+slug = "bioagilytix"
+
+[[source]]
+kind = "lever"
+name = "Bisnow"
+slug = "bisnow"
+
+[[source]]
+kind = "lever"
+name = "Bloom"
+slug = "bloom"
+
+[[source]]
+kind = "lever"
+name = "Boson Ai"
+slug = "bosonai"
+
+[[source]]
+kind = "lever"
+name = "Bright Machines"
+slug = "brightmachines"
+
+[[source]]
+kind = "lever"
+name = "Brooks Running"
+slug = "brooksrunning"
+
+[[source]]
+kind = "lever"
+name = "Bumble"
+slug = "bumbleinc"
+
+[[source]]
+kind = "lever"
+name = "Canvas Worldwide"
+slug = "canvasww"
+
+[[source]]
+kind = "lever"
+name = "capital.com"
+slug = "capital"
+
+[[source]]
+kind = "lever"
+name = "Capricor Therapeutics"
+slug = "capricor"
+
+[[source]]
+kind = "lever"
+name = "Catalist"
+slug = "catalist"
+
+[[source]]
+kind = "lever"
+name = "Certik"
+slug = "certik"
+
+[[source]]
+kind = "lever"
+name = "CGS Federal (Contact Government Services)"
+slug = "cgsfederal"
+
+[[source]]
+kind = "lever"
+name = "ChowNow"
+slug = "chownow"
+
+[[source]]
+kind = "lever"
+name = "Cirque du Soleil"
+slug = "cirquedusoleil"
+
+[[source]]
+kind = "lever"
+name = "City Electrical Factors"
+slug = "cef"
+
+[[source]]
+kind = "lever"
+name = "Civitech"
+slug = "civitech"
+
+[[source]]
+kind = "lever"
+name = "CleanSpark"
+slug = "cleanspark"
+
+[[source]]
+kind = "lever"
+name = "CLO Virtual Fashion"
+slug = "clovirtualfashion"
+
+[[source]]
+kind = "lever"
+name = "Cloudforce"
+slug = "go-cloudforce"
+
+[[source]]
+kind = "lever"
+name = "Cloudinary"
+slug = "cloudinary"
+
+[[source]]
+kind = "lever"
+name = "CoderPad"
+slug = "coderpad"
+
+[[source]]
+kind = "lever"
+name = "Colibri Group"
+slug = "colibrigroup"
+
+[[source]]
+kind = "lever"
+name = "Commerce Architects"
+slug = "commercearchitects"
+
+[[source]]
+kind = "lever"
+name = "CompassX Group"
+slug = "compassx"
+
+[[source]]
+kind = "lever"
+name = "Conversica"
+slug = "conversica"
+
+[[source]]
+kind = "lever"
+name = "Coupa Software"
+slug = "coupa"
+
+[[source]]
+kind = "lever"
+name = "Crest Industries"
+slug = "crestoperations"
+
+[[source]]
+kind = "lever"
+name = "CrowdGen by Appen"
+slug = "appen"
+
+[[source]]
+kind = "lever"
+name = "Crumbl"
+slug = "crumbl"
+
+[[source]]
+kind = "lever"
+name = "CX2"
+slug = "cx2"
+
+[[source]]
+kind = "lever"
+name = "Daniels Health"
+slug = "daniels-sharpsmart"
+
+[[source]]
+kind = "lever"
+name = "Datalab USA"
+slug = "datalabusa"
+
+[[source]]
+kind = "lever"
+name = "Democratic Governors Association"
+slug = "dga"
+
+[[source]]
+kind = "lever"
+name = "Diversified Automation"
+slug = "diversified-automation"
+
+[[source]]
+kind = "lever"
+name = "Drivemode"
+slug = "drivemode"
+
+[[source]]
+kind = "lever"
+name = "Dun & Bradstreet"
+slug = "dnb"
+
+[[source]]
+kind = "lever"
+name = "Dutch"
+slug = "dutch"
+
+[[source]]
+kind = "lever"
+name = "Eastern Communications"
+slug = "eastern-communications"
+
+[[source]]
+kind = "lever"
+name = "Eastern Research Group"
+slug = "erg"
+
+[[source]]
+kind = "lever"
+name = "Easy Street Capital"
+slug = "easystreetcap"
+
+[[source]]
+kind = "lever"
+name = "Ekimetrics"
+slug = "ekimetrics"
+
+[[source]]
+kind = "lever"
+name = "Elf Beauty"
+slug = "elfbeauty"
+
+[[source]]
+kind = "lever"
+name = "Eliyan"
+slug = "eliyan"
+
+[[source]]
+kind = "lever"
+name = "Empire State Realty Trust"
+slug = "esrtreit"
+
+[[source]]
+kind = "lever"
+name = "Endpoint Clinical"
+slug = "endpointclinical"
+
+[[source]]
+kind = "lever"
+name = "Enveda"
+slug = "enveda"
+
+[[source]]
+kind = "lever"
+name = "EQ Bank"
+slug = "eqbank"
+
+[[source]]
+kind = "lever"
+name = "Equativ"
+slug = "equativ"
+
+[[source]]
+kind = "lever"
+name = "Ethena"
+slug = "ethena"
+
+[[source]]
+kind = "lever"
+name = "EV Realty"
+slug = "evrealty-us"
+
+[[source]]
+kind = "lever"
+name = "Exowatt"
+slug = "exowatt"
+
+[[source]]
+kind = "lever"
+name = "Extreme Networks"
+slug = "extremenetworks"
+
+[[source]]
+kind = "lever"
+name = "Farfetch"
+slug = "farfetch"
+
+[[source]]
+kind = "lever"
+name = "Fehr & Peers"
+slug = "fehrandpeers"
+
+[[source]]
+kind = "lever"
+name = "Field AI"
+slug = "field-ai"
+
+[[source]]
+kind = "lever"
+name = "Filevine"
+slug = "filevine"
+
+[[source]]
+kind = "lever"
+name = "Findem"
+slug = "findem"
+
+[[source]]
+kind = "lever"
+name = "Finix"
+slug = "finix"
+
+[[source]]
+kind = "lever"
+name = "FinQuery"
+slug = "finquery"
+
+[[source]]
+kind = "lever"
+name = "Firemon"
+slug = "firemon"
+
+[[source]]
+kind = "lever"
+name = "FiscalNote"
+slug = "fiscalnote"
+
+[[source]]
+kind = "lever"
+name = "Fluxergy"
+slug = "fluxergy-2"
+
+[[source]]
+kind = "lever"
+name = "FOTH"
+slug = "foth"
+
+[[source]]
+kind = "lever"
+name = "Fullscript"
+slug = "fullscript"
+
+[[source]]
+kind = "lever"
+name = "GenBio AI"
+slug = "genbio"
+
+[[source]]
+kind = "lever"
+name = "GeoComply"
+slug = "geocomply-2"
+
+[[source]]
+kind = "lever"
+name = "Girls Who Code"
+slug = "girlswhocode"
+
+[[source]]
+kind = "lever"
+name = "GLIDE"
+slug = "glide"
+
+[[source]]
+kind = "lever"
+name = "Global Lending Services"
+slug = "glsllc"
+
+[[source]]
+kind = "lever"
+name = "GoMaterials"
+slug = "gomaterials"
+
+[[source]]
+kind = "lever"
+name = "Gopuff"
+slug = "gopuff"
+
+[[source]]
+kind = "lever"
+name = "Gr0"
+slug = "gr0"
+
+[[source]]
+kind = "lever"
+name = "GRAIL"
+slug = "grailbio"
+
+[[source]]
+kind = "lever"
+name = "Great Gray"
+slug = "great-gray-group"
+
+[[source]]
+kind = "lever"
+name = "Greenlight"
+slug = "greenlight"
+
+[[source]]
+kind = "lever"
+name = "Gynger"
+slug = "gynger"
+
+[[source]]
+kind = "lever"
+name = "H1"
+slug = "h1"
+
+[[source]]
+kind = "lever"
+name = "Hanna Andersson"
+slug = "hannaandersson"
+
+[[source]]
+kind = "lever"
+name = "Hatch IT"
+slug = "hatchit"
+
+[[source]]
+kind = "lever"
+name = "Hermeus"
+slug = "hermeus"
+
+[[source]]
+kind = "lever"
+name = "hhaexchange"
+slug = "hhaexchange"
+
+[[source]]
+kind = "lever"
+name = "Hive"
+slug = "hive"
+
+[[source]]
+kind = "lever"
+name = "HRL Laboratories"
+slug = "dodmg"
+
+[[source]]
+kind = "lever"
+name = "Ibility"
+slug = "ibility"
+
+[[source]]
+kind = "lever"
+name = "Ideas United"
+slug = "ideasunited"
+
+[[source]]
+kind = "lever"
+name = "IMO Health"
+slug = "imo-online"
+
+[[source]]
+kind = "lever"
+name = "Institute of Foundation Models"
+slug = "ifm-us"
+
+[[source]]
+kind = "lever"
+name = "Intropic"
+slug = "intropic"
+
+[[source]]
+kind = "lever"
+name = "ION Group"
+slug = "ion"
+
+[[source]]
+kind = "lever"
+name = "ispace"
+slug = "ispace-inc"
+
+[[source]]
+kind = "lever"
+name = "Istari Digital"
+slug = "istaridigital.ai"
+
+[[source]]
+kind = "lever"
+name = "Jam City"
+slug = "jamcity"
+
+[[source]]
+kind = "lever"
+name = "JumpCloud"
+slug = "jumpcloud"
+
+[[source]]
+kind = "lever"
+name = "K Group"
+slug = "kgroupcompanies"
+
+[[source]]
+kind = "lever"
+name = "Kabam"
+slug = "kabam"
+
+[[source]]
+kind = "lever"
+name = "Kapwing"
+slug = "kapwing"
+
+[[source]]
+kind = "lever"
+name = "Kepler Communications"
+slug = "kepler"
+
+[[source]]
+kind = "lever"
+name = "Kitware"
+slug = "kitware"
+
+[[source]]
+kind = "lever"
+name = "Kpler"
+slug = "kpler"
+
+[[source]]
+kind = "lever"
+name = "Larian Studios"
+slug = "larian"
+
+[[source]]
+kind = "lever"
+name = "Latitude"
+slug = "latitudeinc"
+
+[[source]]
+kind = "lever"
+name = "LCBC Church"
+slug = "lcbcchurch"
+
+[[source]]
+kind = "lever"
+name = "Lendbuzz"
+slug = "lendbuzz"
+
+[[source]]
+kind = "lever"
+name = "Level AI"
+slug = "levelai"
+
+[[source]]
+kind = "lever"
+name = "Lever"
+slug = "leverdemo-8"
+
+[[source]]
+kind = "lever"
+name = "Lexeo Therapeutics"
+slug = "lexeotx"
+
+[[source]]
+kind = "lever"
+name = "Life.Church"
+slug = "life"
+
+[[source]]
+kind = "lever"
+name = "Lightcast"
+slug = "economicmodeling"
+
+[[source]]
+kind = "lever"
+name = "Lightship RV"
+slug = "lightship"
+
+[[source]]
+kind = "lever"
+name = "Link"
+slug = "linkllc"
+
+[[source]]
+kind = "lever"
+name = "Long Wall"
+slug = "longwall"
+
+[[source]]
+kind = "lever"
+name = "LTA Research"
+slug = "ltaresearch"
+
+[[source]]
+kind = "lever"
+name = "Lumafield"
+slug = "lumafield"
+
+[[source]]
+kind = "lever"
+name = "Lumotive"
+slug = "lumotive"
+
+[[source]]
+kind = "lever"
+name = "Luxury Presence"
+slug = "luxurypresence"
+
+[[source]]
+kind = "lever"
+name = "Lyra Health"
+slug = "lyrahealth"
+
+[[source]]
+kind = "lever"
+name = "Magnet Forensics"
+slug = "magnetforensics"
+
+[[source]]
+kind = "lever"
+name = "Major League Baseball"
+slug = "redsox"
+
+[[source]]
+kind = "lever"
+name = "MARGO"
+slug = "margo-group"
+
+[[source]]
+kind = "lever"
+name = "Massachusetts School Building Authority"
+slug = "massschoolbuildings"
+
+[[source]]
+kind = "lever"
+name = "Mastery Charter Schools"
+slug = "masterycharter"
+
+[[source]]
+kind = "lever"
+name = "Matillion"
+slug = "matillion"
+
+[[source]]
+kind = "lever"
+name = "MCA Connect"
+slug = "mcaconnect"
+
+[[source]]
+kind = "lever"
+name = "Meds"
+slug = "meds"
+
+[[source]]
+kind = "lever"
+name = "Mendix"
+slug = "mendix"
+
+[[source]]
+kind = "lever"
+name = "Metergy Solutions"
+slug = "metergysolutions"
+
+[[source]]
+kind = "lever"
+name = "Model N"
+slug = "modeln"
+
+[[source]]
+kind = "lever"
+name = "Monterey Technologies"
+slug = "mti-inc"
+
+[[source]]
+kind = "lever"
+name = "moo"
+slug = "moo"
+
+[[source]]
+kind = "lever"
+name = "Moonpig"
+slug = "moonpig"
+
+[[source]]
+kind = "lever"
+name = "Multiply Labs"
+slug = "multiplylabs"
+
+[[source]]
+kind = "lever"
+name = "N-Power Medicine"
+slug = "npowermedicine"
+
+[[source]]
+kind = "lever"
+name = "Neighbor"
+slug = "neighbor"
+
+[[source]]
+kind = "lever"
+name = "Neon Pagamentos"
+slug = "neon"
+
+[[source]]
+kind = "lever"
+name = "Netomi"
+slug = "netomi"
+
+[[source]]
+kind = "lever"
+name = "Nevados"
+slug = "nevados"
+
+[[source]]
+kind = "lever"
+name = "Nextech Systems"
+slug = "nextech"
+
+[[source]]
+kind = "lever"
+name = "NextGen Federal Systems"
+slug = "nextgenfed"
+
+[[source]]
+kind = "lever"
+name = "Nobull"
+slug = "nobullproject"
+
+[[source]]
+kind = "lever"
+name = "Nomi Health"
+slug = "nomihealth"
+
+[[source]]
+kind = "lever"
+name = "OakNorth Bank"
+slug = "oaknorth.ai"
+
+[[source]]
+kind = "lever"
+name = "Octopus Energy"
+slug = "octoenergy"
+
+[[source]]
+kind = "lever"
+name = "Oleria Security"
+slug = "oleria-security"
+
+[[source]]
+kind = "lever"
+name = "Olo"
+slug = "olo"
+
+[[source]]
+kind = "lever"
+name = "Omni Design Technologies"
+slug = "omnidesigntech"
+
+[[source]]
+kind = "lever"
+name = "OpenX"
+slug = "openx"
+
+[[source]]
+kind = "lever"
+name = "OptionMetrics"
+slug = "optionmetrics"
+
+[[source]]
+kind = "lever"
+name = "OraSure Technologies"
+slug = "dnagenotek"
+
+[[source]]
+kind = "lever"
+name = "Orb Aerospace"
+slug = "orbaerospace"
+
+[[source]]
+kind = "lever"
+name = "Outreach"
+slug = "outreach"
 
 [[source]]
 kind = "lever"
 name = "Palantir"
 slug = "palantir"
 
-# --- SmartRecruiters ----------------------------------------------------------
+[[source]]
+kind = "lever"
+name = "Parallel Wireless"
+slug = "parallelwireless"
+
+[[source]]
+kind = "lever"
+name = "Parkdepot"
+slug = "salesdemo-jr"
+
+[[source]]
+kind = "lever"
+name = "Pendulum™"
+slug = "pendulum"
+
+[[source]]
+kind = "lever"
+name = "Penumbra Inc"
+slug = "penumbrainc"
+
+[[source]]
+kind = "lever"
+name = "Pickle Robot"
+slug = "picklerobot"
+
+[[source]]
+kind = "lever"
+name = "Picus"
+slug = "picus"
+
+[[source]]
+kind = "lever"
+name = "Pigment"
+slug = "pigment"
+
+[[source]]
+kind = "lever"
+name = "PingWind"
+slug = "pingwind"
+
+[[source]]
+kind = "lever"
+name = "Pivot Energy"
+slug = "pivotenergy"
+
+[[source]]
+kind = "lever"
+name = "Pivotal Software"
+slug = "pivotal"
+
+[[source]]
+kind = "lever"
+name = "Plexus"
+slug = "plexus"
+
+[[source]]
+kind = "lever"
+name = "PlusAI"
+slug = "plus-2"
+
+[[source]]
+kind = "lever"
+name = "Porter Cares, Inc."
+slug = "porter"
+
+[[source]]
+kind = "lever"
+name = "PredictX"
+slug = "pibenchmark"
+
+[[source]]
+kind = "lever"
+name = "Proper"
+slug = "proper"
+
+[[source]]
+kind = "lever"
+name = "Prosper Funding"
+slug = "prosper"
+
+[[source]]
+kind = "lever"
+name = "Protective Life"
+slug = "protective"
+
+[[source]]
+kind = "lever"
+name = "Protolabs"
+slug = "protolabs"
+
+[[source]]
+kind = "lever"
+name = "Q-CTRL"
+slug = "q-ctrl"
+
+[[source]]
+kind = "lever"
+name = "Quandri"
+slug = "quandri"
+
+[[source]]
+kind = "lever"
+name = "QuantCo"
+slug = "quantco-"
+
+[[source]]
+kind = "lever"
+name = "Quest Analytics"
+slug = "questanalytics"
+
+[[source]]
+kind = "lever"
+name = "Rainmaker"
+slug = "make-rain"
+
+[[source]]
+kind = "lever"
+name = "RAVL"
+slug = "ravl_io"
+
+[[source]]
+kind = "lever"
+name = "Redhorse"
+slug = "redhorsecorp"
+
+[[source]]
+kind = "lever"
+name = "Redwood Credit Union"
+slug = "redwoodcu"
+
+[[source]]
+kind = "lever"
+name = "Reli"
+slug = "shopreli"
+
+[[source]]
+kind = "lever"
+name = "Reply"
+slug = "reply"
+
+[[source]]
+kind = "lever"
+name = "Revefi"
+slug = "revefi"
+
+[[source]]
+kind = "lever"
+name = "Revenue Analytics"
+slug = "revenueanalytics"
+
+[[source]]
+kind = "lever"
+name = "Rigetti"
+slug = "rigetti"
+
+[[source]]
+kind = "lever"
+name = "Robust.ai"
+slug = "robust-ai"
+
+[[source]]
+kind = "lever"
+name = "RWS"
+slug = "rws"
+
+[[source]]
+kind = "lever"
+name = "Salvo Health"
+slug = "salvohealth"
+
+[[source]]
+kind = "lever"
+name = "Samba TV"
+slug = "sambatv"
+
+[[source]]
+kind = "lever"
+name = "Saviynt"
+slug = "saviynt"
+
+[[source]]
+kind = "lever"
+name = "Schmidt Sciences"
+slug = "schmidt-entities"
+
+[[source]]
+kind = "lever"
+name = "Scott Logic"
+slug = "scottlogic"
+
+[[source]]
+kind = "lever"
+name = "Secureframe"
+slug = "secureframe"
+
+[[source]]
+kind = "lever"
+name = "Seer Interactive"
+slug = "seerinteractive"
+
+[[source]]
+kind = "lever"
+name = "SF Giants"
+slug = "sfgiants"
+
+[[source]]
+kind = "lever"
+name = "SFMOMA"
+slug = "sfmoma"
+
+[[source]]
+kind = "lever"
+name = "Shield AI"
+slug = "shieldai"
+
+[[source]]
+kind = "lever"
+name = "ShyftLabs"
+slug = "shyftlabs"
+
+[[source]]
+kind = "lever"
+name = "Simulmedia"
+slug = "simulmedia"
+
+[[source]]
+kind = "lever"
+name = "Skyways"
+slug = "skyways"
+
+[[source]]
+kind = "lever"
+name = "SoloPulse"
+slug = "solopulseco"
+
+[[source]]
+kind = "lever"
+name = "Sonar"
+slug = "sonarsource"
+
+[[source]]
+kind = "lever"
+name = "Sophos"
+slug = "sophos"
+
+[[source]]
+kind = "lever"
+name = "Spotify"
+slug = "spotify"
+
+[[source]]
+kind = "lever"
+name = "Spry Methods"
+slug = "sprymethods"
+
+[[source]]
+kind = "lever"
+name = "SpryPoint"
+slug = "sprypointservices"
+
+[[source]]
+kind = "lever"
+name = "SQA Services"
+slug = "sqaservices"
+
+[[source]]
+kind = "lever"
+name = "Stand Together"
+slug = "standtogether"
+
+[[source]]
+kind = "lever"
+name = "StarCompliance"
+slug = "starcompliance"
+
+[[source]]
+kind = "lever"
+name = "SteerBridge"
+slug = "steerbridge"
+
+[[source]]
+kind = "lever"
+name = "Strada Education Foundation"
+slug = "stradaeducation"
+
+[[source]]
+kind = "lever"
+name = "SunSource"
+slug = "sunsrce"
+
+[[source]]
+kind = "lever"
+name = "Sunwater Capital"
+slug = "sunwatercapital"
+
+[[source]]
+kind = "lever"
+name = "SuperAnnotate AI"
+slug = "superannotate"
+
+[[source]]
+kind = "lever"
+name = "Synergy ECP"
+slug = "synergyecp"
+
+[[source]]
+kind = "lever"
+name = "Syntax"
+slug = "syntax"
+
+[[source]]
+kind = "lever"
+name = "Synthego"
+slug = "synthego"
+
+[[source]]
+kind = "lever"
+name = "Sysdig"
+slug = "sysdig"
+
+[[source]]
+kind = "lever"
+name = "Tahoe Therapeutics"
+slug = "tahoebio-ai"
+
+[[source]]
+kind = "lever"
+name = "TalentWerx"
+slug = "talentwerx.io"
+
+[[source]]
+kind = "lever"
+name = "Tangram Interiors"
+slug = "tangraminteriors"
+
+[[source]]
+kind = "lever"
+name = "Tekton"
+slug = "tekton"
+
+[[source]]
+kind = "lever"
+name = "Teleo"
+slug = "teleo"
+
+[[source]]
+kind = "lever"
+name = "Telesat"
+slug = "telesat"
+
+[[source]]
+kind = "lever"
+name = "Telligen"
+slug = "telligen"
+
+[[source]]
+kind = "lever"
+name = "The Information Lab"
+slug = "theinformationlab"
+
+[[source]]
+kind = "lever"
+name = "The Trevor Project"
+slug = "thetrevorproject"
+
+[[source]]
+kind = "lever"
+name = "Theodo"
+slug = "theodo"
+
+[[source]]
+kind = "lever"
+name = "Thomas & Hutton"
+slug = "tandh"
+
+[[source]]
+kind = "lever"
+name = "Tinder"
+slug = "matchgroup"
+
+[[source]]
+kind = "lever"
+name = "Toptal"
+slug = "toptal"
+
+[[source]]
+kind = "lever"
+name = "Toyota Research Institute"
+slug = "tri"
+
+[[source]]
+kind = "lever"
+name = "Traackr"
+slug = "traackr"
+
+[[source]]
+kind = "lever"
+name = "Trackforce"
+slug = "tracktik"
+
+[[source]]
+kind = "lever"
+name = "TreviPay"
+slug = "trevipay"
+
+[[source]]
+kind = "lever"
+name = "Trio"
+slug = "trio"
+
+[[source]]
+kind = "lever"
+name = "TrueTandem"
+slug = "truetandem"
+
+[[source]]
+kind = "lever"
+name = "TSMG"
+slug = "tsmg"
+
+[[source]]
+kind = "lever"
+name = "Twingate"
+slug = "twingate"
+
+[[source]]
+kind = "lever"
+name = "Unison Infrastructure"
+slug = "unisoninfra"
+
+[[source]]
+kind = "lever"
+name = "UntilLabs"
+slug = "until"
+
+[[source]]
+kind = "lever"
+name = "Veeva Systems"
+slug = "veeva"
+
+[[source]]
+kind = "lever"
+name = "Versapay"
+slug = "versapay"
+
+[[source]]
+kind = "lever"
+name = "Very Good Security"
+slug = "verygoodsecurity"
+
+[[source]]
+kind = "lever"
+name = "Vevo"
+slug = "vevo"
+
+[[source]]
+kind = "lever"
+name = "Vivenu"
+slug = "vivenu"
+
+[[source]]
+kind = "lever"
+name = "Voltus"
+slug = "voltus"
+
+[[source]]
+kind = "lever"
+name = "Waabi"
+slug = "waabi"
+
+[[source]]
+kind = "lever"
+name = "Wachter"
+slug = "wachter"
+
+[[source]]
+kind = "lever"
+name = "Wade Trim"
+slug = "wadetrim"
+
+[[source]]
+kind = "lever"
+name = "Wealthfront"
+slug = "wealthfront"
+
+[[source]]
+kind = "lever"
+name = "WebFX"
+slug = "webfx"
+
+[[source]]
+kind = "lever"
+name = "Welo Global"
+slug = "weloglobal"
+
+[[source]]
+kind = "lever"
+name = "WeRide"
+slug = "weride"
+
+[[source]]
+kind = "lever"
+name = "Windfall"
+slug = "windfalldata"
+
+[[source]]
+kind = "lever"
+name = "Wing Assistant"
+slug = "getwingapp"
+
+[[source]]
+kind = "lever"
+name = "Wintermute"
+slug = "wintermute-trading"
+
+[[source]]
+kind = "lever"
+name = "World Wide Professional Solutions"
+slug = "wwprosolutions"
+
+[[source]]
+kind = "lever"
+name = "Woven"
+slug = "woven-by-toyota"
+
+[[source]]
+kind = "lever"
+name = "Wpromote"
+slug = "wpromote"
+
+[[source]]
+kind = "lever"
+name = "Wyetech"
+slug = "wyetechllc"
+
+[[source]]
+kind = "lever"
+name = "Xsolla"
+slug = "xsolla"
+
+[[source]]
+kind = "lever"
+name = "zaimler"
+slug = "zaimler"
+
+[[source]]
+kind = "lever"
+name = "Zeiss"
+slug = "zeiss"
+
+[[source]]
+kind = "lever"
+name = "Zeta"
+slug = "zeta"
+
+[[source]]
+kind = "lever"
+name = "Zoox"
+slug = "zoox"
+
+[[source]]
+kind = "lever"
+name = "Zopa"
+slug = "zopa"
+
+[[source]]
+kind = "lever"
+name = "Zus Health"
+slug = "zushealth"
+
+
+# --- SmartRecruiters -------------------------------------------------------------
+
+[[source]]
+kind = "smartrecruiters"
+name = "3S Business Corporation"
+slug = "3sbusinesscorporationinc1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "4DS Corp"
+slug = "4dscorp"
+
+[[source]]
+kind = "smartrecruiters"
+name = "AbbVie"
+slug = "abbvie"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Abercrombie and Fitch Co."
+slug = "abercrombieandfitchco"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Absolute Facility Solutions"
+slug = "absolutefacilitysolutionsllc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Accel Learning"
+slug = "accellearning"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Accor"
+slug = "accorcorpo"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Achieve"
+slug = "achieve1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Acumen Solutions"
+slug = "acumensolutions"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Adept Solutions"
+slug = "adeptsolutionsinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "AECOM"
+slug = "aecom2"
+
+[[source]]
+kind = "smartrecruiters"
+name = "AG Technologies"
+slug = "agtechnologies1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "AJ Bell"
+slug = "ajbell1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Allegis Global Solutions"
+slug = "allegisglobalsolutions"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Analysys Mason"
+slug = "analysysmason1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "AO Swag"
+slug = "advanced-online"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Apex Clean Energy"
+slug = "apexcleanenergy"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Arista Networks"
+slug = "aristanetworks"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Arka Infotech"
+slug = "arkainfotechinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Arthur Grand Technologies"
+slug = "arthurgrandtechnologiesinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Ask IT Consulting"
+slug = "askitconsulting"
+
+[[source]]
+kind = "smartrecruiters"
+name = "ASOS plc"
+slug = "asos"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Assent"
+slug = "assent"
+
+[[source]]
+kind = "smartrecruiters"
+name = "ASSYSTEM"
+slug = "assystem"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Atria Group"
+slug = "atriagroupllc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Avance Consulting"
+slug = "avanceconsultingservices2"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Avery Dennison"
+slug = "averydennison"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Barkback"
+slug = "barkbackllc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "BCforward"
+slug = "bcforward3"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Beta Soft Systems"
+slug = "betasoftsystems3"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Bigcommerce"
+slug = "bigcommerce"
+
+[[source]]
+kind = "smartrecruiters"
+name = "blend360"
+slug = "blend360"
+
+[[source]]
+kind = "smartrecruiters"
+name = "BlinqLABS"
+slug = "blinqlabs"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Boyd Gaming"
+slug = "boydgaming"
+
+[[source]]
+kind = "smartrecruiters"
+name = "California ISO"
+slug = "californiaiso"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Canadian Bank Note"
+slug = "canadianbanknotecompany"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Canva"
+slug = "canva"
+
+[[source]]
+kind = "smartrecruiters"
+name = "CapTech Consulting"
+slug = "captechconsulting"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Career Guidant"
+slug = "careerguidant"
+
+[[source]]
+kind = "smartrecruiters"
+name = "City and County of San Francisco"
+slug = "cityandcountyofsanfrancisco1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "City of Philadelphia"
+slug = "cityofphiladelphia"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Codeage"
+slug = "codeage"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Collabera"
+slug = "collabera2"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Comtech"
+slug = "comtechllc2"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Consultadd Public Services"
+slug = "consultadd4"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Continental"
+slug = "continental"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Cornerstone Building Brands"
+slug = "cornerstonebuildingbrandscareers"
+
+[[source]]
+kind = "smartrecruiters"
+name = "CoServe Global Solutions"
+slug = "coserveglobalsolutions"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Crown Innovations"
+slug = "crowninnovationsinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Data Intellect"
+slug = "dataintellect"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Deegit"
+slug = "deegitinc3"
+
+[[source]]
+kind = "smartrecruiters"
+name = "DellFor Technologies"
+slug = "dellfortechnologies"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Dexterra Group"
+slug = "dexterra"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Direct Staffing"
+slug = "dstaff"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Eataly"
+slug = "eataly"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Egis Group"
+slug = "egisgroup"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Entain"
+slug = "entain"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Enviri"
+slug = "enviricorporation"
+
+[[source]]
+kind = "smartrecruiters"
+name = "EROS Technologies"
+slug = "erostechnologiesinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Eurofins"
+slug = "eurofins"
+
+[[source]]
+kind = "smartrecruiters"
+name = "EVERSANA"
+slug = "eversana1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Expeditors"
+slug = "expeditors"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Experian"
+slug = "experian"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Experis"
+slug = "ettaingroup"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Fiverr"
+slug = "fiverr"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Flywire"
+slug = "flywire1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Freshworks"
+slug = "freshworks"
+
+[[source]]
+kind = "smartrecruiters"
+name = "General Dynamics UK"
+slug = "gdmsi"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Genomics England"
+slug = "genomicsengland"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Global Channel Management"
+slug = "globalchannelmanagementinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "GONG!"
+slug = "gong"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Gousto"
+slug = "gousto1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Harvard University"
+slug = "harvarduniversity"
+
+[[source]]
+kind = "smartrecruiters"
+name = "HireVue"
+slug = "hirevue"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Horizon Technologies"
+slug = "horizontechnologiesinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "HSSSoft"
+slug = "hsssoft"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Huxley"
+slug = "computerfutures3"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Idealforce"
+slug = "idealforcellc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Idexcel"
+slug = "idexcel3"
+
+[[source]]
+kind = "smartrecruiters"
+name = "IFS"
+slug = "ifs1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Implify"
+slug = "implifyinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "InfiniteQuant"
+slug = "infinitequant"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Infojini"
+slug = "infojiniinc1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Informa Group"
+slug = "informagroupplc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Insilico Logix"
+slug = "insilicologix"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Integrated Resources"
+slug = "integratedresourcesinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Intelerad"
+slug = "intelerad"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Intuitive Surgical"
+slug = "intuitive"
+
+[[source]]
+kind = "smartrecruiters"
+name = "J.S. Held"
+slug = "jsheldllc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Jobs for Humanity"
+slug = "jobsforhumanity"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Jobsbridge"
+slug = "jobsbridge1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Kanshe Infotech"
+slug = "learnkwikcom"
+
+[[source]]
+kind = "smartrecruiters"
+name = "KGS Technology Group"
+slug = "kgstechnologygroupinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Kioxia"
+slug = "kioxia"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Kite Ping"
+slug = "kiteping"
+
+[[source]]
+kind = "smartrecruiters"
+name = "kore.ai"
+slug = "koreai"
+
+[[source]]
+kind = "smartrecruiters"
+name = "KRG Technologies"
+slug = "krgtechnologyinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Lawrence Livermore National Laboratory (LLNL)"
+slug = "llnl"
+
+[[source]]
+kind = "smartrecruiters"
+name = "LAXIR"
+slug = "laxir1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Legal & General"
+slug = "legalandgeneral"
+
+[[source]]
+kind = "smartrecruiters"
+name = "LGC Group"
+slug = "lgcgroup"
+
+[[source]]
+kind = "smartrecruiters"
+name = "LinkedIn"
+slug = "linkedin3"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Londontown"
+slug = "londontown"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Louis Dreyfus Company"
+slug = "louisdreyfuscompany"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Lyra"
+slug = "lyra"
+
+[[source]]
+kind = "smartrecruiters"
+name = "MAT Holdings"
+slug = "matholdings"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Mattel"
+slug = "mattelinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "MAXISIQ"
+slug = "iomaxisllc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Merative"
+slug = "truvenhealthanalyticsanibmcompany"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Mindlance"
+slug = "mindlance2"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Miracle Software Systems"
+slug = "miraclesoftwaresystem1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "MSX International"
+slug = "msxinternational"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Myriad Genetics"
+slug = "myriadgenetics1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Namely"
+slug = "namely"
+
+[[source]]
+kind = "smartrecruiters"
+name = "NBCUniversal"
+slug = "nbcuniversal3"
+
+[[source]]
+kind = "smartrecruiters"
+name = "NEC Software Solutions"
+slug = "necsws"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Netcompany"
+slug = "netcompany1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Nexthink"
+slug = "nexthink"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Nielsen"
+slug = "thenielsencompany"
+
+[[source]]
+kind = "smartrecruiters"
+name = "NielsenIQ"
+slug = "nielseniq"
+
+[[source]]
+kind = "smartrecruiters"
+name = "North Star Staffing Solutions"
+slug = "northstarstaffingsolutions1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Northwestern Medicine"
+slug = "northwesternmedicine"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Northwestern Mutual"
+slug = "northwesternmutual"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Oxfam International"
+slug = "oxfamamerica2"
+
+[[source]]
+kind = "smartrecruiters"
+name = "PA Consulting"
+slug = "paconsulting"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Pioneer Data Systems"
+slug = "pioneerdatasystemsinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Procom"
+slug = "procomconsultantsgroup"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Prosidian Consulting"
+slug = "prosidianconsulting"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Prosum"
+slug = "prosum2"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Proximate Technologies"
+slug = "proximatetechnologiesinc1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "pureIntegration"
+slug = "pureintegration"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Quantix SCS"
+slug = "quantix"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Radiant Info Systems"
+slug = "radiantinfosystemsltd"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Radius Limited"
+slug = "radiuslimited"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Ramboll"
+slug = "ramboll3"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Randstad"
+slug = "randstad4"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Red Bull"
+slug = "redbull"
+
+[[source]]
+kind = "smartrecruiters"
+name = "RESPEC"
+slug = "respecinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Robert Bosch Venture Capital"
+slug = "boschgroup"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Roljobs Technology Services"
+slug = "ra2"
+
+[[source]]
+kind = "smartrecruiters"
+name = "RR Donnelley"
+slug = "rrdonnelley"
+
+[[source]]
+kind = "smartrecruiters"
+name = "SA Technologies"
+slug = "satechnologiesinc4"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Sajix"
+slug = "sajixsoftwaresolutionprivatelimited"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Sandisk"
+slug = "sandisk"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Saxon Global"
+slug = "saxonglobal"
+
+[[source]]
+kind = "smartrecruiters"
+name = "SBT Global"
+slug = "sbtglobalinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Schreder"
+slug = "schrder"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Securiti"
+slug = "securiti"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Sensiple"
+slug = "eproinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "ServiceNow"
+slug = "servicenow"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Sia Partners"
+slug = "sia"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Sika"
+slug = "sikaag"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Silfab Solar"
+slug = "silfabsolar"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Skyward"
+slug = "skyward1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "SmartRecruiters Inc"
+slug = "smartrecruiters"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Smiths Detection Group"
+slug = "smithsgroup2"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Société Générale de Surveillance (SGS)"
+slug = "sgs"
+
+[[source]]
+kind = "smartrecruiters"
+name = "SOCOTEC Global"
+slug = "socotec"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Softpath System"
+slug = "softpathsystemllc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Software Quality Experts"
+slug = "sqexpetsllc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Solidigm"
+slug = "solidigm"
+
+[[source]]
+kind = "smartrecruiters"
+name = "SOMFY Group"
+slug = "somfygroup"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Sonsoft"
+slug = "sonsoftinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Sopra Steria"
+slug = "soprasteria1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "SourceDirect Talent"
+slug = "sourcedirecttalent"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Sportradar"
+slug = "sportradar"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Spring Venture Group"
+slug = "springventuregroup1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Spruce InfoTech"
+slug = "spruceinfotechinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "STCU"
+slug = "stcu1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "STEM Expert"
+slug = "stemxpert1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Syncreon Consulting"
+slug = "syncreonconsulting"
+
+[[source]]
+kind = "smartrecruiters"
+name = "System Canada Technologies"
+slug = "systemcanadatechnologies"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Talan"
+slug = "talan"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Tech Tammina"
+slug = "tectammina"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Testing Xperts"
+slug = "testingxperts"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Texas Water Development Board"
+slug = "texaswaterdevelopmentboardtwdb"
+
+[[source]]
+kind = "smartrecruiters"
+name = "The Wonderful Company"
+slug = "thewonderfulcompany"
+
+[[source]]
+kind = "smartrecruiters"
+name = "TMS"
+slug = "tmsllc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Together"
+slug = "together"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Tower Research Capital LLC"
+slug = "towerresearchcapitalllc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Treehouse Strategy and Communications"
+slug = "treehousestrategyandcommunicatio"
+
+[[source]]
+kind = "smartrecruiters"
+name = "TTP"
+slug = "ttp1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Turner & Townsend"
+slug = "turnertownsend"
+
+[[source]]
+kind = "smartrecruiters"
+name = "UAP"
+slug = "uapinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "United Franchise Group"
+slug = "unitedfranchisegroup"
+
+[[source]]
+kind = "smartrecruiters"
+name = "University Health Network"
+slug = "universityhealthnetwork"
+
+[[source]]
+kind = "smartrecruiters"
+name = "UNLEASH"
+slug = "unleash"
+
+[[source]]
+kind = "smartrecruiters"
+name = "US IT Solutions"
+slug = "usitsolutionsinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "USM Business Systems"
+slug = "usm2"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Veolia"
+slug = "veoliaenvironnementsa"
 
 [[source]]
 kind = "smartrecruiters"
 name = "Visa"
 slug = "visa"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Vitol"
+slug = "vitol"
+
+[[source]]
+kind = "smartrecruiters"
+name = "vTech Solution"
+slug = "vtechsolution1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Wabash Valley Power Alliance"
+slug = "wabashvalleypoweralliance"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Wabtec"
+slug = "wabtec"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Wayfair"
+slug = "wayfair"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Wellmark"
+slug = "wellmarkinc"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Western Digital"
+slug = "westerndigital"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Westgate Resorts"
+slug = "westgateresorts"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Winsupply"
+slug = "winsupply1"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Wise"
+slug = "wise"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Woongjin"
+slug = "wjcompany"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Worldwide TechServices"
+slug = "worldwidetechservices"
+
+[[source]]
+kind = "smartrecruiters"
+name = "Zenefits"
+slug = "zenefits"
+
+
+# --- Workable --------------------------------------------------------------------
+
+[[source]]
+kind = "workable"
+name = "Al Warren Oil Company"
+slug = "al-warren-oil-company-inc"
+
+[[source]]
+kind = "workable"
+name = "Altom Transport"
+slug = "altom-transport"
+
+[[source]]
+kind = "workable"
+name = "Ascendis Pharma"
+slug = "ascendis-pharma"
+
+[[source]]
+kind = "workable"
+name = "Belmond"
+slug = "belmond-uk-ltd"
+
+[[source]]
+kind = "workable"
+name = "Bits"
+slug = "getbits"
+
+[[source]]
+kind = "workable"
+name = "Blink"
+slug = "joinblink"
+
+[[source]]
+kind = "workable"
+name = "Charlotte Tilbury"
+slug = "charlotte-tilbury"
+
+[[source]]
+kind = "workable"
+name = "ConnectPrep"
+slug = "connectprep"
+
+[[source]]
+kind = "workable"
+name = "DataVisor"
+slug = "datavisor-jobs"
+
+[[source]]
+kind = "workable"
+name = "Double Eleven"
+slug = "double-eleven"
+
+[[source]]
+kind = "workable"
+name = "Eluvio"
+slug = "eluvio"
+
+[[source]]
+kind = "workable"
+name = "ENFOS"
+slug = "enfos-inc"
+
+[[source]]
+kind = "workable"
+name = "Evolve Technology"
+slug = "evolv-technology"
+
+[[source]]
+kind = "workable"
+name = "Infleqtion"
+slug = "coldquanta"
+
+[[source]]
+kind = "workable"
+name = "Innovaccer"
+slug = "innovaccer-analytics"
+
+[[source]]
+kind = "workable"
+name = "LEAP Legal Software"
+slug = "leap-legal-software"
+
+[[source]]
+kind = "workable"
+name = "OnLogic"
+slug = "onlogic-inc"
+
+[[source]]
+kind = "workable"
+name = "OptiSigns"
+slug = "optisigns-inc"
+
+[[source]]
+kind = "workable"
+name = "OptiTrack"
+slug = "optitrack"
+
+[[source]]
+kind = "workable"
+name = "Oxford Quantum Circuits (OQC)"
+slug = "oxford-quantum-circuits-8"
+
+[[source]]
+kind = "workable"
+name = "pony.ai"
+slug = "pony-dot-ai"
+
+[[source]]
+kind = "workable"
+name = "qode.world"
+slug = "qodeworld"
+
+[[source]]
+kind = "workable"
+name = "Quadric"
+slug = "quadric-dot-i-o-inc"
+
+[[source]]
+kind = "workable"
+name = "Rokt"
+slug = "rokt"
+
+[[source]]
+kind = "workable"
+name = "SciTec"
+slug = "scitec"
+
+[[source]]
+kind = "workable"
+name = "Sigma Defense"
+slug = "sigmadefense"
+
+[[source]]
+kind = "workable"
+name = "Softheon"
+slug = "softheon"
+
+[[source]]
+kind = "workable"
+name = "Starling Bank"
+slug = "starling-bank"
+
+[[source]]
+kind = "workable"
+name = "Terabase"
+slug = "terabase-energy"
+
+[[source]]
+kind = "workable"
+name = "Thorlabs"
+slug = "thorlabs"
+
+[[source]]
+kind = "workable"
+name = "TickPick"
+slug = "tickpick"
+
+[[source]]
+kind = "workable"
+name = "TMEIC"
+slug = "tmeic-corporation-americas"
+
+[[source]]
+kind = "workable"
+name = "Tokamak Energy"
+slug = "tokamak-energy"
+
+[[source]]
+kind = "workable"
+name = "Trexquant"
+slug = "trexquant"
+
+[[source]]
+kind = "workable"
+name = "TWG Global"
+slug = "twgai"
+
+[[source]]
+kind = "workable"
+name = "Two Circles"
+slug = "twocircles"
+
+[[source]]
+kind = "workable"
+name = "Valsoft Corporation"
+slug = "valsoft-corp"
+
+[[source]]
+kind = "workable"
+name = "Zego"
+slug = "zego"
