@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+  <body>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "JobPosting",
+        "title": "Software Engineering Intern",
+        "url": "/jobs/one?utm_source=careers",
+        "identifier": {"value": "job-1"},
+        "hiringOrganization": {"name": "Example Labs"},
+        "jobLocation": {
+          "address": {
+            "addressLocality": "New York",
+            "addressRegion": "NY",
+            "addressCountry": {"name": "US"}
+          }
+        },
+        "description": "<p>Build useful things.</p>",
+        "datePosted": "2026-07-20"
+      }
+    </script>
+    <script type="application/ld+json">
+      [
+        {
+          "@type": ["Thing", "JobPosting"],
+          "title": "Duplicate Software Engineering Intern",
+          "url": "/jobs/one"
+        },
+        {
+          "@type": "Organization",
+          "name": "Example Labs"
+        }
+      ]
+    </script>
+    <script type="application/ld+json">
+      {
+        "@graph": [
+          {
+            "@type": "JobPosting",
+            "title": "Data Science Intern",
+            "mainEntityOfPage": {"@id": "two"},
+            "identifier": 202,
+            "jobLocation": [
+              {"name": "Boston, MA"},
+              {"address": {"addressLocality": "Seattle", "addressRegion": "WA"}}
+            ]
+          }
+        ]
+      }
+    </script>
+    <script type="application/ld+json">{not valid JSON</script>
+  </body>
+</html>
