@@ -10,9 +10,10 @@ from jobtrack.db.engine import SessionFactory
 from jobtrack.db.models import Candidate, Run, RunSourceResult, SeenJob, Source
 from jobtrack.filtering.rules import SEED_RULES
 from jobtrack.pipeline import run_pipeline
-from tests.payloads import FULLTIME_JOB, GREENHOUSE_JOB
+from tests.payloads import FULLTIME_JOB, GREENHOUSE_JOB, LEVER_JOB
 
 GH_URL = "https://boards-api.greenhouse.io/v1/boards/acme/jobs?content=true"
+LEVER_URL = "https://api.lever.co/v0/postings/globex?mode=json"
 
 
 async def seed(factory: SessionFactory, *, with_rules: bool = True) -> int:
@@ -158,6 +159,62 @@ async def test_dry_run_preview_does_not_suppress_the_next_real_run(
         source = await session.scalar(select(Source))
         assert source is not None
         assert source.config.get("etag") == 'W/"v1"'  # the real run does store it
+
+
+@respx.mock
+async def test_max_sources_polls_only_the_first_n(
+    settings: Settings, session_factory: SessionFactory
+) -> None:
+    settings = settings.model_copy(update={"discord_bot_token": "", "discord_channel_id": ""})
+    await seed(session_factory)
+    async with session_factory() as session:  # second source, higher id
+        await repo.add_source(session, "lever", "Globex", {"slug": "globex"})
+        await session.commit()
+    gh = respx.get(GH_URL).mock(return_value=httpx.Response(200, json={"jobs": [GREENHOUSE_JOB]}))
+    lever = respx.get(LEVER_URL).mock(return_value=httpx.Response(200, json=[LEVER_JOB]))
+
+    summary = await run_pipeline(settings, session_factory, max_sources=1)
+    assert summary.sources_total == 1
+    assert gh.called
+    assert not lever.called
+
+    # No limit → both sources are polled.
+    summary2 = await run_pipeline(settings, session_factory, max_sources=None)
+    assert summary2.sources_total == 2
+    assert lever.called
+
+
+@respx.mock
+async def test_ignore_seen_requeues_known_jobs(
+    settings: Settings, session_factory: SessionFactory
+) -> None:
+    settings = settings.model_copy(update={"discord_bot_token": "", "discord_channel_id": ""})
+    await seed(session_factory)
+    route = respx.get(GH_URL).mock(
+        return_value=httpx.Response(
+            200, json={"jobs": [GREENHOUSE_JOB]}, headers={"ETag": 'W/"v1"'}
+        )
+    )
+
+    first = await run_pipeline(settings, session_factory)
+    assert first.jobs_new == 1
+
+    # Without the flag the job is deduped away; with it, it is queued again.
+    assert (await run_pipeline(settings, session_factory)).jobs_new == 0
+    again = await run_pipeline(settings, session_factory, ignore_seen=True)
+    assert again.jobs_new == 1
+    # The stored ETag is not sent, so the board actually returns the postings.
+    assert "If-None-Match" not in route.calls.last.request.headers
+
+    async with session_factory() as session:
+        assert len(list(await session.scalars(select(SeenJob)))) == 1  # no duplicate dedup row
+        assert len(list(await session.scalars(select(Candidate)))) == 2  # re-queued once
+
+    # Dry run + ignore_seen previews the known job without writing anything new.
+    preview = await run_pipeline(settings, session_factory, dry_run=True, ignore_seen=True)
+    assert len(preview.new_jobs) == 1
+    async with session_factory() as session:
+        assert len(list(await session.scalars(select(Candidate)))) == 2
 
 
 @respx.mock

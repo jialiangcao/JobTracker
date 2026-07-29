@@ -111,9 +111,26 @@ async def _process_source(
     return outcome
 
 
+def _ref_config(source: Source, ignore_seen: bool) -> dict[str, object]:
+    """Ignoring seen_jobs also has to drop the cached validators: a 304 returns no
+    postings at all, so leaving them in would hide the very jobs the flag asks to resurface."""
+    config = dict(source.config)
+    if ignore_seen:
+        config.pop("etag", None)
+        config.pop("last_modified", None)
+    return config
+
+
 async def run_pipeline(
-    settings: Settings, session_factory: SessionFactory, *, dry_run: bool = False
+    settings: Settings,
+    session_factory: SessionFactory,
+    *,
+    dry_run: bool = False,
+    max_sources: int | None = None,
+    ignore_seen: bool = False,
 ) -> RunSummary:
+    """`max_sources` polls only the first N enabled sources (by id); `ignore_seen` treats
+    every match as new, ignoring seen_jobs. Both are debugging aids for manual runs."""
     async with session_factory() as session:
         run = await repo.create_run(session)
         source_rows = await repo.get_enabled_sources(session)
@@ -121,13 +138,23 @@ async def run_pipeline(
         await session.commit()
         run_id = run.id
 
+    if max_sources is not None:
+        source_rows = source_rows[:max_sources]
+
     rules = compile_rules(rule_rows)
     if not rules.includes and not rules.excludes:
         log.warning("no enabled filter rules — every fetched job will match")
     refs = [
-        SourceRef(id=s.id, kind=s.kind, name=s.name, config=dict(s.config)) for s in source_rows
+        SourceRef(id=s.id, kind=s.kind, name=s.name, config=_ref_config(s, ignore_seen))
+        for s in source_rows
     ]
-    log.info("run started", run_id=run_id, sources=len(refs), dry_run=dry_run)
+    log.info(
+        "run started",
+        run_id=run_id,
+        sources=len(refs),
+        dry_run=dry_run,
+        ignore_seen=ignore_seen,
+    )
 
     async with PoliteClient(settings) as client:
         outcomes = await asyncio.gather(
@@ -160,14 +187,16 @@ async def run_pipeline(
                 )
                 for job in outcome.matched:
                     if dry_run:
-                        if await repo.find_seen_job(session, source.id, job) is None:
+                        if ignore_seen or await repo.find_seen_job(session, source.id, job) is None:
                             new_count += 1
                             summary.new_jobs.append(job)
                         continue
                     seen, is_new = await repo.upsert_seen_job(
                         session, source.id, job, run_id, matched=True
                     )
-                    if is_new:
+                    # ignore_seen re-queues known jobs; the seen_jobs row is still upserted
+                    # (not duplicated) so the candidate has something to hang off.
+                    if is_new or ignore_seen:
                         new_count += 1
                         await repo.insert_candidate(session, run_id, seen.id, job)
                 summary.jobs_new += new_count

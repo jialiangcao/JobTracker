@@ -30,13 +30,33 @@ def test_seed_rules_match_cs_internship() -> None:
     rules = seed_ruleset()
     assert matches(make_job("Software Engineering Intern", "Summer 2027 program"), rules)
     assert matches(make_job("Backend Developer Co-op", "Winter term"), rules)
+    assert matches(make_job("SDE Intern"), rules)
+    assert matches(make_job("Intern, Data Engineering"), rules)  # domain + role noun
+    assert matches(make_job("Engineer Intern, Machine Learning"), rules)  # reversed order
+    assert matches(make_job("Android Developer Internship"), rules)
 
 
-def test_seed_rules_reject_fulltime_and_noncs() -> None:
+def test_seed_rules_require_an_intern_signal_in_the_title() -> None:
     rules = seed_ruleset()
-    assert not matches(make_job("Senior Software Engineer", "Summer start"), rules)  # no intern
-    assert not matches(make_job("Marketing Intern", "Summer 2027"), rules)  # not CS
-    assert not matches(make_job("Mechanical Engineering Intern", "Summer 2027"), rules)  # excluded
+    assert not matches(make_job("Senior Software Engineer", "Summer start"), rules)
+    assert not matches(make_job("Software Engineer II"), rules)
+    # An intern mention buried in the description is not enough — title only.
+    assert not matches(make_job("Software Engineer", "Our internship program runs in June"), rules)
+
+
+def test_seed_rules_reject_non_software_internships() -> None:
+    rules = seed_ruleset()
+    assert not matches(make_job("Marketing Intern", "Summer 2027"), rules)
+    assert not matches(make_job("Mechanical Engineering Intern", "Summer 2027"), rules)
+    # Domain words that only look technical on their own.
+    assert not matches(make_job("Data Entry Intern"), rules)
+    assert not matches(make_job("Platform Marketing Intern"), rules)
+    assert not matches(make_job("Physical Security Intern"), rules)
+    assert not matches(make_job("AI Policy Intern"), rules)
+    # Engineering-adjacent titles vetoed by the exclude rules.
+    assert not matches(make_job("Sales Engineer Intern"), rules)
+    assert not matches(make_job("Manufacturing Systems Engineering Intern"), rules)
+    assert not matches(make_job("Technical Program Manager Intern"), rules)
 
 
 def test_include_groups_or_within_and_across() -> None:

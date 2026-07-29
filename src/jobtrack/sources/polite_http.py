@@ -5,6 +5,7 @@ import asyncio
 import random
 import time
 import urllib.robotparser
+from contextlib import AsyncExitStack
 from dataclasses import dataclass
 from email.utils import parsedate_to_datetime
 from urllib.parse import urlsplit, urlunsplit
@@ -67,6 +68,7 @@ class PoliteClient:
         )
         self._global = asyncio.Semaphore(settings.global_concurrency)
         self._hosts: dict[str, _HostState] = {}
+        self._source_limits: dict[tuple[str, Politeness], asyncio.Semaphore] = {}
         self._robots: dict[str, urllib.robotparser.RobotFileParser | None] = {}
 
     async def __aenter__(self) -> "PoliteClient":
@@ -78,19 +80,35 @@ class PoliteClient:
     async def aclose(self) -> None:
         await self._client.aclose()
 
-    def _host_state(self, host: str, politeness: Politeness | None) -> _HostState:
+    def _host_state(self, host: str) -> _HostState:
+        """One pacing clock and one concurrency cap per host, sized from settings alone.
+        A per-source max_concurrency must not resize the budget every other source on the
+        same host shares — whichever source happened to arrive first would otherwise set
+        it for all of them. Those overrides get their own semaphore in _source_limit."""
         state = self._hosts.get(host)
         if state is None:
-            max_concurrency = (
-                politeness.max_concurrency if politeness and politeness.max_concurrency else None
-            ) or self._settings.per_host_concurrency
-            state = _HostState(max_concurrency)
+            state = _HostState(self._settings.per_host_concurrency)
             self._hosts[host] = state
         return state
 
+    def _source_limit(self, host: str, politeness: Politeness | None) -> asyncio.Semaphore | None:
+        """Extra cap for sources setting politeness.max_concurrency. It can only tighten
+        the caller, never loosen it: the host cap still applies on top. Sources on a host
+        sharing an identical politeness config share one budget."""
+        if politeness is None or not politeness.max_concurrency:
+            return None
+        key = (host, politeness)
+        semaphore = self._source_limits.get(key)
+        if semaphore is None:
+            semaphore = asyncio.Semaphore(politeness.max_concurrency)
+            self._source_limits[key] = semaphore
+        return semaphore
+
     async def _pace(self, state: _HostState, politeness: Politeness | None) -> None:
         """Reserve a start slot: request starts on the same host are spaced by a jittered
-        delay, independent of how long each request runs."""
+        delay, independent of how long each request runs. Callers must await this outside
+        the semaphores — a task sleeping until its slot holds no concurrency budget, so
+        the delay sets the request rate and the semaphores cap only what is in flight."""
         s = self._settings
         min_ms = (
             politeness.min_delay_ms
@@ -120,15 +138,21 @@ class PoliteClient:
         """GET with pacing and retries. Returns any non-retryable response (including
         304/404); raises FetchError once retryable failures exhaust attempts."""
         host = urlsplit(url).netloc.lower()
-        state = self._host_state(host, politeness)
+        state = self._host_state(host)
+        source_limit = self._source_limit(host, politeness)
         s = self._settings
 
         last_error = "unknown"
         last_status: int | None = None
         for attempt in range(s.max_retries):
             response: httpx.Response | None = None
-            async with self._global, state.semaphore:
-                await self._pace(state, politeness)
+            await self._pace(state, politeness)
+            # Narrowest budget first, so waiting on it never pins a host or global slot.
+            async with AsyncExitStack() as stack:
+                if source_limit is not None:
+                    await stack.enter_async_context(source_limit)
+                await stack.enter_async_context(self._global)
+                await stack.enter_async_context(state.semaphore)
                 try:
                     response = await self._client.get(url, headers=headers)
                 except httpx.HTTPError as exc:

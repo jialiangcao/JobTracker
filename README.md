@@ -21,6 +21,7 @@ uv run jobtrack rules seed               # default CS-internship filter rules
 uv run jobtrack sources sync             # apply sources.toml
 
 uv run jobtrack run-once --dry-run       # fetch + filter, print would-be matches, no writes
+uv run jobtrack run-once -n 3 --dry-run  # same, but only the first 3 enabled sources
 uv run jobtrack run-once                 # real run (sends to Discord if configured)
 uv run jobtrack serve                    # the 30-minute loop
 ```
@@ -39,13 +40,17 @@ uv run pytest
 |---|---|
 | `jobtrack serve` | Polling loop (what the container runs) |
 | `jobtrack run-once [--dry-run]` | Single run; dry-run writes no dedup state and sends nothing |
+| `jobtrack run-once -n/--max-sources N` | Poll only the first N enabled sources (lowest ids) — handy for quick checks |
+| `jobtrack run-once --ignore-seen` | Ignore `seen_jobs` (and cached ETags): every match counts as new. Without `--dry-run` it re-sends jobs already delivered |
 | `jobtrack db-upgrade` | Apply Alembic migrations |
 | `jobtrack sources sync [path] [--prune]` | Apply `sources.toml` (the normal way to manage sources) |
 | `jobtrack sources add/list/enable/disable` | One-off source edits (`--slug` for ATS boards, `--url` for scrape) |
 | `jobtrack rules seed/add/list/enable/disable` | Manage regex filter rules |
 
-Filter semantics: rules are grouped by name prefix (`season:*` is one group); a job must
-match every include group (rules within a group are OR'd) and no exclude rule.
+Filter semantics: rules are grouped by name prefix (`cs:*` is one group); a job must
+match every include group (rules within a group are OR'd) and no exclude rule. The seeded
+set requires an intern/co-op signal *and* a software signal, both in the title; recency is
+handled separately by `MAX_POSTING_AGE_DAYS`, not by a season rule.
 
 ## Sources
 

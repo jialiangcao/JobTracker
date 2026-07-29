@@ -67,6 +67,19 @@ def run_once(
     dry_run: bool = typer.Option(
         False, "--dry-run", help="Fetch and filter, but write no dedup state and send nothing."
     ),
+    max_sources: int | None = typer.Option(
+        None,
+        "--max-sources",
+        "-n",
+        min=1,
+        help="Poll only the first N enabled sources (lowest ids first).",
+    ),
+    ignore_seen: bool = typer.Option(
+        False,
+        "--ignore-seen",
+        help="Treat every match as new, ignoring seen_jobs (and cached ETags). "
+        "Without --dry-run this re-sends jobs already delivered.",
+    ),
 ) -> None:
     """Execute a single pipeline run."""
     _bootstrap()
@@ -75,7 +88,13 @@ def run_once(
         settings = get_settings()
         engine = make_engine(settings)
         try:
-            summary = await run_pipeline(settings, make_session_factory(engine), dry_run=dry_run)
+            summary = await run_pipeline(
+                settings,
+                make_session_factory(engine),
+                dry_run=dry_run,
+                max_sources=max_sources,
+                ignore_seen=ignore_seen,
+            )
         finally:
             await engine.dispose()
         typer.echo(

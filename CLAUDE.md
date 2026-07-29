@@ -21,7 +21,7 @@ uv run jobtrack run-once --dry-run        # end-to-end against real APIs, no wri
 uv run jobtrack db-upgrade                # apply Alembic migrations
 ```
 
-CLI (`jobtrack …`): `serve` (the 30-min loop), `run-once [--dry-run]`, `sources add/list/enable/disable`, `rules seed/add/list/enable/disable`, `db-upgrade`.
+CLI (`jobtrack …`): `serve` (the 30-min loop), `run-once [--dry-run] [-n/--max-sources N] [--ignore-seen]`, `sources add/list/enable/disable`, `rules seed/add/list/enable/disable`, `db-upgrade`.
 
 Schema changes require a hand-written Alembic migration in `alembic/versions/` alongside the `db/models.py` edit.
 
