@@ -6,6 +6,7 @@ additionally obey X-RateLimit-Remaining/Reset-After response headers and 429 ret
 
 import asyncio
 import contextlib
+from contextlib import AbstractAsyncContextManager
 from typing import Any
 
 import httpx
@@ -87,21 +88,37 @@ class DiscordSender:
                 await asyncio.sleep(float(reset_after))
 
 
-async def drain_outbox(session: AsyncSession, sender: DiscordSender, settings: Settings) -> int:
+async def drain_outbox(
+    session: AsyncSession,
+    sender: DiscordSender,
+    settings: Settings,
+    *,
+    db_lock: asyncio.Lock | None = None,
+) -> int:
     """Send all pending candidates (including leftovers from crashed runs). Each row is
-    committed individually so a crash mid-drain never re-sends. Returns sent count."""
-    pending = await repo.pending_candidates(session, settings.discord_max_attempts)
+    committed individually so a crash mid-drain never re-sends. Returns sent count.
+
+    `db_lock` lets a background drain share a session with another task: it is held only
+    around DB work, never across a send, so a rate-limited Discord never stalls the writer.
+    Callers that own the session outright can leave it None."""
+    guard: AbstractAsyncContextManager[object] = (
+        db_lock if db_lock is not None else contextlib.nullcontext()
+    )
+    async with guard:
+        pending = await repo.pending_candidates(session, settings.discord_max_attempts)
     sent = 0
     for candidate in pending:
         try:
             message_id = await sender.send_embed(build_embed(candidate))
         except (DiscordError, httpx.HTTPError) as exc:
             log.error("discord send failed", candidate_id=candidate.id, error=str(exc))
-            await repo.mark_candidate_failed(session, candidate, settings.discord_max_attempts)
-            await session.commit()
+            async with guard:
+                await repo.mark_candidate_failed(session, candidate, settings.discord_max_attempts)
+                await session.commit()
             continue
-        await repo.mark_candidate_sent(session, candidate, message_id or None)
-        await session.commit()
+        async with guard:
+            await repo.mark_candidate_sent(session, candidate, message_id or None)
+            await session.commit()
         sent += 1
         await asyncio.sleep(settings.discord_pace_seconds)
     return sent

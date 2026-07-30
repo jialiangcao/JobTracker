@@ -1,6 +1,9 @@
 """End-to-end pipeline tests over sqlite + mocked HTTP."""
 
+import asyncio
+
 import httpx
+import pytest
 import respx
 from sqlalchemy import select
 
@@ -13,7 +16,15 @@ from jobtrack.pipeline import run_pipeline
 from tests.payloads import FULLTIME_JOB, GREENHOUSE_JOB, LEVER_JOB
 
 GH_URL = "https://boards-api.greenhouse.io/v1/boards/acme/jobs?content=true"
+GH2_URL = "https://boards-api.greenhouse.io/v1/boards/globex/jobs?content=true"
 LEVER_URL = "https://api.lever.co/v0/postings/globex?mode=json"
+MESSAGES_URL = "https://discord.com/api/v10/channels/123456/messages"
+
+# A second matching posting, so a two-source run produces one candidate per source.
+GREENHOUSE_JOB_2 = GREENHOUSE_JOB | {
+    "id": 4000002,
+    "absolute_url": "https://boards.greenhouse.io/globex/jobs/4000002",
+}
 
 
 async def seed(factory: SessionFactory, *, with_rules: bool = True) -> int:
@@ -229,3 +240,92 @@ async def test_not_modified_short_circuits(
     assert summary.status == "success"
     assert summary.jobs_fetched == 0
     assert summary.sources_ok == 1
+
+
+@respx.mock
+async def test_matches_send_before_the_slowest_source_finishes(
+    settings: Settings, session_factory: SessionFactory
+) -> None:
+    """The point of streaming the DB phase: a match found early leaves for Discord while
+    the rest of the run is still fetching, instead of waiting for the last source."""
+    settings = settings.model_copy(update={"outbox_poll_seconds": 0.01})
+    await seed(session_factory)
+    async with session_factory() as session:
+        await repo.add_source(session, "greenhouse", "Globex", {"slug": "globex"})
+        await session.commit()
+
+    gate = asyncio.Event()  # holds the slow source open until the first send lands
+    sent = asyncio.Event()
+
+    respx.get(GH_URL).mock(return_value=httpx.Response(200, json={"jobs": [GREENHOUSE_JOB]}))
+
+    async def slow_board(request: httpx.Request) -> httpx.Response:
+        await gate.wait()
+        return httpx.Response(200, json={"jobs": []})
+
+    respx.get(GH2_URL).mock(side_effect=slow_board)
+
+    def on_send(request: httpx.Request) -> httpx.Response:
+        sent.set()
+        return httpx.Response(200, json={"id": "msg-1"})
+
+    respx.post(MESSAGES_URL).mock(side_effect=on_send)
+
+    async def release_once_sent() -> bool:
+        """Let the slow board answer only after a send. Always releases, so a regression
+        fails the assertion below instead of deadlocking the run."""
+        try:
+            await asyncio.wait_for(sent.wait(), timeout=5)
+            return True
+        except TimeoutError:
+            return False
+        finally:
+            gate.set()
+
+    releaser = asyncio.create_task(release_once_sent())
+    summary = await run_pipeline(settings, session_factory)
+
+    assert await releaser, "no candidate was sent until every source had been fetched"
+    assert summary.jobs_sent == 1
+    async with session_factory() as session:
+        candidate = await session.scalar(select(Candidate))
+        assert candidate is not None
+        assert candidate.send_status == "sent"
+
+
+@respx.mock
+async def test_persist_failure_is_contained_to_one_source(
+    settings: Settings, session_factory: SessionFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A DB error while writing one source must not lose the other sources in the run."""
+    settings = settings.model_copy(update={"discord_bot_token": "", "discord_channel_id": ""})
+    await seed(session_factory)
+    async with session_factory() as session:
+        await repo.add_source(session, "greenhouse", "Globex", {"slug": "globex"})
+        await session.commit()
+
+    respx.get(GH_URL).mock(return_value=httpx.Response(200, json={"jobs": [GREENHOUSE_JOB]}))
+    respx.get(GH2_URL).mock(return_value=httpx.Response(200, json={"jobs": [GREENHOUSE_JOB_2]}))
+
+    real_insert = repo.insert_candidate
+    calls = 0
+
+    async def flaky_insert(*args: object, **kwargs: object) -> Candidate:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise RuntimeError("simulated DB failure")
+        return await real_insert(*args, **kwargs)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(repo, "insert_candidate", flaky_insert)
+
+    summary = await run_pipeline(settings, session_factory)
+
+    assert calls == 2  # the second source was still consumed
+    assert summary.sources_ok == 1  # the rolled-back source is not counted as succeeded
+    assert summary.jobs_new == 1
+    async with session_factory() as session:
+        assert len(list(await session.scalars(select(Candidate)))) == 1
+        run = await session.get(Run, summary.run_id)
+        assert run is not None
+        assert run.finished_at is not None  # the run still completed and was closed out

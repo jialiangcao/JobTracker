@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     discord_channel_id: str = ""
     discord_pace_seconds: float = 1.3  # stay under the 5 msgs / 5 s per-channel bucket
     discord_max_attempts: int = 3
+    outbox_poll_seconds: float = 2.0  # how often the in-run drain checks for new matches
 
     # Alerting
     sentry_dsn: str = ""
@@ -26,13 +27,19 @@ class Settings(BaseSettings):
     us_only: bool = True
 
     # Scheduler
-    run_interval_seconds: int = 1800
+    run_interval_seconds: int = 720
 
     # Polite HTTP defaults (per-source overrides live in sources.config.politeness)
-    global_concurrency: int = 20
-    per_host_concurrency: int = 3
-    min_delay_ms: int = 500
-    max_delay_ms: int = 1500
+    #
+    # The delay is what sets throughput: _pace() spaces request *starts* on a host, so a
+    # run's wall clock is roughly (sources on the busiest host x average delay) — with
+    # ~1100 Greenhouse boards, 500-1500ms meant an 18-minute run. The concurrency caps
+    # only bound what is in flight; they are sized so a host with slow responses does not
+    # throttle the pacing clock (in-flight settles around latency / delay).
+    global_concurrency: int = 40
+    per_host_concurrency: int = 8
+    min_delay_ms: int = 150
+    max_delay_ms: int = 400
     request_timeout_seconds: float = 30.0
     max_retries: int = 3
     backoff_base_seconds: float = 1.0
