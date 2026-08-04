@@ -49,3 +49,45 @@ FULLTIME_JOB: dict[str, Any] = {
     "location": {"name": "New York, NY"},
     "content": "Own large systems end to end.",
 }
+
+# Workday's search rows are thin: no description, and a relative date. `_base_url` is not
+# from the API — the fetcher injects it so the adapter can resolve externalPath.
+WORKDAY_JOB: dict[str, Any] = {
+    "title": "Software Engineering Intern, Summer 2027",
+    "externalPath": "/job/US-CA-Santa-Clara/Software-Engineering-Intern_JR2013673",
+    "locationsText": "US, CA, Santa Clara",
+    "postedOn": "Posted Today",
+    "bulletFields": ["JR2013673"],
+    "_base_url": "https://acme.wd5.myworkdayjobs.com/en-US/AcmeCareers",
+}
+
+# One page of the CxS search response, with the facet block the fetcher mines for ids.
+WORKDAY_LIST_PAGE: dict[str, Any] = {
+    "total": 2,
+    "jobPostings": [
+        {k: v for k, v in WORKDAY_JOB.items() if k != "_base_url"},
+        {
+            "title": "Senior Staff Software Engineer",
+            "externalPath": "/job/US-CA-Santa-Clara/Senior-Staff-Software-Engineer_JR2011908",
+            "locationsText": "US, CA, Santa Clara",
+            "postedOn": "Posted 5 Days Ago",
+            "bulletFields": ["JR2011908"],
+        },
+    ],
+    "facets": [
+        {
+            "facetParameter": "workerSubType",
+            "descriptor": "Job Type",
+            "values": [
+                {"id": "regular-id", "descriptor": "Regular Employee", "count": 2343},
+                {"id": "ncg-id", "descriptor": "New College Graduate", "count": 81},
+                {"id": "intern-id", "descriptor": "Intern (Fixed Term)", "count": 11},
+            ],
+        },
+        {
+            "facetParameter": "timeType",
+            "descriptor": "Time Type",
+            "values": [{"id": "ft-id", "descriptor": "Full time", "count": 2627}],
+        },
+    ],
+}

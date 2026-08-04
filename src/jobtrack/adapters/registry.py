@@ -7,6 +7,7 @@ from jobtrack.adapters.greenhouse import GreenhouseAdapter
 from jobtrack.adapters.lever import LeverAdapter
 from jobtrack.adapters.smartrecruiters import SmartRecruitersAdapter
 from jobtrack.adapters.workable import WorkableAdapter
+from jobtrack.adapters.workday import WorkdayAdapter
 
 _FALLBACK = FallbackAdapter()
 
@@ -16,6 +17,7 @@ ADAPTERS: dict[str, Adapter] = {
     "ashby": AshbyAdapter(),
     "smartrecruiters": SmartRecruitersAdapter(),
     "workable": WorkableAdapter(),
+    "workday": WorkdayAdapter(),
     "fallback": _FALLBACK,
 }
 

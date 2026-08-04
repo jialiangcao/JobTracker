@@ -8,6 +8,7 @@ from jobtrack.sources.polite_http import FetchError
 from jobtrack.sources.scrape.browser import BrowserFetcher
 from jobtrack.sources.smartrecruiters import SmartRecruitersFetcher
 from jobtrack.sources.workable import WorkableFetcher
+from jobtrack.sources.workday import WorkdayFetcher
 
 FETCHERS: dict[str, Fetcher] = {
     "greenhouse": GreenhouseFetcher(),
@@ -15,6 +16,7 @@ FETCHERS: dict[str, Fetcher] = {
     "ashby": AshbyFetcher(),
     "smartrecruiters": SmartRecruitersFetcher(),
     "workable": WorkableFetcher(),
+    "workday": WorkdayFetcher(),
     "scrape": BrowserFetcher(),
 }
 

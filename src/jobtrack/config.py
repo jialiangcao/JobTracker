@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     us_only: bool = True
 
     # Scheduler
-    run_interval_seconds: int = 720
+    run_interval_seconds: int = 1800
 
     # Polite HTTP defaults (per-source overrides live in sources.config.politeness)
     #

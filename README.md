@@ -1,7 +1,7 @@
 # jobtrack
 
 Self-hosted job-listing watcher. Every 30 minutes it polls job sources (ATS public APIs:
-Greenhouse, Lever, Ashby, SmartRecruiters, Workable), normalizes listings via per-source
+Greenhouse, Lever, Ashby, SmartRecruiters, Workable, Workday), normalizes listings via per-source
 adapters, filters for CS internships with DB-configurable regex rules, dedups against
 history, and posts new matches as Discord embeds. Per-run results land in Postgres;
 Sentry captures errors and healthchecks.io provides a dead-man liveness alert.

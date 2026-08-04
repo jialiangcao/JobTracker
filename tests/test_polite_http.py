@@ -1,4 +1,6 @@
 import asyncio
+import json
+import re
 import time
 
 import httpx
@@ -121,6 +123,71 @@ async def test_source_override_caps_that_source(settings: Settings) -> None:
         )
 
     assert peak == 1
+
+
+@respx.mock
+async def test_post_sends_a_json_body_and_retries(settings: Settings) -> None:
+    """POST shares the GET pacing/retry path — safe only because its one caller uses POST
+    as a read."""
+    route = respx.post("https://api.example.com/jobs").mock(
+        side_effect=[
+            httpx.Response(503, headers={"Retry-After": "0"}),
+            httpx.Response(200, json={"total": 1}),
+        ]
+    )
+    async with PoliteClient(settings) as client:
+        response = await client.post("https://api.example.com/jobs", json={"offset": 0})
+
+    assert response.status_code == 200
+    assert route.call_count == 2
+    assert json.loads(route.calls[0].request.content) == {"offset": 0}
+
+
+@respx.mock
+async def test_post_reports_the_method_when_retries_are_exhausted(settings: Settings) -> None:
+    respx.post("https://api.example.com/jobs").mock(return_value=httpx.Response(503))
+    async with PoliteClient(settings) as client:
+        with pytest.raises(FetchError, match=re.escape("POST https://api.example.com/jobs failed")):
+            await client.post("https://api.example.com/jobs", json={})
+
+
+@respx.mock
+async def test_shared_limit_domains_pace_as_one_provider(settings: Settings) -> None:
+    """Workday gives every tenant its own subdomain but rate-limits them as one. Treating
+    them as separate hosts let 1000+ boards start at once and earned 728 HTTP 429s."""
+    # The group's own politeness (60-100ms) applies here, not the zeroed test defaults.
+    tenants = ("acme", "globex", "initech", "hooli", "umbrella")
+    for tenant in tenants:
+        respx.post(f"https://{tenant}.wd5.myworkdayjobs.com/x").mock(
+            return_value=httpx.Response(200)
+        )
+
+    async with PoliteClient(settings) as client:
+        start = time.monotonic()
+        await asyncio.gather(
+            *(client.post(f"https://{t}.wd5.myworkdayjobs.com/x") for t in tenants)
+        )
+        elapsed = time.monotonic() - start
+
+    # Five requests on one shared clock: the last starts at least 4 x 60ms in. Separate
+    # hosts would all start immediately (see the next test).
+    assert elapsed >= 0.24
+
+
+@respx.mock
+async def test_unrelated_hosts_still_pace_independently(settings: Settings) -> None:
+    tuned = settings.model_copy(update={"min_delay_ms": 100, "max_delay_ms": 100})
+    for host in ("a.example", "b.example", "c.example"):
+        respx.get(f"https://{host}/x").mock(return_value=httpx.Response(200))
+
+    async with PoliteClient(tuned) as client:
+        start = time.monotonic()
+        await asyncio.gather(
+            *(client.get(f"https://{h}/x") for h in ("a.example", "b.example", "c.example"))
+        )
+        elapsed = time.monotonic() - start
+
+    assert elapsed < 0.05
 
 
 @respx.mock

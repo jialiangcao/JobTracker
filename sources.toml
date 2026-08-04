@@ -1,20 +1,30 @@
 # Declarative source list. Apply with: jobtrack sources sync
 #
-#   kind      greenhouse | lever | ashby | smartrecruiters | workable | scrape
+#   kind      greenhouse | lever | ashby | smartrecruiters | workable | workday | scrape
 #   name      display name; (kind, name) identifies the source, so renaming adds a new one
-#   slug      board token from the company's job-board URL (ATS kinds)
-#   url       careers page (scrape kind only)
+#   slug      board token from the company's job-board URL (slug-addressed ATS kinds)
+#   url       careers page (workday and scrape kinds)
 #   enabled   omit to leave the DB alone — the circuit breaker also writes this field
 #
 # Optional per-source tuning:
 #   adapter    = "fallback"
 #   politeness = { max_concurrency = 1, min_delay_ms = 3000, max_delay_ms = 6000 }
 #
-# Every slug below was verified against the live API on 2026-07-29 and returned at least one
-# posting. Boards were collected from the SimplifyJobs Summer2026-Internships and
-# New-Grad-Positions listings (slugs read straight out of real job URLs) plus a hand-built
-# sweep of tech companies, AI labs, quant shops and startups; guessed slugs were kept only
-# when the board's own advertised name matched the company.
+# Workday-only tuning (all optional — the defaults are derived from `url`):
+#   tenant           = "acme-inc"      # override; defaults to the first host label
+#   site             = "Careers"       # override; defaults to the last path segment
+#   worker_sub_types = ["<facet-id>"]  # skip facet discovery, apply these ids verbatim
+#   max_pages        = 40              # raise the 25-page (500-posting) crawl cap
+#
+# Every slug below was verified against the live API on 2026-07-29 (52 added 2026-08-03) and
+# returned at least one posting. Boards were collected from the SimplifyJobs
+# Summer2026-Internships, Summer2027-Internships and New-Grad-Positions listings (slugs read
+# straight out of real job URLs) plus a hand-built sweep of tech companies, AI labs, quant
+# shops and startups; guessed slugs were kept only when the board's own advertised name
+# matched the company.
+#
+# Ashby slugs are case-sensitive and may contain spaces ("Flock Safety") — copy them from the
+# job URL verbatim and let httpx encode them; do not slugify.
 #
 # Before adding one, confirm the board answers:
 #   curl -s "https://boards-api.greenhouse.io/v1/boards/<slug>/jobs" | jq '.jobs | length'
@@ -22,9 +32,35 @@
 #   curl -s "https://api.lever.co/v0/postings/<slug>?mode=json" | jq 'length'
 # A 404 or a count of 0 means the slug is wrong or the board is empty — jobtrack will
 # report a healthy fetch of zero jobs either way, so it fails silently if you skip this.
+#
+# Every tenant below is its own subdomain but they share one rate limit per client IP, so
+# polite_http paces the whole provider as a single group (measured: 15 req/s sustained is
+# fine, 25 req/s starts returning 429). Adding boards here lengthens the run rather than
+# widening the request rate — check the run duration against RUN_INTERVAL_SECONDS.
+#
+# Workday takes a URL rather than a slug: copy the careers page verbatim, e.g.
+# "https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite". The site segment
+# is the part people get wrong, so check it — of three tenants guessed while building this
+# fetcher, two answered HTTP 400 or a total of 0:
+#   curl -s -X POST "https://<host>/wday/cxs/<tenant>/<site>/jobs" \
+#     -H 'Content-Type: application/json' \
+#     -d '{"appliedFacets":{},"limit":20,"offset":0,"searchText":""}' | jq '.total'
+#
+# Workday narrows its crawl using whichever of the board's own facets classifies interns —
+# "workerSubType" (Intern, New College Graduate...) on about 40% of boards, otherwise
+# "jobFamilyGroup" or "jobFamily" (Internships, Early Careers...). Roughly half of all
+# boards expose no such facet; those crawl up to `max_pages` in the board's default order,
+# and a board with more than 500 postings is truncated there — raise `max_pages` for any
+# large board you care about. To pin the facet instead, read the ids out of the `.facets`
+# block of the curl above and set `worker_sub_types`.
 
 
 # --- Greenhouse ------------------------------------------------------------------
+
+[[source]]
+kind = "greenhouse"
+name = "1-800 Contacts"
+slug = "1800contacts"
 
 [[source]]
 kind = "greenhouse"
@@ -458,6 +494,11 @@ slug = "asteralabs"
 
 [[source]]
 kind = "greenhouse"
+name = "Astera Labs Early Career"
+slug = "asteraearlycareer2026"
+
+[[source]]
+kind = "greenhouse"
 name = "Astranis"
 slug = "astranis"
 
@@ -598,6 +639,11 @@ slug = "axon"
 
 [[source]]
 kind = "greenhouse"
+name = "Axon (Talent Community)"
+slug = "axontalentcommunity"
+
+[[source]]
+kind = "greenhouse"
 name = "Axonius"
 slug = "axonius"
 
@@ -630,6 +676,11 @@ slug = "aypapower"
 kind = "greenhouse"
 name = "Babel Street"
 slug = "babelstreet"
+
+[[source]]
+kind = "greenhouse"
+name = "Baltimore Orioles"
+slug = "baltimoreorioles"
 
 [[source]]
 kind = "greenhouse"
@@ -1068,6 +1119,16 @@ slug = "chicagotrading"
 
 [[source]]
 kind = "greenhouse"
+name = "Chicago Trading Company (Campus Board)"
+slug = "ctccampusboard"
+
+[[source]]
+kind = "greenhouse"
+name = "Chicago Trading Company (Campus)"
+slug = "chicagotradingcampus"
+
+[[source]]
+kind = "greenhouse"
 name = "Chime"
 slug = "chime"
 
@@ -1245,6 +1306,11 @@ slug = "coreweave"
 kind = "greenhouse"
 name = "Correlation One"
 slug = "correlationone"
+
+[[source]]
+kind = "greenhouse"
+name = "Correlation One (Expert Network)"
+slug = "expertnetwork"
 
 [[source]]
 kind = "greenhouse"
@@ -1543,6 +1609,11 @@ slug = "drweng"
 
 [[source]]
 kind = "greenhouse"
+name = "DRW (University)"
+slug = "drwuniversityjobs"
+
+[[source]]
+kind = "greenhouse"
 name = "dunnhumby"
 slug = "dunnhumby"
 
@@ -1813,6 +1884,11 @@ slug = "figureai"
 
 [[source]]
 kind = "greenhouse"
+name = "Figure Lending"
+slug = "figure"
+
+[[source]]
+kind = "greenhouse"
 name = "Financial Technology Partners"
 slug = "financialtechnologypartners"
 
@@ -1850,6 +1926,11 @@ slug = "fivetran"
 kind = "greenhouse"
 name = "Flagship Pioneering"
 slug = "flagshippioneeringinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Flagship Pioneering (Co-op)"
+slug = "fspco-op012325"
 
 [[source]]
 kind = "greenhouse"
@@ -2058,6 +2139,11 @@ slug = "geotab"
 
 [[source]]
 kind = "greenhouse"
+name = "Geotab (Internships)"
+slug = "internshiplist2000"
+
+[[source]]
+kind = "greenhouse"
 name = "Ghost"
 slug = "ghost"
 
@@ -2110,6 +2196,11 @@ slug = "glydways"
 kind = "greenhouse"
 name = "GoDaddy"
 slug = "godaddy"
+
+[[source]]
+kind = "greenhouse"
+name = "GoDaddy (Events and Interns)"
+slug = "eventsandinterns"
 
 [[source]]
 kind = "greenhouse"
@@ -2478,6 +2569,11 @@ slug = "imply"
 
 [[source]]
 kind = "greenhouse"
+name = "Incident IQ"
+slug = "incidentiq"
+
+[[source]]
+kind = "greenhouse"
 name = "Inflection"
 slug = "inflectionai"
 
@@ -2485,6 +2581,11 @@ slug = "inflectionai"
 kind = "greenhouse"
 name = "Inizio"
 slug = "ashfieldadvisory"
+
+[[source]]
+kind = "greenhouse"
+name = "Inizio (Group)"
+slug = "inizio"
 
 [[source]]
 kind = "greenhouse"
@@ -2535,6 +2636,11 @@ slug = "insurify"
 kind = "greenhouse"
 name = "Integra FEC"
 slug = "integra"
+
+[[source]]
+kind = "greenhouse"
+name = "Integra FEC (Interns)"
+slug = "integrainterns"
 
 [[source]]
 kind = "greenhouse"
@@ -2878,6 +2984,11 @@ slug = "lgelectronics"
 
 [[source]]
 kind = "greenhouse"
+name = "LHV Bank"
+slug = "lhvuk"
+
+[[source]]
+kind = "greenhouse"
 name = "Liaison International"
 slug = "liaisoninternational"
 
@@ -3095,6 +3206,11 @@ slug = "mercury"
 kind = "greenhouse"
 name = "MERGE"
 slug = "mergeworld"
+
+[[source]]
+kind = "greenhouse"
+name = "Meridial"
+slug = "agency"
 
 [[source]]
 kind = "greenhouse"
@@ -3538,6 +3654,11 @@ slug = "optiverus"
 
 [[source]]
 kind = "greenhouse"
+name = "Optiver (Private)"
+slug = "optiverprivate"
+
+[[source]]
+kind = "greenhouse"
 name = "Opto Investments"
 slug = "optoinvest"
 
@@ -3748,6 +3869,11 @@ slug = "pharomanagement"
 
 [[source]]
 kind = "greenhouse"
+name = "Philadelphia Phillies"
+slug = "philliesbaseballoperations"
+
+[[source]]
+kind = "greenhouse"
 name = "Phoenix Contact"
 slug = "phoenixcontact"
 
@@ -3843,6 +3969,11 @@ slug = "polyai"
 
 [[source]]
 kind = "greenhouse"
+name = "Postman"
+slug = "postman"
+
+[[source]]
+kind = "greenhouse"
 name = "Postscript"
 slug = "postscript"
 
@@ -3915,6 +4046,11 @@ slug = "prolaio"
 kind = "greenhouse"
 name = "Prolific"
 slug = "prolific"
+
+[[source]]
+kind = "greenhouse"
+name = "Prophet"
+slug = "prophet"
 
 [[source]]
 kind = "greenhouse"
@@ -4803,6 +4939,11 @@ slug = "tenstorrent"
 
 [[source]]
 kind = "greenhouse"
+name = "Tenstorrent (University)"
+slug = "tenstorrentuniversity"
+
+[[source]]
+kind = "greenhouse"
 name = "Terran Orbital"
 slug = "terranorbitalcorporation"
 
@@ -5120,6 +5261,11 @@ slug = "unitedmasterstranslation"
 kind = "greenhouse"
 name = "Universal"
 slug = "universal"
+
+[[source]]
+kind = "greenhouse"
+name = "University of Virginia Investment Management Company (UVIMCO)"
+slug = "uvimco"
 
 [[source]]
 kind = "greenhouse"
@@ -5626,6 +5772,11 @@ slug = "allica-bank"
 
 [[source]]
 kind = "ashby"
+name = "Alljoined"
+slug = "alljoined"
+
+[[source]]
+kind = "ashby"
 name = "AlphaLife Sciences"
 slug = "alphalifesci"
 
@@ -6111,6 +6262,11 @@ slug = "collective"
 
 [[source]]
 kind = "ashby"
+name = "Colonist"
+slug = "colonist"
+
+[[source]]
+kind = "ashby"
 name = "Color"
 slug = "color-health"
 
@@ -6496,6 +6652,11 @@ slug = "flock"
 
 [[source]]
 kind = "ashby"
+name = "Flock Safety (Careers)"
+slug = "Flock Safety"
+
+[[source]]
+kind = "ashby"
 name = "Fluency"
 slug = "fluency"
 
@@ -6528,6 +6689,11 @@ slug = "forerunner"
 kind = "ashby"
 name = "Formula"
 slug = "formula"
+
+[[source]]
+kind = "ashby"
+name = "Forus"
+slug = "forus"
 
 [[source]]
 kind = "ashby"
@@ -6603,6 +6769,11 @@ slug = "gecko-robotics"
 kind = "ashby"
 name = "Gen Digital"
 slug = "gen-digital"
+
+[[source]]
+kind = "ashby"
+name = "General Intuition & Medal"
+slug = "generalintuition-medal"
 
 [[source]]
 kind = "ashby"
@@ -6781,6 +6952,11 @@ slug = "heidihealth.com.au"
 
 [[source]]
 kind = "ashby"
+name = "Heliux"
+slug = "heliux"
+
+[[source]]
+kind = "ashby"
 name = "Heron Data"
 slug = "herondata"
 
@@ -6823,6 +6999,11 @@ slug = "hinge-health"
 kind = "ashby"
 name = "Hipp Health"
 slug = "hipp"
+
+[[source]]
+kind = "ashby"
+name = "Hippocratic AI"
+slug = "Hippocratic AI"
 
 [[source]]
 kind = "ashby"
@@ -6963,6 +7144,11 @@ slug = "junipersquare"
 kind = "ashby"
 name = "k-ID"
 slug = "k-id"
+
+[[source]]
+kind = "ashby"
+name = "Kastle AI"
+slug = "kastle"
 
 [[source]]
 kind = "ashby"
@@ -7286,6 +7472,11 @@ slug = "medraai"
 
 [[source]]
 kind = "ashby"
+name = "Melius"
+slug = "melius"
+
+[[source]]
+kind = "ashby"
 name = "Melotech"
 slug = "melotech"
 
@@ -7481,6 +7672,11 @@ slug = "northwoodspace"
 
 [[source]]
 kind = "ashby"
+name = "NORY"
+slug = "nory-co"
+
+[[source]]
+kind = "ashby"
 name = "Notion"
 slug = "notion"
 
@@ -7488,6 +7684,11 @@ slug = "notion"
 kind = "ashby"
 name = "NOX METALS"
 slug = "nox-metals"
+
+[[source]]
+kind = "ashby"
+name = "NTT DATA AIVista"
+slug = "ntt-data-aivista"
 
 [[source]]
 kind = "ashby"
@@ -7901,6 +8102,11 @@ slug = "range"
 
 [[source]]
 kind = "ashby"
+name = "RapDev"
+slug = "rapdev"
+
+[[source]]
+kind = "ashby"
 name = "Rasa"
 slug = "rasa"
 
@@ -7948,6 +8154,11 @@ slug = "relay"
 kind = "ashby"
 name = "Remarcable"
 slug = "remarcable-inc"
+
+[[source]]
+kind = "ashby"
+name = "Remedy Scientific"
+slug = "Remedy Scientific"
 
 [[source]]
 kind = "ashby"
@@ -8326,6 +8537,11 @@ slug = "surveymonkey"
 
 [[source]]
 kind = "ashby"
+name = "Sweatpals"
+slug = "sweatpals"
+
+[[source]]
+kind = "ashby"
 name = "Sylvera"
 slug = "sylvera"
 
@@ -8438,6 +8654,11 @@ slug = "tolan"
 kind = "ashby"
 name = "Tonal"
 slug = "tonal"
+
+[[source]]
+kind = "ashby"
+name = "Tools for Humanity"
+slug = "Tools for Humanity"
 
 [[source]]
 kind = "ashby"
@@ -8611,6 +8832,11 @@ slug = "vendelux"
 
 [[source]]
 kind = "ashby"
+name = "Verne Robotics"
+slug = "Verne Robotics"
+
+[[source]]
+kind = "ashby"
 name = "Verse Medical"
 slug = "versemedical"
 
@@ -8688,6 +8914,11 @@ slug = "workos"
 kind = "ashby"
 name = "Worldly"
 slug = "worldly"
+
+[[source]]
+kind = "ashby"
+name = "Yotta Labs"
+slug = "yotta"
 
 [[source]]
 kind = "ashby"
@@ -8784,6 +9015,11 @@ slug = "thinkahead"
 
 [[source]]
 kind = "lever"
+name = "AI Fund"
+slug = "AIFund"
+
+[[source]]
+kind = "lever"
 name = "Aircall"
 slug = "aircall"
 
@@ -8841,6 +9077,11 @@ slug = "anomali"
 kind = "lever"
 name = "Appen"
 slug = "appen-2"
+
+[[source]]
+kind = "lever"
+name = "Aprio"
+slug = "Aprio"
 
 [[source]]
 kind = "lever"
@@ -8914,6 +9155,11 @@ slug = "benchsci"
 
 [[source]]
 kind = "lever"
+name = "Best Egg"
+slug = "BestEgg"
+
+[[source]]
+kind = "lever"
 name = "BioAgilytix"
 slug = "bioagilytix"
 
@@ -8949,6 +9195,11 @@ slug = "bumbleinc"
 
 [[source]]
 kind = "lever"
+name = "CALSTART"
+slug = "calstart"
+
+[[source]]
+kind = "lever"
 name = "Canvas Worldwide"
 slug = "canvasww"
 
@@ -8971,6 +9222,11 @@ slug = "catalist"
 kind = "lever"
 name = "Certik"
 slug = "certik"
+
+[[source]]
+kind = "lever"
+name = "CesiumAstro"
+slug = "CesiumAstro"
 
 [[source]]
 kind = "lever"
@@ -9144,6 +9400,11 @@ slug = "endpointclinical"
 
 [[source]]
 kind = "lever"
+name = "Energy Vault"
+slug = "EnergyVault"
+
+[[source]]
+kind = "lever"
 name = "Enveda"
 slug = "enveda"
 
@@ -9291,6 +9552,11 @@ slug = "great-gray-group"
 kind = "lever"
 name = "Greenlight"
 slug = "greenlight"
+
+[[source]]
+kind = "lever"
+name = "Grid"
+slug = "Grid"
 
 [[source]]
 kind = "lever"
@@ -9544,6 +9810,11 @@ slug = "mendix"
 
 [[source]]
 kind = "lever"
+name = "Mercedes-Benz"
+slug = "MBRDNA"
+
+[[source]]
+kind = "lever"
 name = "Metergy Solutions"
 slug = "metergysolutions"
 
@@ -9596,6 +9867,11 @@ slug = "netomi"
 kind = "lever"
 name = "Nevados"
 slug = "nevados"
+
+[[source]]
+kind = "lever"
+name = "New Jersey Innovation Authority"
+slug = "NJStateOfficeofInnovation"
 
 [[source]]
 kind = "lever"
@@ -9776,6 +10052,11 @@ slug = "quandri"
 kind = "lever"
 name = "QuantCo"
 slug = "quantco-"
+
+[[source]]
+kind = "lever"
+name = "Quantum Workplace"
+slug = "QuantumWorkplace"
 
 [[source]]
 kind = "lever"
@@ -10206,6 +10487,11 @@ slug = "wpromote"
 kind = "lever"
 name = "Wyetech"
 slug = "wyetechllc"
+
+[[source]]
+kind = "lever"
+name = "Xpansiv"
+slug = "Xpansiv "
 
 [[source]]
 kind = "lever"
@@ -11167,6 +11453,11 @@ slug = "uapinc"
 
 [[source]]
 kind = "smartrecruiters"
+name = "Ubisoft"
+slug = "Ubisoft2"
+
+[[source]]
+kind = "smartrecruiters"
 name = "United Franchise Group"
 slug = "unitedfranchisegroup"
 
@@ -11457,3 +11748,5426 @@ slug = "valsoft-corp"
 kind = "workable"
 name = "Zego"
 slug = "zego"
+
+
+# --- Workday ---------------------------------------------------------------------
+#
+# Addressed by careers-page URL, not a slug. Boards were extracted from the SimplifyJobs
+# Summer2027-Internships listing (host + site read straight out of real job URLs) and each
+# one was probed on 2026-08-04; only boards that answered HTTP 200 with at least one
+# posting are listed. Where one company runs two boards, the site name disambiguates them.
+
+[[source]]
+kind = "workday"
+name = "3M"
+url = "https://3m.wd1.myworkdayjobs.com/en-US/Search"
+
+[[source]]
+kind = "workday"
+name = "7-Eleven"
+url = "https://my7elevenhr.wd12.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "AAA Club Alliance (aaamidatlantic)"
+url = "https://aaamidatlantic.wd5.myworkdayjobs.com/en-US/aaamidatlantic"
+
+[[source]]
+kind = "workday"
+name = "AAA Club Alliance (careers)"
+url = "https://ace.wd5.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "AAA Club Alliance (csaacareers)"
+url = "https://aaaie.wd1.myworkdayjobs.com/en-US/csaacareers"
+
+[[source]]
+kind = "workday"
+name = "AAA Mountainwest Group"
+url = "https://ncnu.wd1.myworkdayjobs.com/en-US/aaa_ncnu_careers"
+
+[[source]]
+kind = "workday"
+name = "ABB"
+url = "https://abb.wd3.myworkdayjobs.com/en-US/external_career_page"
+
+[[source]]
+kind = "workday"
+name = "Abbott"
+url = "https://abbott.wd5.myworkdayjobs.com/en-US/abbottcareers"
+
+[[source]]
+kind = "workday"
+name = "ABC Fitness"
+url = "https://abcfinancial.wd5.myworkdayjobs.com/en-US/abcfinancialservices"
+
+[[source]]
+kind = "workday"
+name = "Aberdeen"
+url = "https://abrdn.wd3.myworkdayjobs.com/en-US/abrdn"
+
+[[source]]
+kind = "workday"
+name = "Accenture"
+url = "https://accenture.wd103.myworkdayjobs.com/en-US/AccentureCareers"
+
+[[source]]
+kind = "workday"
+name = "ACCIONA"
+url = "https://acciona.wd3.myworkdayjobs.com/en-US/acciona_employment_channel"
+
+[[source]]
+kind = "workday"
+name = "Accuray"
+url = "https://accuray.wd5.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Ace Hardware"
+url = "https://acehardware.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Acushnet Holdings"
+url = "https://acushnetgolf.wd12.myworkdayjobs.com/en-US/ACU"
+
+[[source]]
+kind = "workday"
+name = "Acxiom"
+url = "https://acxiomllc.wd5.myworkdayjobs.com/en-US/AcxiomUSA"
+
+[[source]]
+kind = "workday"
+name = "Adobe"
+url = "https://adobe.wd5.myworkdayjobs.com/en-US/external_experienced"
+
+[[source]]
+kind = "workday"
+name = "Adtran"
+url = "https://adtran.wd3.myworkdayjobs.com/en-US/adtran"
+
+[[source]]
+kind = "workday"
+name = "Advance Auto Parts"
+url = "https://advanceauto.wd5.myworkdayjobs.com/en-US/advanceexternalcareers"
+
+[[source]]
+kind = "workday"
+name = "AeroVironment (AVAV)"
+url = "https://avav.wd1.myworkdayjobs.com/en-US/AVAV"
+
+[[source]]
+kind = "workday"
+name = "AeroVironment (avav)"
+url = "https://avav.wd1.myworkdayjobs.com/en-US/avav"
+
+[[source]]
+kind = "workday"
+name = "AES (aes_clean_energy)"
+url = "https://aes.wd1.myworkdayjobs.com/en-US/aes_clean_energy"
+
+[[source]]
+kind = "workday"
+name = "AES (AES_US)"
+url = "https://aes.wd1.myworkdayjobs.com/en-US/AES_US"
+
+[[source]]
+kind = "workday"
+name = "Agilent Technologies"
+url = "https://agilent.wd5.myworkdayjobs.com/en-US/Agilent_Student_Careers"
+
+[[source]]
+kind = "workday"
+name = "Air Liquide"
+url = "https://airliquidehr.wd3.myworkdayjobs.com/en-US/AirLiquideExternalCareer"
+
+[[source]]
+kind = "workday"
+name = "Air Products"
+url = "https://airproducts.wd5.myworkdayjobs.com/en-US/AP0001"
+
+[[source]]
+kind = "workday"
+name = "Airbus"
+url = "https://ag.wd3.myworkdayjobs.com/en-US/Airbus"
+
+[[source]]
+kind = "workday"
+name = "Airgas"
+url = "https://airliquidehr.wd3.myworkdayjobs.com/en-US/airgasexternalcareer"
+
+[[source]]
+kind = "workday"
+name = "Alation"
+url = "https://alation.wd503.myworkdayjobs.com/en-US/ExternalSite"
+
+[[source]]
+kind = "workday"
+name = "Albemarle"
+url = "https://albemarle.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Alberta Investment Management Corporation"
+url = "https://aimco.wd10.myworkdayjobs.com/en-US/AIMCoCareers"
+
+[[source]]
+kind = "workday"
+name = "Alcon"
+url = "https://alcon.wd5.myworkdayjobs.com/en-US/careers_alcon"
+
+[[source]]
+kind = "workday"
+name = "Alexion"
+url = "https://astrazeneca.wd3.myworkdayjobs.com/en-US/alexion"
+
+[[source]]
+kind = "workday"
+name = "ALFA LAVAL"
+url = "https://alfalaval.wd3.myworkdayjobs.com/en-US/Alfa_Laval_jobs"
+
+[[source]]
+kind = "workday"
+name = "Allegion"
+url = "https://allegion.wd5.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Allegro MicroSystems"
+url = "https://allegromicro.wd5.myworkdayjobs.com/en-US/allegrocareers"
+
+[[source]]
+kind = "workday"
+name = "Allied Solutions"
+url = "https://alliedsolutions.wd501.myworkdayjobs.com/en-US/Allied_External"
+
+[[source]]
+kind = "workday"
+name = "Allstate Insurance Company (allstate_careers)"
+url = "https://allstate.wd5.myworkdayjobs.com/en-US/allstate_careers"
+
+[[source]]
+kind = "workday"
+name = "Allstate Insurance Company (sourcing_event)"
+url = "https://allstate.wd5.myworkdayjobs.com/en-US/sourcing_event"
+
+[[source]]
+kind = "workday"
+name = "Alston & Bird Law Firm"
+url = "https://alston.wd1.myworkdayjobs.com/en-US/ExternalCareer"
+
+[[source]]
+kind = "workday"
+name = "AltaGas"
+url = "https://wgl.wd5.myworkdayjobs.com/en-US/altagas"
+
+[[source]]
+kind = "workday"
+name = "Altar'd State"
+url = "https://standoutforgood.wd12.myworkdayjobs.com/en-US/StandOutForGood"
+
+[[source]]
+kind = "workday"
+name = "Altasciences"
+url = "https://altasciences.wd1.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Altera Corporation"
+url = "https://altera.wd1.myworkdayjobs.com/en-US/altera"
+
+[[source]]
+kind = "workday"
+name = "Alteryx"
+url = "https://alteryx.wd108.myworkdayjobs.com/en-US/AlteryxCareers"
+
+[[source]]
+kind = "workday"
+name = "Ambarella"
+url = "https://ambarella.wd108.myworkdayjobs.com/en-US/ambarella"
+
+[[source]]
+kind = "workday"
+name = "AMC Networks"
+url = "https://amcn.wd5.myworkdayjobs.com/en-US/amcnetworks"
+
+[[source]]
+kind = "workday"
+name = "Amcor"
+url = "https://amcor.wd5.myworkdayjobs.com/en-US/amcor_external_career_site"
+
+[[source]]
+kind = "workday"
+name = "Amentum"
+url = "https://pae.wd1.myworkdayjobs.com/en-US/amentum_careers"
+
+[[source]]
+kind = "workday"
+name = "Ameresco"
+url = "https://ameresco.wd5.myworkdayjobs.com/en-US/Ameresco"
+
+[[source]]
+kind = "workday"
+name = "American Cancer Society"
+url = "https://acs.wd5.myworkdayjobs.com/en-US/acscareers"
+
+[[source]]
+kind = "workday"
+name = "American Cancer Society Cancer Action Network"
+url = "https://acs.wd5.myworkdayjobs.com/en-US/acscan"
+
+[[source]]
+kind = "workday"
+name = "American Century Investments"
+url = "https://americancentury.wd5.myworkdayjobs.com/en-US/AmericanCenturyInvestments"
+
+[[source]]
+kind = "workday"
+name = "American Electric Power"
+url = "https://aep.wd1.myworkdayjobs.com/en-US/AEPCareerSite"
+
+[[source]]
+kind = "workday"
+name = "American Fidelity"
+url = "https://americanfidelity.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "American Red Cross"
+url = "https://americanredcross.wd1.myworkdayjobs.com/en-US/american_red_cross_careers"
+
+[[source]]
+kind = "workday"
+name = "American University"
+url = "https://american.wd1.myworkdayjobs.com/en-US/au"
+
+[[source]]
+kind = "workday"
+name = "Ameriprise Financial"
+url = "https://ameriprise.wd5.myworkdayjobs.com/en-US/Ameriprise"
+
+[[source]]
+kind = "workday"
+name = "Amgen"
+url = "https://amgen.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "AMN Healthcare"
+url = "https://amn.wd1.myworkdayjobs.com/en-US/amn_careers"
+
+[[source]]
+kind = "workday"
+name = "Amynta Group"
+url = "https://amynta.wd5.myworkdayjobs.com/en-US/global"
+
+[[source]]
+kind = "workday"
+name = "Analog Devices"
+url = "https://analogdevices.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Analytical Mechanics Associates"
+url = "https://amainc.wd12.myworkdayjobs.com/en-US/ama_careers"
+
+[[source]]
+kind = "workday"
+name = "Ancestry"
+url = "https://ancestry.wd501.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Anglian Water (AW)"
+url = "https://awg.wd3.myworkdayjobs.com/en-US/AW"
+
+[[source]]
+kind = "workday"
+name = "Anglian Water (broadbean_external)"
+url = "https://awg.wd3.myworkdayjobs.com/en-US/broadbean_external"
+
+[[source]]
+kind = "workday"
+name = "Ankura Consulting Group"
+url = "https://ankura.wd5.myworkdayjobs.com/en-US/ankura"
+
+[[source]]
+kind = "workday"
+name = "Anoka County Minnesota"
+url = "https://anokacounty.wd1.myworkdayjobs.com/en-US/anoka_county_career_opportunities"
+
+[[source]]
+kind = "workday"
+name = "Apex Fintech Solutions"
+url = "https://peak6group.wd1.myworkdayjobs.com/en-US/apexfintechsolutions"
+
+[[source]]
+kind = "workday"
+name = "APM Terminals"
+url = "https://maersk.wd3.myworkdayjobs.com/en-US/APMT_Careers"
+
+[[source]]
+kind = "workday"
+name = "Apollo Global"
+url = "https://athene.wd5.myworkdayjobs.com/en-US/Apollo_Careers"
+
+[[source]]
+kind = "workday"
+name = "Applied Fluid Power"
+url = "https://applied.wd501.myworkdayjobs.com/en-US/applied"
+
+[[source]]
+kind = "workday"
+name = "Applied Materials"
+url = "https://amat.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Aptiv"
+url = "https://aptiv.wd5.myworkdayjobs.com/en-US/aptiv_careers"
+
+[[source]]
+kind = "workday"
+name = "Arch Capital Group"
+url = "https://archgroup.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Arctic Wolf"
+url = "https://arcticwolf.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Ardian"
+url = "https://ardian.wd103.myworkdayjobs.com/en-US/ArdianCareers"
+
+[[source]]
+kind = "workday"
+name = "Argo Group"
+url = "https://brookfield.wd5.myworkdayjobs.com/en-US/bpandc"
+
+[[source]]
+kind = "workday"
+name = "Argonne National Laboratory (Argonne_Careers)"
+url = "https://argonne.wd1.myworkdayjobs.com/en-US/Argonne_Careers"
+
+[[source]]
+kind = "workday"
+name = "Argonne National Laboratory (EDU_PUB)"
+url = "https://argonne.wd1.myworkdayjobs.com/en-US/EDU_PUB"
+
+[[source]]
+kind = "workday"
+name = "AriensCo"
+url = "https://arienscompany.wd5.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Aristocrat Leisure"
+url = "https://aristocrat.wd3.myworkdayjobs.com/en-US/aristocratexternalcareerssite"
+
+[[source]]
+kind = "workday"
+name = "Arizona State University (ASUEP)"
+url = "https://asuep.wd5.myworkdayjobs.com/en-US/ASUEP"
+
+[[source]]
+kind = "workday"
+name = "Arizona State University (ASUFoundation)"
+url = "https://asuep.wd5.myworkdayjobs.com/en-US/ASUFoundation"
+
+[[source]]
+kind = "workday"
+name = "Arizona State University (ASUStaffCareers)"
+url = "https://asu.wd1.myworkdayjobs.com/en-US/ASUStaffCareers"
+
+[[source]]
+kind = "workday"
+name = "Arkansas Children's"
+url = "https://archildrens.wd1.myworkdayjobs.com/en-US/external_career_site"
+
+[[source]]
+kind = "workday"
+name = "Arlo"
+url = "https://arlo.wd12.myworkdayjobs.com/en-US/external_careers"
+
+[[source]]
+kind = "workday"
+name = "Arlo Technologies"
+url = "https://arlo.wd12.myworkdayjobs.com/en-US/External_Careers"
+
+[[source]]
+kind = "workday"
+name = "Armanino"
+url = "https://armaninollp.wd1.myworkdayjobs.com/en-US/Armanino"
+
+[[source]]
+kind = "workday"
+name = "ARRAY Technologies"
+url = "https://arraytechinc.wd5.myworkdayjobs.com/en-US/Array_Careers"
+
+[[source]]
+kind = "workday"
+name = "Arrowstreet Capital"
+url = "https://arrowstreetcapital.wd5.myworkdayjobs.com/en-US/Campus_Careers"
+
+[[source]]
+kind = "workday"
+name = "Asahi Kasei Corporation"
+url = "https://akamerica.wd501.myworkdayjobs.com/en-US/aka"
+
+[[source]]
+kind = "workday"
+name = "Ascend Performance Materials"
+url = "https://ascendperformancematerials.wd1.myworkdayjobs.com/en-US/ascend"
+
+[[source]]
+kind = "workday"
+name = "Ascensus"
+url = "https://ascensushr.wd1.myworkdayjobs.com/en-US/ascensuscareers"
+
+[[source]]
+kind = "workday"
+name = "AskBio"
+url = "https://askbio.wd12.myworkdayjobs.com/en-US/AskBio"
+
+[[source]]
+kind = "workday"
+name = "ASM Global"
+url = "https://asmglobal.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "ASML"
+url = "https://asml.wd3.myworkdayjobs.com/en-US/asmlext1"
+
+[[source]]
+kind = "workday"
+name = "AspenTech"
+url = "https://aspentech.wd5.myworkdayjobs.com/en-US/aspentech"
+
+[[source]]
+kind = "workday"
+name = "AssetMark"
+url = "https://assetmark.wd5.myworkdayjobs.com/en-US/AssetMark_Careers"
+
+[[source]]
+kind = "workday"
+name = "AssetWorks (AssetWorks)"
+url = "https://volarisgroup.wd3.myworkdayjobs.com/en-US/AssetWorks"
+
+[[source]]
+kind = "workday"
+name = "AssetWorks (GoAssetWorks)"
+url = "https://volarisgroup.wd3.myworkdayjobs.com/en-US/GoAssetWorks"
+
+[[source]]
+kind = "workday"
+name = "Associated Bank"
+url = "https://associatedbank.wd1.myworkdayjobs.com/en-US/external_careers"
+
+[[source]]
+kind = "workday"
+name = "Assurant (Assurant_Careers)"
+url = "https://assurant.wd1.myworkdayjobs.com/en-US/Assurant_Careers"
+
+[[source]]
+kind = "workday"
+name = "Assurant (External_Limited_Posting)"
+url = "https://assurant.wd1.myworkdayjobs.com/en-US/External_Limited_Posting"
+
+[[source]]
+kind = "workday"
+name = "AstraZeneca"
+url = "https://astrazeneca.wd3.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "AT&T (attcollege)"
+url = "https://att.wd1.myworkdayjobs.com/en-US/attcollege"
+
+[[source]]
+kind = "workday"
+name = "AT&T (ATTCollege)"
+url = "https://att.wd1.myworkdayjobs.com/en-US/ATTCollege"
+
+[[source]]
+kind = "workday"
+name = "Athena Health"
+url = "https://athenahealth.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "AtkinsRéalis"
+url = "https://slihrms.wd3.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Atrium Health"
+url = "https://aah.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Auto Club Group"
+url = "https://acg.wd1.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Autodesk (Ext)"
+url = "https://autodesk.wd1.myworkdayjobs.com/en-US/Ext"
+
+[[source]]
+kind = "workday"
+name = "Autodesk (uni)"
+url = "https://autodesk.wd1.myworkdayjobs.com/en-US/uni"
+
+[[source]]
+kind = "workday"
+name = "AutoNation"
+url = "https://autonation.wd5.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Autostore"
+url = "https://autostore.wd3.myworkdayjobs.com/en-US/autostore"
+
+[[source]]
+kind = "workday"
+name = "Avaap"
+url = "https://avaap.wd501.myworkdayjobs.com/en-US/AvaapCareers"
+
+[[source]]
+kind = "workday"
+name = "Availity"
+url = "https://availity.wd1.myworkdayjobs.com/en-US/availity_careers_us"
+
+[[source]]
+kind = "workday"
+name = "AVEVA"
+url = "https://aveva.wd3.myworkdayjobs.com/en-US/AVEVA_careers"
+
+[[source]]
+kind = "workday"
+name = "Avis Budget Group"
+url = "https://avisbudget.wd1.myworkdayjobs.com/en-US/abg_careers"
+
+[[source]]
+kind = "workday"
+name = "Aviva"
+url = "https://aviva.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Avnet"
+url = "https://avnet.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Axiom Space"
+url = "https://axiomspace.wd5.myworkdayjobs.com/en-US/External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Axis Capital"
+url = "https://axiscapital.wd1.myworkdayjobs.com/en-US/axiscareers"
+
+[[source]]
+kind = "workday"
+name = "Axis Communications AB"
+url = "https://axis.wd3.myworkdayjobs.com/en-US/external_career_site"
+
+[[source]]
+kind = "workday"
+name = "Axos Bank"
+url = "https://axos.wd5.myworkdayjobs.com/en-US/Axos"
+
+[[source]]
+kind = "workday"
+name = "Baird"
+url = "https://baird.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Baker Hughes"
+url = "https://bakerhughes.wd5.myworkdayjobs.com/en-US/BakerHughes"
+
+[[source]]
+kind = "workday"
+name = "Baker Tilly"
+url = "https://bakertilly.wd5.myworkdayjobs.com/en-US/BTCareers"
+
+[[source]]
+kind = "workday"
+name = "Baldwin Group"
+url = "https://baldwin.wd1.myworkdayjobs.com/en-US/Baldwin"
+
+[[source]]
+kind = "workday"
+name = "Banco Bilbao Vizcaya Argentaria"
+url = "https://bbva.wd3.myworkdayjobs.com/en-US/BBVA"
+
+[[source]]
+kind = "workday"
+name = "Bank of America"
+url = "https://ghr.wd1.myworkdayjobs.com/en-US/us-emplsv"
+
+[[source]]
+kind = "workday"
+name = "Bank of Montreal (Campus)"
+url = "https://bmo.wd3.myworkdayjobs.com/en-US/Campus"
+
+[[source]]
+kind = "workday"
+name = "Bank of Montreal (External)"
+url = "https://bmo.wd3.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Bank of Montreal (Privileged)"
+url = "https://bmo.wd3.myworkdayjobs.com/en-US/Privileged"
+
+[[source]]
+kind = "workday"
+name = "Banner Health"
+url = "https://bannerhealth.wd108.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Barclays"
+url = "https://barclays.wd3.myworkdayjobs.com/en-US/External_Career_Site_Barclays"
+
+[[source]]
+kind = "workday"
+name = "Barr"
+url = "https://barr.wd1.myworkdayjobs.com/en-US/barrcareers"
+
+[[source]]
+kind = "workday"
+name = "Barry-Wehmiller (BWCareers)"
+url = "https://barrywehmiller.wd1.myworkdayjobs.com/en-US/BWCareers"
+
+[[source]]
+kind = "workday"
+name = "Barry-Wehmiller (BWConfidential)"
+url = "https://barrywehmiller.wd1.myworkdayjobs.com/en-US/BWConfidential"
+
+[[source]]
+kind = "workday"
+name = "Baxter International"
+url = "https://baxter.wd1.myworkdayjobs.com/en-US/baxter"
+
+[[source]]
+kind = "workday"
+name = "BCBST"
+url = "https://bcbst.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "BDO Canada"
+url = "https://bdo.wd3.myworkdayjobs.com/en-US/BDO"
+
+[[source]]
+kind = "workday"
+name = "Becton Dickinson (EXTERNAL_CAREER_SITE_USA)"
+url = "https://bdx.wd1.myworkdayjobs.com/en-US/EXTERNAL_CAREER_SITE_USA"
+
+[[source]]
+kind = "workday"
+name = "Becton Dickinson (US_EARLY_TALENT_SITE)"
+url = "https://bdx.wd1.myworkdayjobs.com/en-US/US_EARLY_TALENT_SITE"
+
+[[source]]
+kind = "workday"
+name = "BECU"
+url = "https://becu.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Belk"
+url = "https://belk.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "BeOne"
+url = "https://beigene.wd5.myworkdayjobs.com/en-US/beigene"
+
+[[source]]
+kind = "workday"
+name = "Beth Israel Lahey Health"
+url = "https://bilh.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "BiblioCommons"
+url = "https://volarisgroup.wd3.myworkdayjobs.com/en-US/BiblioCommons"
+
+[[source]]
+kind = "workday"
+name = "BigCommerce"
+url = "https://bigcommerce.wd12.myworkdayjobs.com/en-US/Commerce"
+
+[[source]]
+kind = "workday"
+name = "Bio-Techne"
+url = "https://biotechne.wd5.myworkdayjobs.com/en-US/Biotechne"
+
+[[source]]
+kind = "workday"
+name = "Biogen"
+url = "https://biibhr.wd3.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Bird Construction"
+url = "https://bird.wd3.myworkdayjobs.com/en-US/BirdConstructionCareers"
+
+[[source]]
+kind = "workday"
+name = "BJ's Wholesale Club"
+url = "https://bjswholesaleclub.wd1.myworkdayjobs.com/en-US/BJsCareers"
+
+[[source]]
+kind = "workday"
+name = "Blackberry (blackberry)"
+url = "https://bb.wd3.myworkdayjobs.com/en-US/blackberry"
+
+[[source]]
+kind = "workday"
+name = "Blackberry (Student)"
+url = "https://bb.wd3.myworkdayjobs.com/en-US/Student"
+
+[[source]]
+kind = "workday"
+name = "BlackRock (BlackRock_Early_Careers_Program)"
+url = "https://blackrock.wd1.myworkdayjobs.com/en-US/BlackRock_Early_Careers_Program"
+
+[[source]]
+kind = "workday"
+name = "BlackRock (BlackRock_Professional)"
+url = "https://blackrock.wd1.myworkdayjobs.com/en-US/BlackRock_Professional"
+
+[[source]]
+kind = "workday"
+name = "Blackstone (Blackstone_Campus_Careers)"
+url = "https://blackstone.wd1.myworkdayjobs.com/en-US/Blackstone_Campus_Careers"
+
+[[source]]
+kind = "workday"
+name = "Blackstone (bx_external_site)"
+url = "https://blackstone.wd1.myworkdayjobs.com/en-US/bx_external_site"
+
+[[source]]
+kind = "workday"
+name = "Bloom Energy"
+url = "https://bloomenergy.wd1.myworkdayjobs.com/en-US/bloomenergycareers"
+
+[[source]]
+kind = "workday"
+name = "Bloomberg Industry Group"
+url = "https://bloomberg.wd1.myworkdayjobs.com/en-US/Bloombergindustrygroup_External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Blue Cross and Blue Shield of Kansas"
+url = "https://bcbsks.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Blue Cross and Blue Shield of Minnesota"
+url = "https://bcbsmn.wd5.myworkdayjobs.com/en-US/bluecrossmn"
+
+[[source]]
+kind = "workday"
+name = "Blue Cross and Blue Shield of North Carolina"
+url = "https://bcbsnc.wd5.myworkdayjobs.com/en-US/bcbsnc"
+
+[[source]]
+kind = "workday"
+name = "Blue Cross and Blue Shield of Rhode Island"
+url = "https://bcbsri.wd1.myworkdayjobs.com/en-US/BCBSRICareers"
+
+[[source]]
+kind = "workday"
+name = "Blue Cross Blue Shield"
+url = "https://bcbsa.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Blue Cross Blue Shield of Arizona"
+url = "https://bcbsaz.wd1.myworkdayjobs.com/en-US/bcbsazcareers"
+
+[[source]]
+kind = "workday"
+name = "Blue Cross Blue Shield of Rhode Island"
+url = "https://bcbsri.wd1.myworkdayjobs.com/en-US/bcbsricareers"
+
+[[source]]
+kind = "workday"
+name = "Blue Cross of Idaho"
+url = "https://bcidaho.wd5.myworkdayjobs.com/en-US/BCI"
+
+[[source]]
+kind = "workday"
+name = "Blue Origin"
+url = "https://blueorigin.wd5.myworkdayjobs.com/en-US/blueorigin"
+
+[[source]]
+kind = "workday"
+name = "BlueScope"
+url = "https://bluescopenac.wd5.myworkdayjobs.com/en-US/BNACareers"
+
+[[source]]
+kind = "workday"
+name = "Bob's Discount Furniture"
+url = "https://bobsdf.wd1.myworkdayjobs.com/en-US/bobs_careers"
+
+[[source]]
+kind = "workday"
+name = "Booz Allen (bah_jobs)"
+url = "https://bah.wd1.myworkdayjobs.com/en-US/bah_jobs"
+
+[[source]]
+kind = "workday"
+name = "Booz Allen (Confidential)"
+url = "https://bah.wd1.myworkdayjobs.com/en-US/Confidential"
+
+[[source]]
+kind = "workday"
+name = "BorgWarner"
+url = "https://borgwarner.wd5.myworkdayjobs.com/en-US/BorgWarner_Careers"
+
+[[source]]
+kind = "workday"
+name = "Bose"
+url = "https://boseallaboutme.wd503.myworkdayjobs.com/en-US/Bose_Careers"
+
+[[source]]
+kind = "workday"
+name = "Boston Dynamics"
+url = "https://bostondynamics.wd1.myworkdayjobs.com/en-US/Boston_Dynamics"
+
+[[source]]
+kind = "workday"
+name = "Boston Medical Center"
+url = "https://bmc.wd1.myworkdayjobs.com/en-US/BMC"
+
+[[source]]
+kind = "workday"
+name = "Boys Town"
+url = "https://boystown.wd1.myworkdayjobs.com/en-US/boystowncareers"
+
+[[source]]
+kind = "workday"
+name = "BP (bpCareers)"
+url = "https://bpinternational.wd3.myworkdayjobs.com/en-US/bpCareers"
+
+[[source]]
+kind = "workday"
+name = "BP (bpEarlyCareers)"
+url = "https://bpinternational.wd3.myworkdayjobs.com/en-US/bpEarlyCareers"
+
+[[source]]
+kind = "workday"
+name = "BP (bpPrivateExternalCareersSite)"
+url = "https://bpinternational.wd3.myworkdayjobs.com/en-US/bpPrivateExternalCareersSite"
+
+[[source]]
+kind = "workday"
+name = "Brandeis University"
+url = "https://brandeis.wd5.myworkdayjobs.com/en-US/Jobs"
+
+[[source]]
+kind = "workday"
+name = "Bread Financial"
+url = "https://alliancedata.wd5.myworkdayjobs.com/en-US/breadfinancial_us"
+
+[[source]]
+kind = "workday"
+name = "Brigham Young University - Provo"
+url = "https://byu.wd1.myworkdayjobs.com/en-US/byu-careers"
+
+[[source]]
+kind = "workday"
+name = "Bristol Myers Squibb"
+url = "https://bristolmyerssquibb.wd5.myworkdayjobs.com/en-US/bms"
+
+[[source]]
+kind = "workday"
+name = "British Columbia Investment"
+url = "https://bci.wd10.myworkdayjobs.com/en-US/BCI_Careers"
+
+[[source]]
+kind = "workday"
+name = "Broadridge"
+url = "https://broadridge.wd5.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Brock University"
+url = "https://brocku.wd3.myworkdayjobs.com/en-US/brocku_careers"
+
+[[source]]
+kind = "workday"
+name = "Brookfield"
+url = "https://brookfield.wd5.myworkdayjobs.com/en-US/brookfieldprivate"
+
+[[source]]
+kind = "workday"
+name = "Brookhaven Lab"
+url = "https://bnl.wd1.myworkdayjobs.com/en-US/externa"
+
+[[source]]
+kind = "workday"
+name = "Brooks Automation"
+url = "https://brooksauto.wd1.myworkdayjobs.com/en-US/Brooks_External_Site"
+
+[[source]]
+kind = "workday"
+name = "Brown & Brown Insurance"
+url = "https://bbinsurance.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Brunswick"
+url = "https://brunswick.wd1.myworkdayjobs.com/en-US/search"
+
+[[source]]
+kind = "workday"
+name = "C&S Wholesale Grocers"
+url = "https://cswg.wd1.myworkdayjobs.com/en-US/cs_careers"
+
+[[source]]
+kind = "workday"
+name = "C.H. Guenther"
+url = "https://chg.wd5.myworkdayjobs.com/en-US/US_External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "C.H. Robinson"
+url = "https://chrobinson.wd5.myworkdayjobs.com/en-US/CHRobinson"
+
+[[source]]
+kind = "workday"
+name = "Cable One"
+url = "https://cableone.wd1.myworkdayjobs.com/en-US/Cable_One_External_Careers"
+
+[[source]]
+kind = "workday"
+name = "CACI"
+url = "https://caci.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Cadence Design Systems (External_Careers)"
+url = "https://cadence.wd1.myworkdayjobs.com/en-US/External_Careers"
+
+[[source]]
+kind = "workday"
+name = "Cadence Design Systems (OpenEye_Careers)"
+url = "https://cadence.wd1.myworkdayjobs.com/en-US/OpenEye_Careers"
+
+[[source]]
+kind = "workday"
+name = "Cadence Design Systems (Univ_Careers)"
+url = "https://cadence.wd1.myworkdayjobs.com/en-US/Univ_Careers"
+
+[[source]]
+kind = "workday"
+name = "Cadence Design Systems (University_Talent)"
+url = "https://cadence.wd1.myworkdayjobs.com/en-US/University_Talent"
+
+[[source]]
+kind = "workday"
+name = "Cadence Design Systems (University_Talent_Intern)"
+url = "https://cadence.wd1.myworkdayjobs.com/en-US/University_Talent_Intern"
+
+[[source]]
+kind = "workday"
+name = "CAE"
+url = "https://cae.wd3.myworkdayjobs.com/en-US/career"
+
+[[source]]
+kind = "workday"
+name = "Caliber"
+url = "https://calibercollision.wd1.myworkdayjobs.com/en-US/caliber"
+
+[[source]]
+kind = "workday"
+name = "Calix"
+url = "https://calix.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Cambium Learning Group"
+url = "https://cambiumlearning.wd1.myworkdayjobs.com/en-US/camb"
+
+[[source]]
+kind = "workday"
+name = "Cambria"
+url = "https://cambria.wd1.myworkdayjobs.com/en-US/cambria_careers"
+
+[[source]]
+kind = "workday"
+name = "Cambridge Associates (Cambridge_Associates)"
+url = "https://cambridgeassociates.wd5.myworkdayjobs.com/en-US/Cambridge_Associates"
+
+[[source]]
+kind = "workday"
+name = "Cambridge Associates (Handshake)"
+url = "https://cambridgeassociates.wd5.myworkdayjobs.com/en-US/Handshake"
+
+[[source]]
+kind = "workday"
+name = "Camping World"
+url = "https://campingworld.wd5.myworkdayjobs.com/en-US/Jobs"
+
+[[source]]
+kind = "workday"
+name = "Canadian Tire"
+url = "https://canadiantirecorporation.wd3.myworkdayjobs.com/en-US/Enterprise_External_Careers_Site"
+
+[[source]]
+kind = "workday"
+name = "Capital Automotive Group"
+url = "https://capitalauto.wd3.myworkdayjobs.com/en-US/capitalautogroupcareers"
+
+[[source]]
+kind = "workday"
+name = "Capital Group"
+url = "https://capgroup.wd1.myworkdayjobs.com/en-US/capitalgroupcareers"
+
+[[source]]
+kind = "workday"
+name = "Capital One"
+url = "https://capitalone.wd12.myworkdayjobs.com/en-US/Capital_One"
+
+[[source]]
+kind = "workday"
+name = "Capital Power"
+url = "https://capitalpower.wd10.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Cardinal Health"
+url = "https://cardinalhealth.wd1.myworkdayjobs.com/en-US/EXT"
+
+[[source]]
+kind = "workday"
+name = "CareBridge"
+url = "https://elevancehealth.wd1.myworkdayjobs.com/en-US/ANT"
+
+[[source]]
+kind = "workday"
+name = "CareSource"
+url = "https://caresource.wd1.myworkdayjobs.com/en-US/caresource"
+
+[[source]]
+kind = "workday"
+name = "Carnegie Mellon University (cmu)"
+url = "https://cmu.wd5.myworkdayjobs.com/en-US/cmu"
+
+[[source]]
+kind = "workday"
+name = "Carnegie Mellon University (CMU)"
+url = "https://cmu.wd5.myworkdayjobs.com/en-US/CMU"
+
+[[source]]
+kind = "workday"
+name = "Carpenter Technology"
+url = "https://cartech.wd5.myworkdayjobs.com/en-US/CTCExternal"
+
+[[source]]
+kind = "workday"
+name = "Carrier Global"
+url = "https://carrier.wd5.myworkdayjobs.com/en-US/jobs"
+
+[[source]]
+kind = "workday"
+name = "Carter's"
+url = "https://carters.wd1.myworkdayjobs.com/en-US/CartersCareers"
+
+[[source]]
+kind = "workday"
+name = "Caterpillar Inc."
+url = "https://cat.wd5.myworkdayjobs.com/en-US/CaterpillarCareers"
+
+[[source]]
+kind = "workday"
+name = "Cboe"
+url = "https://cboe.wd1.myworkdayjobs.com/en-US/External_Career_CBOE"
+
+[[source]]
+kind = "workday"
+name = "CCC Intelligent Solutions"
+url = "https://cccis.wd1.myworkdayjobs.com/en-US/broadbean_external"
+
+[[source]]
+kind = "workday"
+name = "CDW Corporation"
+url = "https://cdw.wd5.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Cenovus Energy"
+url = "https://cenovus.wd3.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Centene"
+url = "https://centene.wd5.myworkdayjobs.com/en-US/Centene_External"
+
+[[source]]
+kind = "workday"
+name = "Center for Internet Security (CIS)"
+url = "https://cisecurity.wd1.myworkdayjobs.com/en-US/CIS_External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Centerstone"
+url = "https://centerstone.wd5.myworkdayjobs.com/en-US/centerstonecareers"
+
+[[source]]
+kind = "workday"
+name = "Centific"
+url = "https://centific.wd1.myworkdayjobs.com/en-US/Centific_Global"
+
+[[source]]
+kind = "workday"
+name = "Centrica"
+url = "https://centrica.wd3.myworkdayjobs.com/en-US/Centrica"
+
+[[source]]
+kind = "workday"
+name = "Cerence"
+url = "https://cerence.wd5.myworkdayjobs.com/en-US/Cerence"
+
+[[source]]
+kind = "workday"
+name = "Chamberlain Group"
+url = "https://chamberlain.wd1.myworkdayjobs.com/en-US/Chamberlain_Group"
+
+[[source]]
+kind = "workday"
+name = "ChampionX"
+url = "https://championx.wd1.myworkdayjobs.com/en-US/championx_external"
+
+[[source]]
+kind = "workday"
+name = "Chanel"
+url = "https://cc.wd3.myworkdayjobs.com/en-US/ChanelCareers"
+
+[[source]]
+kind = "workday"
+name = "Charter Manufacturing"
+url = "https://chartermfg.wd5.myworkdayjobs.com/en-US/Charter_Careers"
+
+[[source]]
+kind = "workday"
+name = "Chemours"
+url = "https://chemours.wd103.myworkdayjobs.com/en-US/Chemours"
+
+[[source]]
+kind = "workday"
+name = "CHEP"
+url = "https://brambles.wd5.myworkdayjobs.com/en-US/Brambles_Careers"
+
+[[source]]
+kind = "workday"
+name = "Chevron Corporation"
+url = "https://chevron.wd5.myworkdayjobs.com/en-US/University"
+
+[[source]]
+kind = "workday"
+name = "Chipotle Mexican Grill"
+url = "https://chipotle.wd5.myworkdayjobs.com/en-US/ChipotleCareers"
+
+[[source]]
+kind = "workday"
+name = "Choice Hotels"
+url = "https://choicehotels.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "CIBC (campus)"
+url = "https://cibc.wd3.myworkdayjobs.com/en-US/campus"
+
+[[source]]
+kind = "workday"
+name = "CIBC (search)"
+url = "https://cibc.wd3.myworkdayjobs.com/en-US/search"
+
+[[source]]
+kind = "workday"
+name = "Ciena"
+url = "https://ciena.wd5.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Cincinnati Children’s Hospital and Medical Center"
+url = "https://cincinnatichildrens.wd5.myworkdayjobs.com/en-US/careersatcincinnatichildrens"
+
+[[source]]
+kind = "workday"
+name = "Cinemark Theatres"
+url = "https://cinemark.wd1.myworkdayjobs.com/en-US/cinemark"
+
+[[source]]
+kind = "workday"
+name = "Circle"
+url = "https://circle.wd1.myworkdayjobs.com/en-US/Circle"
+
+[[source]]
+kind = "workday"
+name = "Circle K"
+url = "https://circlek.wd3.myworkdayjobs.com/en-US/circlekstorejobs"
+
+[[source]]
+kind = "workday"
+name = "Cisco"
+url = "https://cisco.wd5.myworkdayjobs.com/en-US/cisco_careers"
+
+[[source]]
+kind = "workday"
+name = "Cisive"
+url = "https://cisive.wd108.myworkdayjobs.com/en-US/Cisive"
+
+[[source]]
+kind = "workday"
+name = "Citi (2)"
+url = "https://citi.wd5.myworkdayjobs.com/en-US/2"
+
+[[source]]
+kind = "workday"
+name = "Citi (Citi_Early_Careers_Events_Site)"
+url = "https://citi.wd5.myworkdayjobs.com/en-US/Citi_Early_Careers_Events_Site"
+
+[[source]]
+kind = "workday"
+name = "City of Amarillo"
+url = "https://amarillo.wd5.myworkdayjobs.com/en-US/amarillo_external_career_site"
+
+[[source]]
+kind = "workday"
+name = "City of Aurora"
+url = "https://auroragov.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "City of Austin"
+url = "https://austintexas.wd5.myworkdayjobs.com/en-US/COA_Careers"
+
+[[source]]
+kind = "workday"
+name = "City of Baltimore"
+url = "https://baltimorecity.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "City of Charlotte"
+url = "https://charlottenc.wd12.myworkdayjobs.com/en-US/citgov"
+
+[[source]]
+kind = "workday"
+name = "City of Largo"
+url = "https://largo.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "City Of Olathe"
+url = "https://olatheks.wd1.myworkdayjobs.com/en-US/olatheks"
+
+[[source]]
+kind = "workday"
+name = "Clarios"
+url = "https://clarios.wd5.myworkdayjobs.com/en-US/clarioscareers"
+
+[[source]]
+kind = "workday"
+name = "Clarivate"
+url = "https://clarivate.wd3.myworkdayjobs.com/en-US/Clarivate_Careers"
+
+[[source]]
+kind = "workday"
+name = "Clayton"
+url = "https://claytonhomes.wd1.myworkdayjobs.com/en-US/ClaytonCareers"
+
+[[source]]
+kind = "workday"
+name = "CLEAResult"
+url = "https://clearesult.wd1.myworkdayjobs.com/en-US/CLEAResult_External_Careers"
+
+[[source]]
+kind = "workday"
+name = "Cleveland Clinic"
+url = "https://ccf.wd1.myworkdayjobs.com/en-US/ClevelandClinicCareers"
+
+[[source]]
+kind = "workday"
+name = "Clio"
+url = "https://clio.wd3.myworkdayjobs.com/en-US/ClioCareerSite"
+
+[[source]]
+kind = "workday"
+name = "Clorox"
+url = "https://clorox.wd1.myworkdayjobs.com/en-US/InviteClorox"
+
+[[source]]
+kind = "workday"
+name = "CMC Markets"
+url = "https://cmcmarkets.wd3.myworkdayjobs.com/en-US/CMC_Markets_Careers"
+
+[[source]]
+kind = "workday"
+name = "CME Group"
+url = "https://cmegroup.wd1.myworkdayjobs.com/en-US/cme_careers"
+
+[[source]]
+kind = "workday"
+name = "CNO Financial Group"
+url = "https://cnoinc.wd5.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Cogeco"
+url = "https://cogeco.wd3.myworkdayjobs.com/en-US/Cogeco_Careers"
+
+[[source]]
+kind = "workday"
+name = "Cognex"
+url = "https://cognex.wd1.myworkdayjobs.com/en-US/External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Cohesity"
+url = "https://cohesity.wd5.myworkdayjobs.com/en-US/Cohesity_Careers"
+
+[[source]]
+kind = "workday"
+name = "Colliers"
+url = "https://colliers.wd3.myworkdayjobs.com/en-US/Colliers-External-Career-Site"
+
+[[source]]
+kind = "workday"
+name = "Colonial Pipeline Company"
+url = "https://colpipe.wd1.myworkdayjobs.com/en-US/Search"
+
+[[source]]
+kind = "workday"
+name = "Comcast"
+url = "https://comcast.wd5.myworkdayjobs.com/en-US/Comcast_Careers"
+
+[[source]]
+kind = "workday"
+name = "Compassion International (compassioncareers)"
+url = "https://compassion.wd5.myworkdayjobs.com/en-US/compassioncareers"
+
+[[source]]
+kind = "workday"
+name = "Compassion International (CompassionCareersPrivateLink)"
+url = "https://compassion.wd5.myworkdayjobs.com/en-US/CompassionCareersPrivateLink"
+
+[[source]]
+kind = "workday"
+name = "Conagra Brands"
+url = "https://conagrabrands.wd1.myworkdayjobs.com/en-US/Careers_US"
+
+[[source]]
+kind = "workday"
+name = "ConocoPhillips"
+url = "https://conocophillips.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Cooper Standard"
+url = "https://cooperstandard.wd1.myworkdayjobs.com/en-US/CooperStandard"
+
+[[source]]
+kind = "workday"
+name = "CoorsTek"
+url = "https://coorstek.wd1.myworkdayjobs.com/en-US/CoorsTekCareers"
+
+[[source]]
+kind = "workday"
+name = "Copart"
+url = "https://copart.wd12.myworkdayjobs.com/en-US/copart"
+
+[[source]]
+kind = "workday"
+name = "Copeland"
+url = "https://copeland.wd5.myworkdayjobs.com/en-US/copeland_external_careers_page"
+
+[[source]]
+kind = "workday"
+name = "Core & Main"
+url = "https://coreandmain.wd1.myworkdayjobs.com/en-US/coreandmain"
+
+[[source]]
+kind = "workday"
+name = "Corebridge Financial"
+url = "https://corebridgefinancial.wd1.myworkdayjobs.com/en-US/CorebridgeFinancial"
+
+[[source]]
+kind = "workday"
+name = "Corewell Health"
+url = "https://spectrumhealth.wd5.myworkdayjobs.com/en-US/CorewellHealthCareers"
+
+[[source]]
+kind = "workday"
+name = "Corpay"
+url = "https://corpay.wd103.myworkdayjobs.com/en-US/ext_001"
+
+[[source]]
+kind = "workday"
+name = "Corteva"
+url = "https://corteva.wd5.myworkdayjobs.com/en-US/corteva"
+
+[[source]]
+kind = "workday"
+name = "CoStar Group"
+url = "https://costar.wd1.myworkdayjobs.com/en-US/CoStarCareers"
+
+[[source]]
+kind = "workday"
+name = "COUNTRY Financial"
+url = "https://countryfinancial.wd5.myworkdayjobs.com/en-US/COUNTRYCorporateExternal"
+
+[[source]]
+kind = "workday"
+name = "Covestro"
+url = "https://covestro.wd3.myworkdayjobs.com/en-US/cov_external"
+
+[[source]]
+kind = "workday"
+name = "Cox"
+url = "https://cox.wd1.myworkdayjobs.com/en-US/Cox_External_Career_Site_1"
+
+[[source]]
+kind = "workday"
+name = "CoxHealth"
+url = "https://coxhealth.wd5.myworkdayjobs.com/en-US/CoxHealth_External"
+
+[[source]]
+kind = "workday"
+name = "Crane Co."
+url = "https://cranecompany.wd5.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Creation Technologies"
+url = "https://creationtech.wd1.myworkdayjobs.com/en-US/Creation"
+
+[[source]]
+kind = "workday"
+name = "Creative Artists Agency"
+url = "https://caa.wd1.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Credit Acceptance Careers"
+url = "https://creditacceptance.wd5.myworkdayjobs.com/en-US/Credit_Acceptance"
+
+[[source]]
+kind = "workday"
+name = "Criteo"
+url = "https://criteo.wd3.myworkdayjobs.com/en-US/Criteo_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Crowdstrike"
+url = "https://crowdstrike.wd5.myworkdayjobs.com/en-US/crowdstrikecareers"
+
+[[source]]
+kind = "workday"
+name = "Crowe"
+url = "https://crowe.wd12.myworkdayjobs.com/en-US/external_careers"
+
+[[source]]
+kind = "workday"
+name = "CSA Group"
+url = "https://csagroup.wd3.myworkdayjobs.com/en-US/csagroup"
+
+[[source]]
+kind = "workday"
+name = "CSAA Insurance Group"
+url = "https://aaaie.wd1.myworkdayjobs.com/en-US/CSAACareers2"
+
+[[source]]
+kind = "workday"
+name = "CSL"
+url = "https://csl.wd1.myworkdayjobs.com/en-US/CSL_External"
+
+[[source]]
+kind = "workday"
+name = "Cubic"
+url = "https://cubic.wd1.myworkdayjobs.com/en-US/cubic_USA_careers"
+
+[[source]]
+kind = "workday"
+name = "Curriculum Associates"
+url = "https://curriculumassociates.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Curtiss-Wright Corporation"
+url = "https://curtisswright.wd1.myworkdayjobs.com/en-US/cw_external_career_site"
+
+[[source]]
+kind = "workday"
+name = "Cushman & Wakefield"
+url = "https://cw.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "CVS Health (CVS_Health_Careers)"
+url = "https://cvshealth.wd1.myworkdayjobs.com/en-US/CVS_Health_Careers"
+
+[[source]]
+kind = "workday"
+name = "CVS Health (Private_Postings_Intern_Conversion_ONLY)"
+url = "https://cvshealth.wd1.myworkdayjobs.com/en-US/Private_Postings_Intern_Conversion_ONLY"
+
+[[source]]
+kind = "workday"
+name = "CWAN"
+url = "https://clearwateranalytics.wd1.myworkdayjobs.com/en-US/Clearwater_Analytics_Careers"
+
+[[source]]
+kind = "workday"
+name = "CWS"
+url = "https://cws.wd3.myworkdayjobs.com/en-US/cws_jobs"
+
+[[source]]
+kind = "workday"
+name = "Daimler Truck (dtna_affiliate)"
+url = "https://dtna.wd5.myworkdayjobs.com/en-US/dtna_affiliate"
+
+[[source]]
+kind = "workday"
+name = "Daimler Truck (DTNA_external)"
+url = "https://dtna.wd5.myworkdayjobs.com/en-US/DTNA_external"
+
+[[source]]
+kind = "workday"
+name = "Dairyland Power Cooperative"
+url = "https://dairynet.wd1.myworkdayjobs.com/en-US/DPCcareers"
+
+[[source]]
+kind = "workday"
+name = "Dallas College"
+url = "https://dallascollege.wd1.myworkdayjobs.com/en-US/Dallas_College_Careers"
+
+[[source]]
+kind = "workday"
+name = "Danaher Corporation (DanaherJobs)"
+url = "https://danaher.wd1.myworkdayjobs.com/en-US/DanaherJobs"
+
+[[source]]
+kind = "workday"
+name = "Danaher Corporation (danaherjobs)"
+url = "https://danaher.wd1.myworkdayjobs.com/en-US/danaherjobs"
+
+[[source]]
+kind = "workday"
+name = "DataRobot"
+url = "https://datarobot.wd1.myworkdayjobs.com/en-US/DataRobot_External_Careers"
+
+[[source]]
+kind = "workday"
+name = "Datasite"
+url = "https://datasite.wd1.myworkdayjobs.com/en-US/datasite"
+
+[[source]]
+kind = "workday"
+name = "Deckers Brands"
+url = "https://deckers.wd5.myworkdayjobs.com/en-US/Deckers"
+
+[[source]]
+kind = "workday"
+name = "Delta Dental"
+url = "https://rhsc.wd5.myworkdayjobs.com/en-US/delta_dental_of_michigan"
+
+[[source]]
+kind = "workday"
+name = "Deluxe"
+url = "https://deluxe.wd5.myworkdayjobs.com/en-US/USA_CAN"
+
+[[source]]
+kind = "workday"
+name = "Dematic"
+url = "https://kiongroup.wd3.myworkdayjobs.com/en-US/kion_scs"
+
+[[source]]
+kind = "workday"
+name = "Dentsu"
+url = "https://dentsuaegis.wd3.myworkdayjobs.com/en-US/DAN_GLOBAL"
+
+[[source]]
+kind = "workday"
+name = "Denver"
+url = "https://denver.wd1.myworkdayjobs.com/en-US/CCD-denver-denvergov-CSC_Jobs-Civil_service_jobs-Police_Jobs-Fire_Jobs"
+
+[[source]]
+kind = "workday"
+name = "Desjardins Group"
+url = "https://desjardins.wd10.myworkdayjobs.com/en-US/Desjardins"
+
+[[source]]
+kind = "workday"
+name = "Dexcom (dexcom)"
+url = "https://dexcom.wd1.myworkdayjobs.com/en-US/dexcom"
+
+[[source]]
+kind = "workday"
+name = "Dexcom (Dexcom)"
+url = "https://dexcom.wd1.myworkdayjobs.com/en-US/Dexcom"
+
+[[source]]
+kind = "workday"
+name = "Dick's Sporting Goods"
+url = "https://dickssportinggoods.wd1.myworkdayjobs.com/en-US/DSG"
+
+[[source]]
+kind = "workday"
+name = "Direct Supply"
+url = "https://directsupply.wd501.myworkdayjobs.com/en-US/direct-supply-careers"
+
+[[source]]
+kind = "workday"
+name = "DotDash Meredith"
+url = "https://meredith.wd5.myworkdayjobs.com/en-US/EXT"
+
+[[source]]
+kind = "workday"
+name = "doTERRA"
+url = "https://doterra.wd1.myworkdayjobs.com/en-US/doTERRACareers"
+
+[[source]]
+kind = "workday"
+name = "Dow Chemical Company"
+url = "https://dow.wd1.myworkdayjobs.com/en-US/ExternalCareers"
+
+[[source]]
+kind = "workday"
+name = "Dow Jones"
+url = "https://dowjones.wd1.myworkdayjobs.com/en-US/Dow_Jones_Career"
+
+[[source]]
+kind = "workday"
+name = "DPR Family of Companies"
+url = "https://mydpr.wd5.myworkdayjobs.com/en-US/11212017"
+
+[[source]]
+kind = "workday"
+name = "DraftKings"
+url = "https://draftkings.wd1.myworkdayjobs.com/en-US/Employee_Referral_Portal"
+
+[[source]]
+kind = "workday"
+name = "Draper"
+url = "https://draper.wd5.myworkdayjobs.com/en-US/Draper_Careers"
+
+[[source]]
+kind = "workday"
+name = "Driscoll's"
+url = "https://driscolls.wd5.myworkdayjobs.com/en-US/driscolls"
+
+[[source]]
+kind = "workday"
+name = "DriveTime"
+url = "https://drivetime.wd1.myworkdayjobs.com/en-US/DriveTime"
+
+[[source]]
+kind = "workday"
+name = "DuCharme, McMillen & Associates"
+url = "https://dmainc.wd5.myworkdayjobs.com/en-US/dma"
+
+[[source]]
+kind = "workday"
+name = "Duke Energy"
+url = "https://dukeenergy.wd1.myworkdayjobs.com/en-US/search"
+
+[[source]]
+kind = "workday"
+name = "DXC Technology"
+url = "https://dxctechnology.wd1.myworkdayjobs.com/en-US/dxcjobs"
+
+[[source]]
+kind = "workday"
+name = "Dyson"
+url = "https://dyson.wd3.myworkdayjobs.com/en-US/dyson_careers"
+
+[[source]]
+kind = "workday"
+name = "Echo Global Logistics"
+url = "https://echo.wd1.myworkdayjobs.com/en-US/Echo_Logistics"
+
+[[source]]
+kind = "workday"
+name = "Edwards Lifesciences"
+url = "https://edwards.wd5.myworkdayjobs.com/en-US/edwardscareers"
+
+[[source]]
+kind = "workday"
+name = "EisnerAmper"
+url = "https://eisneramper.wd1.myworkdayjobs.com/en-US/EisnerAmperEarlyCareers"
+
+[[source]]
+kind = "workday"
+name = "Elanco"
+url = "https://elanco.wd5.myworkdayjobs.com/en-US/External_Career"
+
+[[source]]
+kind = "workday"
+name = "Elekta"
+url = "https://elekta.wd3.myworkdayjobs.com/en-US/Elekta_Careers"
+
+[[source]]
+kind = "workday"
+name = "Element Fleet Management"
+url = "https://elementfleet.wd3.myworkdayjobs.com/en-US/External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Elevance Health"
+url = "https://elevancehealth.wd1.myworkdayjobs.com/en-US/ELV-ET"
+
+[[source]]
+kind = "workday"
+name = "Elsevier"
+url = "https://relx.wd3.myworkdayjobs.com/en-US/ElsevierJobs"
+
+[[source]]
+kind = "workday"
+name = "Empower"
+url = "https://empower.wd12.myworkdayjobs.com/en-US/empower"
+
+[[source]]
+kind = "workday"
+name = "Enbridge"
+url = "https://enbridge.wd3.myworkdayjobs.com/en-US/enbridge_careers"
+
+[[source]]
+kind = "workday"
+name = "Endeavor Health"
+url = "https://nshs.wd1.myworkdayjobs.com/en-US/ns-eeh"
+
+[[source]]
+kind = "workday"
+name = "Energy Northwest"
+url = "https://energynorthwest.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "ENOVIS"
+url = "https://enovis.wd5.myworkdayjobs.com/en-US/enovis"
+
+[[source]]
+kind = "workday"
+name = "Ensemble Health Partners"
+url = "https://ensemblehp.wd5.myworkdayjobs.com/en-US/ensemblehealthpartnerscareers"
+
+[[source]]
+kind = "workday"
+name = "Ensign-Bickford Aerospace & Defense Company"
+url = "https://ebi.wd5.myworkdayjobs.com/en-US/ebadcareers"
+
+[[source]]
+kind = "workday"
+name = "Ensora Health"
+url = "https://therapybrands.wd1.myworkdayjobs.com/en-US/EnsoraHealth"
+
+[[source]]
+kind = "workday"
+name = "Entegris"
+url = "https://entegris.wd1.myworkdayjobs.com/en-US/entegriscareers"
+
+[[source]]
+kind = "workday"
+name = "Entrust"
+url = "https://entrust.wd1.myworkdayjobs.com/en-US/entrustcareers"
+
+[[source]]
+kind = "workday"
+name = "Envista"
+url = "https://envista.wd1.myworkdayjobs.com/en-US/envistacareers"
+
+[[source]]
+kind = "workday"
+name = "Epicor"
+url = "https://epicorsoftware.wd5.myworkdayjobs.com/en-US/epicorjobs"
+
+[[source]]
+kind = "workday"
+name = "Epiq Systems"
+url = "https://epiqsystems.wd503.myworkdayjobs.com/en-US/Epiq_Careers"
+
+[[source]]
+kind = "workday"
+name = "Equifax"
+url = "https://equifax.wd5.myworkdayjobs.com/en-US/UR_External"
+
+[[source]]
+kind = "workday"
+name = "Equinix"
+url = "https://equinix.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Ercot"
+url = "https://ercot.wd1.myworkdayjobs.com/en-US/ercot_careers"
+
+[[source]]
+kind = "workday"
+name = "Erickson Senior Living"
+url = "https://erickson.wd108.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Etsy"
+url = "https://etsy.wd5.myworkdayjobs.com/en-US/Etsy_Careers"
+
+[[source]]
+kind = "workday"
+name = "Euronext"
+url = "https://hrhub.wd3.myworkdayjobs.com/en-US/Euronext_Career_Page"
+
+[[source]]
+kind = "workday"
+name = "EverCommerce"
+url = "https://evercommerce.wd1.myworkdayjobs.com/en-US/evercommerce_careers"
+
+[[source]]
+kind = "workday"
+name = "Everest"
+url = "https://everestre.wd5.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Everfox"
+url = "https://evergreenix.wd1.myworkdayjobs.com/en-US/external-careers2"
+
+[[source]]
+kind = "workday"
+name = "Eversource Energy"
+url = "https://eversource.wd1.myworkdayjobs.com/en-US/ExternalSite"
+
+[[source]]
+kind = "workday"
+name = "Evonik"
+url = "https://evonik.wd3.myworkdayjobs.com/en-US/External_Careers"
+
+[[source]]
+kind = "workday"
+name = "Exclusive Networks"
+url = "https://exclusivenetworks.wd103.myworkdayjobs.com/en-US/Exclusive-Networks-Career"
+
+[[source]]
+kind = "workday"
+name = "Expedia Group (private)"
+url = "https://expedia.wd108.myworkdayjobs.com/en-US/private"
+
+[[source]]
+kind = "workday"
+name = "Expedia Group (search)"
+url = "https://expedia.wd108.myworkdayjobs.com/en-US/search"
+
+[[source]]
+kind = "workday"
+name = "F5"
+url = "https://ffive.wd5.myworkdayjobs.com/en-US/f5jobs"
+
+[[source]]
+kind = "workday"
+name = "Fabletics"
+url = "https://justfab.wd1.myworkdayjobs.com/en-US/fabletics"
+
+[[source]]
+kind = "workday"
+name = "FactSet"
+url = "https://factset.wd108.myworkdayjobs.com/en-US/FactSetCareers"
+
+[[source]]
+kind = "workday"
+name = "Fairstone Financial"
+url = "https://fairstone.wd3.myworkdayjobs.com/en-US/FairstoneCareers"
+
+[[source]]
+kind = "workday"
+name = "Faith Technologies (fti)"
+url = "https://faithtechnologies.wd1.myworkdayjobs.com/en-US/fti"
+
+[[source]]
+kind = "workday"
+name = "Faith Technologies (FTI_Engineering)"
+url = "https://faithtechnologies.wd1.myworkdayjobs.com/en-US/FTI_Engineering"
+
+[[source]]
+kind = "workday"
+name = "Federal Home Loan Bank of Indianapolis"
+url = "https://fhlbi.wd1.myworkdayjobs.com/en-US/FHLBI_Careers"
+
+[[source]]
+kind = "workday"
+name = "Federal Home Loan Bank of New York"
+url = "https://fhlbny.wd1.myworkdayjobs.com/en-US/FHLBNY"
+
+[[source]]
+kind = "workday"
+name = "Fenwick & West"
+url = "https://fenwick.wd1.myworkdayjobs.com/en-US/Fenwick_External_Careers"
+
+[[source]]
+kind = "workday"
+name = "Fermilab"
+url = "https://fermilab.wd5.myworkdayjobs.com/en-US/FermilabCareers"
+
+[[source]]
+kind = "workday"
+name = "Ferrovial"
+url = "https://ferrovial.wd3.myworkdayjobs.com/en-US/ferrovial_career_site"
+
+[[source]]
+kind = "workday"
+name = "FHLBank Atlanta"
+url = "https://fhlbatl.wd1.myworkdayjobs.com/en-US/fhlbatl"
+
+[[source]]
+kind = "workday"
+name = "FHLBank Topeka"
+url = "https://fhlbtopeka.wd1.myworkdayjobs.com/en-US/FHLBT"
+
+[[source]]
+kind = "workday"
+name = "Fidelity Investments (fidelitycareers)"
+url = "https://fmr.wd1.myworkdayjobs.com/en-US/fidelitycareers"
+
+[[source]]
+kind = "workday"
+name = "Fidelity Investments (targeted)"
+url = "https://fmr.wd1.myworkdayjobs.com/en-US/targeted"
+
+[[source]]
+kind = "workday"
+name = "Fifth Third Bank"
+url = "https://fifththird.wd5.myworkdayjobs.com/en-US/53careers"
+
+[[source]]
+kind = "workday"
+name = "Financial Ombudsman Service"
+url = "https://financialombudsman.wd3.myworkdayjobs.com/en-US/FinancialOmbudsmanService"
+
+[[source]]
+kind = "workday"
+name = "Finastra"
+url = "https://finastra.wd3.myworkdayjobs.com/en-US/FINC"
+
+[[source]]
+kind = "workday"
+name = "Finning"
+url = "https://finning.wd3.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Finra"
+url = "https://finra.wd1.myworkdayjobs.com/en-US/FINRA"
+
+[[source]]
+kind = "workday"
+name = "First American"
+url = "https://firstam.wd1.myworkdayjobs.com/en-US/firstamericancareers"
+
+[[source]]
+kind = "workday"
+name = "First Bank & Trust"
+url = "https://bankeasy.wd5.myworkdayjobs.com/en-US/bank-easy-job-openings"
+
+[[source]]
+kind = "workday"
+name = "First Canadian Title"
+url = "https://firstam.wd1.myworkdayjobs.com/en-US/fctcareers"
+
+[[source]]
+kind = "workday"
+name = "First Financial"
+url = "https://ffin.wd1.myworkdayjobs.com/en-US/First_Financial_Bank"
+
+[[source]]
+kind = "workday"
+name = "First National Bank"
+url = "https://fnbcorp.wd501.myworkdayjobs.com/en-US/FNBCORP"
+
+[[source]]
+kind = "workday"
+name = "First Quality"
+url = "https://firstquality.wd5.myworkdayjobs.com/en-US/firstquality"
+
+[[source]]
+kind = "workday"
+name = "FirstDay Foundation"
+url = "https://nphosting.wd5.myworkdayjobs.com/en-US/FDFCareers"
+
+[[source]]
+kind = "workday"
+name = "Fiserv"
+url = "https://fiserv.wd5.myworkdayjobs.com/en-US/ext"
+
+[[source]]
+kind = "workday"
+name = "Five Below"
+url = "https://fivebelow.wd1.myworkdayjobs.com/en-US/fivebelowcareers"
+
+[[source]]
+kind = "workday"
+name = "Flexera"
+url = "https://flexerasoftware.wd1.myworkdayjobs.com/en-US/FlexeraSoftware"
+
+[[source]]
+kind = "workday"
+name = "Flextronics International"
+url = "https://flextronics.wd1.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Florida Atlantic University"
+url = "https://fau.wd1.myworkdayjobs.com/en-US/FAU"
+
+[[source]]
+kind = "workday"
+name = "Florida Institute of Technology"
+url = "https://floridatech.wd5.myworkdayjobs.com/en-US/FloridaTechCareers"
+
+[[source]]
+kind = "workday"
+name = "Flowserve"
+url = "https://flowserve.wd1.myworkdayjobs.com/en-US/applied"
+
+[[source]]
+kind = "workday"
+name = "FMC Corporation"
+url = "https://fmc.wd12.myworkdayjobs.com/en-US/FMC"
+
+[[source]]
+kind = "workday"
+name = "FNBO"
+url = "https://firstnational.wd12.myworkdayjobs.com/en-US/fnbocareers"
+
+[[source]]
+kind = "workday"
+name = "Fortrea"
+url = "https://fortrea.wd1.myworkdayjobs.com/en-US/Fortrea"
+
+[[source]]
+kind = "workday"
+name = "FOX"
+url = "https://fox.wd1.myworkdayjobs.com/en-US/Domestic"
+
+[[source]]
+kind = "workday"
+name = "Franklin Templeton (invitation-only)"
+url = "https://franklintempleton.wd5.myworkdayjobs.com/en-US/invitation-only"
+
+[[source]]
+kind = "workday"
+name = "Franklin Templeton (Primary-External-1)"
+url = "https://franklintempleton.wd5.myworkdayjobs.com/en-US/Primary-External-1"
+
+[[source]]
+kind = "workday"
+name = "Frazer-Nash Consultancy"
+url = "https://kbr.wd5.myworkdayjobs.com/en-US/Frazer_Nash_Careers"
+
+[[source]]
+kind = "workday"
+name = "Freddie Mac"
+url = "https://freddiemac.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Freese and Nichols"
+url = "https://freese.wd1.myworkdayjobs.com/en-US/Freese_Nichols_External"
+
+[[source]]
+kind = "workday"
+name = "Fresenius Kabi"
+url = "https://freseniusglobal.wd3.myworkdayjobs.com/en-US/FK_Careers"
+
+[[source]]
+kind = "workday"
+name = "Fresenius Medical Care"
+url = "https://freseniusmedicalcare.wd3.myworkdayjobs.com/en-US/fme"
+
+[[source]]
+kind = "workday"
+name = "Freudenberg Group"
+url = "https://freudenberg.wd3.myworkdayjobs.com/en-US/freudenberg-group"
+
+[[source]]
+kind = "workday"
+name = "Frontier Economics"
+url = "https://frontiereconomics.wd3.myworkdayjobs.com/en-US/Frontier_Economics_Careers"
+
+[[source]]
+kind = "workday"
+name = "FTI Consulting (FTIConsultingCareers)"
+url = "https://fticonsulting.wd108.myworkdayjobs.com/en-US/FTIConsultingCareers"
+
+[[source]]
+kind = "workday"
+name = "FTI Consulting (FTIConsultingCareersPrivate)"
+url = "https://fticonsulting.wd108.myworkdayjobs.com/en-US/FTIConsultingCareersPrivate"
+
+[[source]]
+kind = "workday"
+name = "Fullsteam"
+url = "https://fullsteam.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "G-Research"
+url = "https://gresearch.wd103.myworkdayjobs.com/en-US/G-Research"
+
+[[source]]
+kind = "workday"
+name = "GAF"
+url = "https://gafsgi.wd5.myworkdayjobs.com/en-US/GAF_Careers"
+
+[[source]]
+kind = "workday"
+name = "GAP"
+url = "https://gapinc.wd1.myworkdayjobs.com/en-US/GAPINC"
+
+[[source]]
+kind = "workday"
+name = "GE Aerospace"
+url = "https://geaerospace.wd5.myworkdayjobs.com/en-US/ge_externalsite"
+
+[[source]]
+kind = "workday"
+name = "GE Appliances"
+url = "https://haier.wd3.myworkdayjobs.com/en-US/ge_appliances"
+
+[[source]]
+kind = "workday"
+name = "GE Healthcare"
+url = "https://gehc.wd5.myworkdayjobs.com/en-US/GEHC_ExternalSite"
+
+[[source]]
+kind = "workday"
+name = "GE Vernova (only_confidential_executive_recruiting)"
+url = "https://gevernova.wd5.myworkdayjobs.com/en-US/only_confidential_executive_recruiting"
+
+[[source]]
+kind = "workday"
+name = "GE Vernova (vernova_externalsite)"
+url = "https://gevernova.wd5.myworkdayjobs.com/en-US/vernova_externalsite"
+
+[[source]]
+kind = "workday"
+name = "GEHA"
+url = "https://geha.wd5.myworkdayjobs.com/en-US/GEHACareers"
+
+[[source]]
+kind = "workday"
+name = "Geico"
+url = "https://geico.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Geisinger"
+url = "https://geisinger.wd5.myworkdayjobs.com/en-US/geisingerexternal"
+
+[[source]]
+kind = "workday"
+name = "Gen"
+url = "https://gen.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Genentech (ROG-A2O-GENE)"
+url = "https://roche.wd3.myworkdayjobs.com/en-US/ROG-A2O-GENE"
+
+[[source]]
+kind = "workday"
+name = "Genentech (rog-a2o-gene)"
+url = "https://roche.wd3.myworkdayjobs.com/en-US/rog-a2o-gene"
+
+[[source]]
+kind = "workday"
+name = "Generac"
+url = "https://generac.wd5.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "General Dynamics Information Technology"
+url = "https://gdit.wd5.myworkdayjobs.com/en-US/external_career_site"
+
+[[source]]
+kind = "workday"
+name = "General Motors"
+url = "https://generalmotors.wd5.myworkdayjobs.com/en-US/Careers_GM"
+
+[[source]]
+kind = "workday"
+name = "Genesys"
+url = "https://genesys.wd1.myworkdayjobs.com/en-US/Genesys"
+
+[[source]]
+kind = "workday"
+name = "Gensler"
+url = "https://gensler.wd1.myworkdayjobs.com/en-US/genslercareers"
+
+[[source]]
+kind = "workday"
+name = "Gentex Corporation"
+url = "https://gentex.wd5.myworkdayjobs.com/en-US/Gentex"
+
+[[source]]
+kind = "workday"
+name = "Genuine Parts Company"
+url = "https://genpt.wd1.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Genworth Financial"
+url = "https://gnw.wd1.myworkdayjobs.com/en-US/GNW"
+
+[[source]]
+kind = "workday"
+name = "GIA"
+url = "https://gia.wd1.myworkdayjobs.com/en-US/GIA"
+
+[[source]]
+kind = "workday"
+name = "Gilead Sciences"
+url = "https://gilead.wd1.myworkdayjobs.com/en-US/gileadcareers"
+
+[[source]]
+kind = "workday"
+name = "Glencore"
+url = "https://glencorecorp.wd3.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Global"
+url = "https://thisisglobal.wd3.myworkdayjobs.com/en-US/Global"
+
+[[source]]
+kind = "workday"
+name = "Global Infrastructure"
+url = "https://gi.wd1.myworkdayjobs.com/en-US/Global_Infrastructure"
+
+[[source]]
+kind = "workday"
+name = "Global Partners"
+url = "https://global.wd1.myworkdayjobs.com/en-US/globalpartnerscareers"
+
+[[source]]
+kind = "workday"
+name = "GlobalFoundries"
+url = "https://globalfoundries.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Globus Medical"
+url = "https://globusmedical.wd5.myworkdayjobs.com/en-US/GMED_Careers"
+
+[[source]]
+kind = "workday"
+name = "GoodRx"
+url = "https://goodrx.wd1.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Goosehead Insurance"
+url = "https://goosehead.wd503.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Gordon Food Service (usjobs-gen-gfs)"
+url = "https://gfs.wd5.myworkdayjobs.com/en-US/usjobs-gen-gfs"
+
+[[source]]
+kind = "workday"
+name = "Gordon Food Service (usprivate-gfs)"
+url = "https://gfs.wd5.myworkdayjobs.com/en-US/usprivate-gfs"
+
+[[source]]
+kind = "workday"
+name = "GoTo Group"
+url = "https://goto.wd5.myworkdayjobs.com/en-US/GoToCareers"
+
+[[source]]
+kind = "workday"
+name = "Graco"
+url = "https://graco.wd501.myworkdayjobs.com/en-US/Graco_Careers"
+
+[[source]]
+kind = "workday"
+name = "Grand Canyon University"
+url = "https://gcu.wd1.myworkdayjobs.com/en-US/GCU"
+
+[[source]]
+kind = "workday"
+name = "Granite Construction"
+url = "https://granite.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Graybar"
+url = "https://graybar.wd1.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Great American Insurance Company"
+url = "https://gaig.wd1.myworkdayjobs.com/en-US/GAIG_External"
+
+[[source]]
+kind = "workday"
+name = "Greene Tweed"
+url = "https://gtweed.wd1.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Greenheck Group"
+url = "https://greenheckgroup.wd5.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Greystar Worldwide"
+url = "https://greystar.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Group 1001"
+url = "https://group1001wd.wd5.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "GSK"
+url = "https://gsk.wd5.myworkdayjobs.com/en-US/GSKCareers"
+
+[[source]]
+kind = "workday"
+name = "Guardian Life"
+url = "https://guardianlife.wd5.myworkdayjobs.com/en-US/guardian-life-careers"
+
+[[source]]
+kind = "workday"
+name = "Guggenheim"
+url = "https://guggenheiminvestment.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Guidehouse"
+url = "https://guidehouse.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "GuideStone"
+url = "https://guidestone.wd1.myworkdayjobs.com/en-US/guidestone"
+
+[[source]]
+kind = "workday"
+name = "Guidewire"
+url = "https://guidewire.wd5.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Gunvor"
+url = "https://gunvor.wd3.myworkdayjobs.com/en-US/Gunvor_Careers"
+
+[[source]]
+kind = "workday"
+name = "Hancock Whitney"
+url = "https://hancockwhitney.wd5.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "HARMAN International"
+url = "https://harman.wd3.myworkdayjobs.com/en-US/HARMAN"
+
+[[source]]
+kind = "workday"
+name = "Harris Central Appraisal District"
+url = "https://hcad.wd5.myworkdayjobs.com/en-US/HCADCareers"
+
+[[source]]
+kind = "workday"
+name = "Harris Computer"
+url = "https://harriscomputer.wd3.myworkdayjobs.com/en-US/1"
+
+[[source]]
+kind = "workday"
+name = "HCSC"
+url = "https://hcsc.wd1.myworkdayjobs.com/en-US/HCSC_External"
+
+[[source]]
+kind = "workday"
+name = "Health Research"
+url = "https://healthresearch.wd1.myworkdayjobs.com/en-US/hri_careers"
+
+[[source]]
+kind = "workday"
+name = "Healthfirst"
+url = "https://healthfirst.wd1.myworkdayjobs.com/en-US/healthfirst"
+
+[[source]]
+kind = "workday"
+name = "Heidelberg Materials"
+url = "https://heidelbergmaterials.wd3.myworkdayjobs.com/en-US/global_hm_career_site"
+
+[[source]]
+kind = "workday"
+name = "Hendrick Motorsports"
+url = "https://hendrick.wd5.myworkdayjobs.com/en-US/HMSCareers"
+
+[[source]]
+kind = "workday"
+name = "Henry Schein"
+url = "https://henryschein.wd1.myworkdayjobs.com/en-US/External_Careers"
+
+[[source]]
+kind = "workday"
+name = "Hewlett Packard (HP) (externalcareersite)"
+url = "https://hp.wd5.myworkdayjobs.com/en-US/externalcareersite"
+
+[[source]]
+kind = "workday"
+name = "Hewlett Packard (HP) (ExternalCareerSite)"
+url = "https://hp.wd5.myworkdayjobs.com/en-US/ExternalCareerSite"
+
+[[source]]
+kind = "workday"
+name = "Hewlett Packard (HP) (EXTEU-AC-CareerSite)"
+url = "https://hp.wd5.myworkdayjobs.com/en-US/EXTEU-AC-CareerSite"
+
+[[source]]
+kind = "workday"
+name = "Hewlett Packard Enterprise (acjobsite)"
+url = "https://hpe.wd5.myworkdayjobs.com/en-US/acjobsite"
+
+[[source]]
+kind = "workday"
+name = "Hewlett Packard Enterprise (Jobsathpe)"
+url = "https://hpe.wd5.myworkdayjobs.com/en-US/Jobsathpe"
+
+[[source]]
+kind = "workday"
+name = "Highmark Health"
+url = "https://highmarkhealth.wd1.myworkdayjobs.com/en-US/highmark"
+
+[[source]]
+kind = "workday"
+name = "Hilb Group"
+url = "https://hilbgroup.wd5.myworkdayjobs.com/en-US/HG-Careers"
+
+[[source]]
+kind = "workday"
+name = "Hilcorp"
+url = "https://hec.wd5.myworkdayjobs.com/en-US/hilcorp_energy_company"
+
+[[source]]
+kind = "workday"
+name = "Hiscox"
+url = "https://hiscox.wd3.myworkdayjobs.com/en-US/Hiscox_External_Site"
+
+[[source]]
+kind = "workday"
+name = "Hitachi"
+url = "https://hitachi.wd1.myworkdayjobs.com/en-US/hitachi"
+
+[[source]]
+kind = "workday"
+name = "HNTB (hntb_careers)"
+url = "https://hntb.wd5.myworkdayjobs.com/en-US/hntb_careers"
+
+[[source]]
+kind = "workday"
+name = "HNTB (hntb_university_careers)"
+url = "https://hntb.wd5.myworkdayjobs.com/en-US/hntb_university_careers"
+
+[[source]]
+kind = "workday"
+name = "Holman"
+url = "https://holmanautogroup.wd1.myworkdayjobs.com/en-US/HolmanEnterprisesCareers"
+
+[[source]]
+kind = "workday"
+name = "Hottinger Brüel & Kjaer (HBK)"
+url = "https://spectris.wd3.myworkdayjobs.com/en-US/HBK_Careers"
+
+[[source]]
+kind = "workday"
+name = "Howard Hughes Medical Institute (HHMI)"
+url = "https://hhmi.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Howard University"
+url = "https://howard.wd1.myworkdayjobs.com/en-US/HU"
+
+[[source]]
+kind = "workday"
+name = "Howden"
+url = "https://hyperiongrp.wd3.myworkdayjobs.com/en-US/Hyperion_External"
+
+[[source]]
+kind = "workday"
+name = "HUB"
+url = "https://hubinternational.wd1.myworkdayjobs.com/en-US/HUBInternational"
+
+[[source]]
+kind = "workday"
+name = "HUB International"
+url = "https://hubinternational.wd1.myworkdayjobs.com/en-US/hubinternational"
+
+[[source]]
+kind = "workday"
+name = "Humana"
+url = "https://humana.wd5.myworkdayjobs.com/en-US/humana_external_career_site"
+
+[[source]]
+kind = "workday"
+name = "Huron"
+url = "https://huron.wd1.myworkdayjobs.com/en-US/huroncareers"
+
+[[source]]
+kind = "workday"
+name = "Iberdrola Group"
+url = "https://iberdrola.wd3.myworkdayjobs.com/en-US/iberdrola"
+
+[[source]]
+kind = "workday"
+name = "ibotta"
+url = "https://ibotta.wd1.myworkdayjobs.com/en-US/Ibotta"
+
+[[source]]
+kind = "workday"
+name = "ICF International"
+url = "https://icf.wd5.myworkdayjobs.com/en-US/icfexternal_career_site"
+
+[[source]]
+kind = "workday"
+name = "IDEX"
+url = "https://idexcorp.wd5.myworkdayjobs.com/en-US/idex_careers"
+
+[[source]]
+kind = "workday"
+name = "IDEXX"
+url = "https://idexx.wd1.myworkdayjobs.com/en-US/IDEXX"
+
+[[source]]
+kind = "workday"
+name = "IGS Energy"
+url = "https://igsenergy.wd1.myworkdayjobs.com/en-US/IGS"
+
+[[source]]
+kind = "workday"
+name = "iHeartMedia"
+url = "https://iheartmedia.wd5.myworkdayjobs.com/en-US/External_iHM"
+
+[[source]]
+kind = "workday"
+name = "IJM"
+url = "https://ijm.wd5.myworkdayjobs.com/en-US/careers-ijm"
+
+[[source]]
+kind = "workday"
+name = "IKO"
+url = "https://iko.wd3.myworkdayjobs.com/en-US/iko_careers"
+
+[[source]]
+kind = "workday"
+name = "Imerys (imerys-careers)"
+url = "https://imerys.wd3.myworkdayjobs.com/en-US/imerys-careers"
+
+[[source]]
+kind = "workday"
+name = "Imerys (imerys_career2)"
+url = "https://imerys.wd3.myworkdayjobs.com/en-US/imerys_career2"
+
+[[source]]
+kind = "workday"
+name = "Ingram Micro"
+url = "https://ingrammicro.wd5.myworkdayjobs.com/en-US/IngramMicro"
+
+[[source]]
+kind = "workday"
+name = "Inmar Intelligence"
+url = "https://inmar.wd1.myworkdayjobs.com/en-US/inmarcareers"
+
+[[source]]
+kind = "workday"
+name = "Insomniac"
+url = "https://livenation.wd503.myworkdayjobs.com/en-US/InsomniacExternalSite"
+
+[[source]]
+kind = "workday"
+name = "Insperity"
+url = "https://insperity.wd12.myworkdayjobs.com/en-US/NSP"
+
+[[source]]
+kind = "workday"
+name = "Insulet Corporation"
+url = "https://insulet.wd5.myworkdayjobs.com/en-US/insuletcareers"
+
+[[source]]
+kind = "workday"
+name = "Intact"
+url = "https://intactfc.wd3.myworkdayjobs.com/en-US/intactfc"
+
+[[source]]
+kind = "workday"
+name = "Intapp"
+url = "https://intapp.wd1.myworkdayjobs.com/en-US/Intapp"
+
+[[source]]
+kind = "workday"
+name = "Integral Ad Science"
+url = "https://integralads.wd1.myworkdayjobs.com/en-US/IAScareers"
+
+[[source]]
+kind = "workday"
+name = "Integrity"
+url = "https://integritymarketing.wd1.myworkdayjobs.com/en-US/Integrity"
+
+[[source]]
+kind = "workday"
+name = "Intel"
+url = "https://intel.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Intelcom | Dragonfly"
+url = "https://intelcomgroup.wd3.myworkdayjobs.com/en-US/Intelcom"
+
+[[source]]
+kind = "workday"
+name = "Interac"
+url = "https://interac.wd3.myworkdayjobs.com/en-US/Interac"
+
+[[source]]
+kind = "workday"
+name = "Interdigital (InterDigital_Career)"
+url = "https://interdigital.wd5.myworkdayjobs.com/en-US/InterDigital_Career"
+
+[[source]]
+kind = "workday"
+name = "Interdigital (InterDigital_Intern)"
+url = "https://interdigital.wd5.myworkdayjobs.com/en-US/InterDigital_Intern"
+
+[[source]]
+kind = "workday"
+name = "Intermountain Healthcare"
+url = "https://imh.wd108.myworkdayjobs.com/en-US/IntermountainCareers"
+
+[[source]]
+kind = "workday"
+name = "International Mission Board"
+url = "https://golimitless.wd1.myworkdayjobs.com/en-US/Staff_External_career_site"
+
+[[source]]
+kind = "workday"
+name = "International Monetary Fund"
+url = "https://imf.wd5.myworkdayjobs.com/en-US/IMF"
+
+[[source]]
+kind = "workday"
+name = "International Rescue Committee (IRC)"
+url = "https://theirc.wd1.myworkdayjobs.com/en-US/External_Careers"
+
+[[source]]
+kind = "workday"
+name = "Invesco"
+url = "https://invesco.wd1.myworkdayjobs.com/en-US/IVZ"
+
+[[source]]
+kind = "workday"
+name = "Investment Management Corporation of Ontario"
+url = "https://imcoinvest.wd3.myworkdayjobs.com/en-US/IMCO"
+
+[[source]]
+kind = "workday"
+name = "Iowa State University"
+url = "https://isu.wd1.myworkdayjobs.com/en-US/IowaStateJobs"
+
+[[source]]
+kind = "workday"
+name = "IQVIA"
+url = "https://iqvia.wd1.myworkdayjobs.com/en-US/IQVIA"
+
+[[source]]
+kind = "workday"
+name = "iRhythm Technologies"
+url = "https://irhythmtech.wd5.myworkdayjobs.com/en-US/irhythm"
+
+[[source]]
+kind = "workday"
+name = "Iron Mountain"
+url = "https://ironmountain.wd5.myworkdayjobs.com/en-US/iron-mountain-jobs"
+
+[[source]]
+kind = "workday"
+name = "Irving Oil"
+url = "https://irvingoil.wd3.myworkdayjobs.com/en-US/iolcareers_allotherpositions"
+
+[[source]]
+kind = "workday"
+name = "Itron (Early_Careers)"
+url = "https://itron.wd5.myworkdayjobs.com/en-US/Early_Careers"
+
+[[source]]
+kind = "workday"
+name = "Itron (Itron)"
+url = "https://itron.wd5.myworkdayjobs.com/en-US/Itron"
+
+[[source]]
+kind = "workday"
+name = "Ivy Tech Community College"
+url = "https://ivytech.wd1.myworkdayjobs.com/en-US/ivy_tech_careers"
+
+[[source]]
+kind = "workday"
+name = "Jabil (Jabil_Careers)"
+url = "https://jabil.wd5.myworkdayjobs.com/en-US/Jabil_Careers"
+
+[[source]]
+kind = "workday"
+name = "Jabil (jabil_careers)"
+url = "https://jabil.wd5.myworkdayjobs.com/en-US/jabil_careers"
+
+[[source]]
+kind = "workday"
+name = "Jackson (jackson_campus)"
+url = "https://jackson.wd1.myworkdayjobs.com/en-US/jackson_campus"
+
+[[source]]
+kind = "workday"
+name = "Jackson (Jackson_Careers)"
+url = "https://jackson.wd1.myworkdayjobs.com/en-US/Jackson_Careers"
+
+[[source]]
+kind = "workday"
+name = "Jade Global"
+url = "https://jadeglobal.wd5.myworkdayjobs.com/en-US/jade_careers"
+
+[[source]]
+kind = "workday"
+name = "Jain Global"
+url = "https://jainglobal.wd5.myworkdayjobs.com/en-US/ExternalSite"
+
+[[source]]
+kind = "workday"
+name = "Jefferson County Colorado"
+url = "https://jefferson.wd5.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Jefferson Health"
+url = "https://jeffersonhealth.wd5.myworkdayjobs.com/en-US/ThomasJeffersonExternal"
+
+[[source]]
+kind = "workday"
+name = "JINGDONG"
+url = "https://jd.wd103.myworkdayjobs.com/en-US/Campus_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "JM Family"
+url = "https://jmfamily.wd1.myworkdayjobs.com/en-US/jmfamily_external"
+
+[[source]]
+kind = "workday"
+name = "John Lewis Partnership"
+url = "https://jlp.wd3.myworkdayjobs.com/en-US/JLPjobs_careers"
+
+[[source]]
+kind = "workday"
+name = "Johns Manville (JM)"
+url = "https://jm.wd103.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Johnson & Johnson (JJ)"
+url = "https://jj.wd5.myworkdayjobs.com/en-US/JJ"
+
+[[source]]
+kind = "workday"
+name = "Johnson & Johnson (jj)"
+url = "https://jj.wd5.myworkdayjobs.com/en-US/jj"
+
+[[source]]
+kind = "workday"
+name = "Johnson Brothers Liquor Company"
+url = "https://johnsonbrothers.wd5.myworkdayjobs.com/en-US/johnsonbrothers"
+
+[[source]]
+kind = "workday"
+name = "Johnson Controls (jci)"
+url = "https://jci.wd5.myworkdayjobs.com/en-US/jci"
+
+[[source]]
+kind = "workday"
+name = "Johnson Controls (JCI)"
+url = "https://jci.wd5.myworkdayjobs.com/en-US/JCI"
+
+[[source]]
+kind = "workday"
+name = "Johnson Controls (JCI_Confidential)"
+url = "https://jci.wd5.myworkdayjobs.com/en-US/JCI_Confidential"
+
+[[source]]
+kind = "workday"
+name = "Johnson Matthey"
+url = "https://matthey.wd3.myworkdayjobs.com/en-US/Ext_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Jonas Software (JonasSoftwareCanada)"
+url = "https://talentmanagementsolution.wd3.myworkdayjobs.com/en-US/JonasSoftwareCanada"
+
+[[source]]
+kind = "workday"
+name = "Jonas Software (JonasSoftwareUSA)"
+url = "https://talentmanagementsolution.wd3.myworkdayjobs.com/en-US/JonasSoftwareUSA"
+
+[[source]]
+kind = "workday"
+name = "Jones Lang LaSalle (JLL)"
+url = "https://jll.wd1.myworkdayjobs.com/en-US/jllcareers"
+
+[[source]]
+kind = "workday"
+name = "Julius Baer"
+url = "https://juliusbaer.wd3.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "KBR"
+url = "https://kbr.wd5.myworkdayjobs.com/en-US/KBR_Careers"
+
+[[source]]
+kind = "workday"
+name = "Ken Garff Auto Group"
+url = "https://kengarff.wd1.myworkdayjobs.com/en-US/external_site"
+
+[[source]]
+kind = "workday"
+name = "Kensho"
+url = "https://spgi.wd5.myworkdayjobs.com/en-US/Kensho_Careers"
+
+[[source]]
+kind = "workday"
+name = "KeyBank"
+url = "https://keybank.wd5.myworkdayjobs.com/en-US/External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "KION Group (KION_SCS)"
+url = "https://kiongroup.wd3.myworkdayjobs.com/en-US/KION_SCS"
+
+[[source]]
+kind = "workday"
+name = "KION Group (kiongroup)"
+url = "https://kiongroup.wd3.myworkdayjobs.com/en-US/kiongroup"
+
+[[source]]
+kind = "workday"
+name = "KLA (AnnArbor)"
+url = "https://kla.wd1.myworkdayjobs.com/en-US/AnnArbor"
+
+[[source]]
+kind = "workday"
+name = "KLA (Search)"
+url = "https://kla.wd1.myworkdayjobs.com/en-US/Search"
+
+[[source]]
+kind = "workday"
+name = "KLA (UR)"
+url = "https://kla.wd1.myworkdayjobs.com/en-US/UR"
+
+[[source]]
+kind = "workday"
+name = "KLA Corporation"
+url = "https://kla.wd1.myworkdayjobs.com/en-US/search"
+
+[[source]]
+kind = "workday"
+name = "Kobo"
+url = "https://rakuten.wd1.myworkdayjobs.com/en-US/Kobo"
+
+[[source]]
+kind = "workday"
+name = "Kontoor Brands"
+url = "https://kbi.wd5.myworkdayjobs.com/en-US/Kontoor"
+
+[[source]]
+kind = "workday"
+name = "Koppers"
+url = "https://koppers.wd5.myworkdayjobs.com/en-US/Koppers"
+
+[[source]]
+kind = "workday"
+name = "Kraft Heinz (KraftHeinz_Careers)"
+url = "https://heinz.wd1.myworkdayjobs.com/en-US/KraftHeinz_Careers"
+
+[[source]]
+kind = "workday"
+name = "Kraft Heinz (KraftHeinz_Careers_UR)"
+url = "https://heinz.wd1.myworkdayjobs.com/en-US/KraftHeinz_Careers_UR"
+
+[[source]]
+kind = "workday"
+name = "KSM"
+url = "https://ksmcpa.wd12.myworkdayjobs.com/en-US/ksmcareers"
+
+[[source]]
+kind = "workday"
+name = "Kyndryl (KyndrylEarlyCareers)"
+url = "https://kyndryl.wd5.myworkdayjobs.com/en-US/KyndrylEarlyCareers"
+
+[[source]]
+kind = "workday"
+name = "Kyndryl (KyndrylProfessionalCareers)"
+url = "https://kyndryl.wd5.myworkdayjobs.com/en-US/KyndrylProfessionalCareers"
+
+[[source]]
+kind = "workday"
+name = "LabCorp"
+url = "https://labcorp.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Labcorp"
+url = "https://labcorp.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Lamb Weston (CTE)"
+url = "https://lambweston.wd1.myworkdayjobs.com/en-US/CTE"
+
+[[source]]
+kind = "workday"
+name = "Lamb Weston (lamb_external)"
+url = "https://lambweston.wd1.myworkdayjobs.com/en-US/lamb_external"
+
+[[source]]
+kind = "workday"
+name = "Las Vegas Valley Water District"
+url = "https://lvvwd.wd1.myworkdayjobs.com/en-US/lvvwdwaterjobs"
+
+[[source]]
+kind = "workday"
+name = "Learfield Amplify"
+url = "https://learfield.wd5.myworkdayjobs.com/en-US/Learfield"
+
+[[source]]
+kind = "workday"
+name = "Leidos"
+url = "https://leidos.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Leonardo"
+url = "https://leonardocompany.wd3.myworkdayjobs.com/en-US/LeonardoCareerSite"
+
+[[source]]
+kind = "workday"
+name = "Levi Strauss & Co."
+url = "https://levistraussandco.wd5.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "LexisNexis Risk Solutions (LexisNexisLegal)"
+url = "https://relx.wd3.myworkdayjobs.com/en-US/LexisNexisLegal"
+
+[[source]]
+kind = "workday"
+name = "LexisNexis Risk Solutions (RiskSolutions)"
+url = "https://relx.wd3.myworkdayjobs.com/en-US/RiskSolutions"
+
+[[source]]
+kind = "workday"
+name = "Liberty University"
+url = "https://liberty.wd5.myworkdayjobs.com/en-US/lu_job_board_staff"
+
+[[source]]
+kind = "workday"
+name = "Light & Wonder"
+url = "https://lnw.wd5.myworkdayjobs.com/en-US/lightwonderexternalcareers"
+
+[[source]]
+kind = "workday"
+name = "Littelfuse"
+url = "https://littelfuse.wd1.myworkdayjobs.com/en-US/Littelfuse-Careers"
+
+[[source]]
+kind = "workday"
+name = "LivaNova"
+url = "https://livanova.wd5.myworkdayjobs.com/en-US/search"
+
+[[source]]
+kind = "workday"
+name = "Live Nation Entertainment"
+url = "https://livenation.wd503.myworkdayjobs.com/en-US/LNExternalSite"
+
+[[source]]
+kind = "workday"
+name = "Live Oak Bank"
+url = "https://liveoakbancshares.wd1.myworkdayjobs.com/en-US/Live_Oak"
+
+[[source]]
+kind = "workday"
+name = "LiveRamp"
+url = "https://liveramp.wd5.myworkdayjobs.com/en-US/LiveRampCareers"
+
+[[source]]
+kind = "workday"
+name = "Lloyds Bank"
+url = "https://lbg.wd3.myworkdayjobs.com/en-US/LBG_Careers"
+
+[[source]]
+kind = "workday"
+name = "Loblaw Companies"
+url = "https://myview.wd3.myworkdayjobs.com/en-US/paradox_careers"
+
+[[source]]
+kind = "workday"
+name = "Loft"
+url = "https://knitwellgroup.wd1.myworkdayjobs.com/en-US/US_Corporate_Jobs"
+
+[[source]]
+kind = "workday"
+name = "Logitech"
+url = "https://logitech.wd5.myworkdayjobs.com/en-US/Logitech"
+
+[[source]]
+kind = "workday"
+name = "Lonza"
+url = "https://lonza.wd3.myworkdayjobs.com/en-US/lonza_careers"
+
+[[source]]
+kind = "workday"
+name = "Louisiana State University (LSU) (LSU)"
+url = "https://lsu.wd1.myworkdayjobs.com/en-US/LSU"
+
+[[source]]
+kind = "workday"
+name = "Louisiana State University (LSU) (lsuwaiver)"
+url = "https://lsu.wd1.myworkdayjobs.com/en-US/lsuwaiver"
+
+[[source]]
+kind = "workday"
+name = "Lowe's"
+url = "https://lowes.wd5.myworkdayjobs.com/en-US/LWS_External_CS"
+
+[[source]]
+kind = "workday"
+name = "LPL Financial Holdings (External)"
+url = "https://lplfinancial.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "LPL Financial Holdings (university)"
+url = "https://lplfinancial.wd1.myworkdayjobs.com/en-US/university"
+
+[[source]]
+kind = "workday"
+name = "LSEG (Careers)"
+url = "https://lseg.wd3.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "LSEG (Graduate_Careers)"
+url = "https://lseg.wd3.myworkdayjobs.com/en-US/Graduate_Careers"
+
+[[source]]
+kind = "workday"
+name = "Lumentum"
+url = "https://lumentum.wd5.myworkdayjobs.com/en-US/LITE"
+
+[[source]]
+kind = "workday"
+name = "Lumeris"
+url = "https://lumeris.wd1.myworkdayjobs.com/en-US/LC"
+
+[[source]]
+kind = "workday"
+name = "Lytx Careers"
+url = "https://lytx.wd1.myworkdayjobs.com/en-US/Lytx"
+
+[[source]]
+kind = "workday"
+name = "M&G"
+url = "https://mgpru.wd3.myworkdayjobs.com/en-US/mandgprudential"
+
+[[source]]
+kind = "workday"
+name = "M&T Bank"
+url = "https://mtb.wd5.myworkdayjobs.com/en-US/Campus"
+
+[[source]]
+kind = "workday"
+name = "Maersk"
+url = "https://maersk.wd3.myworkdayjobs.com/en-US/maersk_careers"
+
+[[source]]
+kind = "workday"
+name = "Magna"
+url = "https://magna.wd3.myworkdayjobs.com/en-US/magna"
+
+[[source]]
+kind = "workday"
+name = "Magna International"
+url = "https://magna.wd3.myworkdayjobs.com/en-US/Magna"
+
+[[source]]
+kind = "workday"
+name = "Manhattan Associates"
+url = "https://manh.wd5.myworkdayjobs.com/en-US/campus"
+
+[[source]]
+kind = "workday"
+name = "Manulife Financial (MFCJH_adminJobs)"
+url = "https://manulife.wd3.myworkdayjobs.com/en-US/MFCJH_adminJobs"
+
+[[source]]
+kind = "workday"
+name = "Manulife Financial (MFCJH_Jobs)"
+url = "https://manulife.wd3.myworkdayjobs.com/en-US/MFCJH_Jobs"
+
+[[source]]
+kind = "workday"
+name = "Maple Leaf Sports & Entertainment Partnership (MLSE)"
+url = "https://mlse.wd3.myworkdayjobs.com/en-US/MLSE"
+
+[[source]]
+kind = "workday"
+name = "Maricopa County"
+url = "https://maricopa.wd1.myworkdayjobs.com/en-US/MC_External"
+
+[[source]]
+kind = "workday"
+name = "Marigold"
+url = "https://campaignmonitor.wd5.myworkdayjobs.com/en-US/marigold"
+
+[[source]]
+kind = "workday"
+name = "Markel Group, Inc."
+url = "https://markelcorp.wd5.myworkdayjobs.com/en-US/GlobalCareers"
+
+[[source]]
+kind = "workday"
+name = "Marmon Holdings (Marmon_Careers)"
+url = "https://marmon.wd501.myworkdayjobs.com/en-US/Marmon_Careers"
+
+[[source]]
+kind = "workday"
+name = "Marmon Holdings (Marmon_MSIP_Internships)"
+url = "https://marmon.wd501.myworkdayjobs.com/en-US/Marmon_MSIP_Internships"
+
+[[source]]
+kind = "workday"
+name = "Marriott Vacations Worldwide"
+url = "https://mymvw.wd5.myworkdayjobs.com/en-US/mvw"
+
+[[source]]
+kind = "workday"
+name = "Mars"
+url = "https://mars.wd3.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Marsh"
+url = "https://mmc.wd1.myworkdayjobs.com/en-US/mmc"
+
+[[source]]
+kind = "workday"
+name = "Marvell (MarvellCareers)"
+url = "https://marvell.wd1.myworkdayjobs.com/en-US/MarvellCareers"
+
+[[source]]
+kind = "workday"
+name = "Marvell (MarvellCareers2)"
+url = "https://marvell.wd1.myworkdayjobs.com/en-US/MarvellCareers2"
+
+[[source]]
+kind = "workday"
+name = "Marvell (marvellcareers2)"
+url = "https://marvell.wd1.myworkdayjobs.com/en-US/marvellcareers2"
+
+[[source]]
+kind = "workday"
+name = "Masco"
+url = "https://masco.wd1.myworkdayjobs.com/en-US/Masco"
+
+[[source]]
+kind = "workday"
+name = "Mass General Brigham"
+url = "https://massgeneralbrigham.wd1.myworkdayjobs.com/en-US/mgbexternal"
+
+[[source]]
+kind = "workday"
+name = "MassMutual Ascend"
+url = "https://massmutual.wd1.myworkdayjobs.com/en-US/MMAscendCareers"
+
+[[source]]
+kind = "workday"
+name = "Mastercard (Campus)"
+url = "https://mastercard.wd1.myworkdayjobs.com/en-US/Campus"
+
+[[source]]
+kind = "workday"
+name = "Mastercard (CorporateCareers)"
+url = "https://mastercard.wd1.myworkdayjobs.com/en-US/CorporateCareers"
+
+[[source]]
+kind = "workday"
+name = "Mastercard (Public_Posting_Site)"
+url = "https://mastercard.wd1.myworkdayjobs.com/en-US/Public_Posting_Site"
+
+[[source]]
+kind = "workday"
+name = "McGill University"
+url = "https://mcgill.wd3.myworkdayjobs.com/en-US/McGill_Careers"
+
+[[source]]
+kind = "workday"
+name = "McKesson"
+url = "https://mckesson.wd3.myworkdayjobs.com/en-US/External_Careers"
+
+[[source]]
+kind = "workday"
+name = "Medical University of South Carolina"
+url = "https://musc.wd1.myworkdayjobs.com/en-US/MUSC"
+
+[[source]]
+kind = "workday"
+name = "Medline"
+url = "https://medline.wd5.myworkdayjobs.com/en-US/Medline"
+
+[[source]]
+kind = "workday"
+name = "Medtronic"
+url = "https://medtronic.wd1.myworkdayjobs.com/en-US/redeploymentmedtroniccareers"
+
+[[source]]
+kind = "workday"
+name = "Memorial Hermann"
+url = "https://memorialhermann.wd5.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Menasha Corporation"
+url = "https://menasha.wd12.myworkdayjobs.com/en-US/menashacorp"
+
+[[source]]
+kind = "workday"
+name = "Mercer University"
+url = "https://merceruniversity.wd1.myworkdayjobs.com/en-US/student"
+
+[[source]]
+kind = "workday"
+name = "Merck"
+url = "https://msd.wd5.myworkdayjobs.com/en-US/searchjobs"
+
+[[source]]
+kind = "workday"
+name = "MFS"
+url = "https://mfs.wd1.myworkdayjobs.com/en-US/MFS-Careers"
+
+[[source]]
+kind = "workday"
+name = "MGIC"
+url = "https://mgic.wd5.myworkdayjobs.com/en-US/mgic"
+
+[[source]]
+kind = "workday"
+name = "Miami University"
+url = "https://miamioh.wd5.myworkdayjobs.com/en-US/miamioh-staff"
+
+[[source]]
+kind = "workday"
+name = "Michelin"
+url = "https://michelinhr.wd3.myworkdayjobs.com/en-US/Michelin"
+
+[[source]]
+kind = "workday"
+name = "Micron Technology"
+url = "https://micron.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "MillerKnoll"
+url = "https://millerknoll.wd1.myworkdayjobs.com/en-US/MillerKnoll"
+
+[[source]]
+kind = "workday"
+name = "MiQ"
+url = "https://miqdigital.wd3.myworkdayjobs.com/en-US/MiQ_Careers"
+
+[[source]]
+kind = "workday"
+name = "MiTek"
+url = "https://mii.wd5.myworkdayjobs.com/en-US/MiTek"
+
+[[source]]
+kind = "workday"
+name = "Mizuho Securities USA"
+url = "https://mizuho.wd1.myworkdayjobs.com/en-US/Mizuho_Confidential"
+
+[[source]]
+kind = "workday"
+name = "MKS Instruments"
+url = "https://mksinst.wd1.myworkdayjobs.com/en-US/MKSCareersUniversity"
+
+[[source]]
+kind = "workday"
+name = "Moderna"
+url = "https://modernatx.wd1.myworkdayjobs.com/en-US/M_tx"
+
+[[source]]
+kind = "workday"
+name = "Modernizing Medicine"
+url = "https://modmed.wd501.myworkdayjobs.com/en-US/ModMed12"
+
+[[source]]
+kind = "workday"
+name = "Momentive"
+url = "https://momentive.wd1.myworkdayjobs.com/en-US/MC"
+
+[[source]]
+kind = "workday"
+name = "Monolithic Power Systems"
+url = "https://monolithicpower.wd12.myworkdayjobs.com/en-US/MPS_Careers"
+
+[[source]]
+kind = "workday"
+name = "Moog"
+url = "https://moog.wd5.myworkdayjobs.com/en-US/moog_external_career_site"
+
+[[source]]
+kind = "workday"
+name = "Mosaic"
+url = "https://mosaic.wd5.myworkdayjobs.com/en-US/mosaic"
+
+[[source]]
+kind = "workday"
+name = "Moss & Associates"
+url = "https://mosscm.wd1.myworkdayjobs.com/en-US/moss_careers"
+
+[[source]]
+kind = "workday"
+name = "Motorola"
+url = "https://motorolasolutions.wd5.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Motorola Solutions"
+url = "https://motorolasolutions.wd5.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "MRI Software"
+url = "https://mrisoftware.wd501.myworkdayjobs.com/en-US/External_CareerSite"
+
+[[source]]
+kind = "workday"
+name = "MSI"
+url = "https://baldwin.wd1.myworkdayjobs.com/en-US/MSI"
+
+[[source]]
+kind = "workday"
+name = "MSIG USA"
+url = "https://msigna.wd5.myworkdayjobs.com/en-US/gbl"
+
+[[source]]
+kind = "workday"
+name = "MultiCare Health System"
+url = "https://multicare.wd1.myworkdayjobs.com/en-US/multicare"
+
+[[source]]
+kind = "workday"
+name = "Munters"
+url = "https://munters.wd3.myworkdayjobs.com/en-US/external_careers"
+
+[[source]]
+kind = "workday"
+name = "Nasdaq"
+url = "https://nasdaq.wd1.myworkdayjobs.com/en-US/Global_External_Site"
+
+[[source]]
+kind = "workday"
+name = "National Interstate Insurance"
+url = "https://gaig.wd1.myworkdayjobs.com/en-US/National_Interstate_External"
+
+[[source]]
+kind = "workday"
+name = "National Laboratory of the Rockies"
+url = "https://nrel.wd5.myworkdayjobs.com/en-US/NLR"
+
+[[source]]
+kind = "workday"
+name = "Nationwide Children's Hospital"
+url = "https://nationwidechildrens.wd5.myworkdayjobs.com/en-US/NCHCareers"
+
+[[source]]
+kind = "workday"
+name = "NatWest Group"
+url = "https://rbs.wd3.myworkdayjobs.com/en-US/rbs"
+
+[[source]]
+kind = "workday"
+name = "NAV CANADA"
+url = "https://navcanada.wd10.myworkdayjobs.com/en-US/NAV_Careers"
+
+[[source]]
+kind = "workday"
+name = "NCR Voyix"
+url = "https://ncr.wd1.myworkdayjobs.com/en-US/ext_non_us"
+
+[[source]]
+kind = "workday"
+name = "Neighborly"
+url = "https://neighborlybrands.wd1.myworkdayjobs.com/en-US/neighborly"
+
+[[source]]
+kind = "workday"
+name = "Nelnet (MyNelnet)"
+url = "https://nelnet.wd1.myworkdayjobs.com/en-US/MyNelnet"
+
+[[source]]
+kind = "workday"
+name = "Nelnet (mynelnet)"
+url = "https://nelnet.wd1.myworkdayjobs.com/en-US/mynelnet"
+
+[[source]]
+kind = "workday"
+name = "Netsmart"
+url = "https://ntst.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Neuberger Berman"
+url = "https://nb.wd1.myworkdayjobs.com/en-US/NBCareers"
+
+[[source]]
+kind = "workday"
+name = "Neurocrine Biosciences"
+url = "https://neurocrine.wd5.myworkdayjobs.com/en-US/Neurocrinecareers"
+
+[[source]]
+kind = "workday"
+name = "New Balance"
+url = "https://newbalance.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "New York Post Holdings"
+url = "https://dowjones.wd1.myworkdayjobs.com/en-US/New_York_Post_Careers"
+
+[[source]]
+kind = "workday"
+name = "NewYork-Presbyterian"
+url = "https://nyp.wd1.myworkdayjobs.com/en-US/nypcareers"
+
+[[source]]
+kind = "workday"
+name = "Nexstar"
+url = "https://nexstar.wd5.myworkdayjobs.com/en-US/nexstar"
+
+[[source]]
+kind = "workday"
+name = "Nidec"
+url = "https://nidec.wd1.myworkdayjobs.com/en-US/nidec"
+
+[[source]]
+kind = "workday"
+name = "Nightwing Intelligence Solutions"
+url = "https://nwis.wd12.myworkdayjobs.com/en-US/NW"
+
+[[source]]
+kind = "workday"
+name = "Nio"
+url = "https://nio.wd3.myworkdayjobs.com/en-US/NIO_Careers"
+
+[[source]]
+kind = "workday"
+name = "Nissan Global"
+url = "https://alliance.wd3.myworkdayjobs.com/en-US/nissanjobs"
+
+[[source]]
+kind = "workday"
+name = "Nordson"
+url = "https://nordsonhcm.wd501.myworkdayjobs.com/en-US/nordsoncareers"
+
+[[source]]
+kind = "workday"
+name = "Nordstrom"
+url = "https://nordstrom.wd501.myworkdayjobs.com/en-US/nordstrom_careers"
+
+[[source]]
+kind = "workday"
+name = "Northeastern University"
+url = "https://northeastern.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Northern Trust"
+url = "https://ntrs.wd1.myworkdayjobs.com/en-US/northerntrust"
+
+[[source]]
+kind = "workday"
+name = "Northrop Grumman"
+url = "https://ngc.wd1.myworkdayjobs.com/en-US/Northrop_Grumman_External_Site"
+
+[[source]]
+kind = "workday"
+name = "Northwest Bank"
+url = "https://northwest.wd1.myworkdayjobs.com/en-US/Northwest_Careers"
+
+[[source]]
+kind = "workday"
+name = "Northwestern Mutual"
+url = "https://northwesternmutual.wd5.myworkdayjobs.com/en-US/corporate-careers"
+
+[[source]]
+kind = "workday"
+name = "Novanta"
+url = "https://novanta.wd5.myworkdayjobs.com/en-US/Novanta-Careers"
+
+[[source]]
+kind = "workday"
+name = "Novartis"
+url = "https://novartis.wd3.myworkdayjobs.com/en-US/Novartis_Careers"
+
+[[source]]
+kind = "workday"
+name = "Novogradac"
+url = "https://novoco.wd108.myworkdayjobs.com/en-US/Novogradac"
+
+[[source]]
+kind = "workday"
+name = "NRECA International"
+url = "https://nreca.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "nVent"
+url = "https://nvent.wd5.myworkdayjobs.com/en-US/nVent"
+
+[[source]]
+kind = "workday"
+name = "NVIDIA"
+url = "https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite"
+
+[[source]]
+kind = "workday"
+name = "NXP Semiconductors"
+url = "https://nxp.wd3.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "O'Reilly Auto Parts"
+url = "https://oreillyauto.wd1.myworkdayjobs.com/en-US/oreilly"
+
+[[source]]
+kind = "workday"
+name = "OCC"
+url = "https://theocc.wd5.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Occidental Petroleum"
+url = "https://oxy.wd5.myworkdayjobs.com/en-US/Corporate"
+
+[[source]]
+kind = "workday"
+name = "Occidental Petroleum Corporation (Oxy)"
+url = "https://oxy.wd5.myworkdayjobs.com/en-US/UniversityRelations"
+
+[[source]]
+kind = "workday"
+name = "Ocean Optics"
+url = "https://halma.wd3.myworkdayjobs.com/en-US/halma"
+
+[[source]]
+kind = "workday"
+name = "OCLC"
+url = "https://oclc.wd1.myworkdayjobs.com/en-US/OCLC_Careers"
+
+[[source]]
+kind = "workday"
+name = "Ohio State University"
+url = "https://osu.wd1.myworkdayjobs.com/en-US/OSUCareers"
+
+[[source]]
+kind = "workday"
+name = "Oklahoma State Government"
+url = "https://okgov.wd1.myworkdayjobs.com/en-US/okgovjobs"
+
+[[source]]
+kind = "workday"
+name = "Old Republic Title"
+url = "https://oldrepublic.wd1.myworkdayjobs.com/en-US/oldrepublictitle"
+
+[[source]]
+kind = "workday"
+name = "OLG"
+url = "https://olg.wd3.myworkdayjobs.com/en-US/Careers-Students"
+
+[[source]]
+kind = "workday"
+name = "OMERS"
+url = "https://omers.wd3.myworkdayjobs.com/en-US/omers_external"
+
+[[source]]
+kind = "workday"
+name = "OneMain Financial"
+url = "https://myhrhome.wd1.myworkdayjobs.com/en-US/OneMainCareers"
+
+[[source]]
+kind = "workday"
+name = "Ontario Health"
+url = "https://oh.wd3.myworkdayjobs.com/en-US/OH"
+
+[[source]]
+kind = "workday"
+name = "Ontario Teachers' Pension Plan"
+url = "https://otppb.wd3.myworkdayjobs.com/en-US/OntarioTeachers_Careers"
+
+[[source]]
+kind = "workday"
+name = "Onto Innovation"
+url = "https://onto.wd1.myworkdayjobs.com/en-US/onto_careers"
+
+[[source]]
+kind = "workday"
+name = "Oregon State Government"
+url = "https://oregon.wd5.myworkdayjobs.com/en-US/sor_external_career_site"
+
+[[source]]
+kind = "workday"
+name = "Orthofix"
+url = "https://orthofix.wd1.myworkdayjobs.com/en-US/external_careers"
+
+[[source]]
+kind = "workday"
+name = "Oshkosh"
+url = "https://oshkoshcorporation.wd5.myworkdayjobs.com/en-US/Oshkosh"
+
+[[source]]
+kind = "workday"
+name = "Otis"
+url = "https://otis.wd5.myworkdayjobs.com/en-US/REC_Ext_Gateway"
+
+[[source]]
+kind = "workday"
+name = "Otis Worldwide"
+url = "https://otis.wd5.myworkdayjobs.com/en-US/rec_ext_gateway"
+
+[[source]]
+kind = "workday"
+name = "Palo Alto Networks"
+url = "https://paloaltonetworks.wd5.myworkdayjobs.com/en-US/panwexternalcareers"
+
+[[source]]
+kind = "workday"
+name = "Papa John's"
+url = "https://papajohns.wd1.myworkdayjobs.com/en-US/papajohnscareers"
+
+[[source]]
+kind = "workday"
+name = "Parsons"
+url = "https://parsons.wd5.myworkdayjobs.com/en-US/search"
+
+[[source]]
+kind = "workday"
+name = "Particle Measuring Systems"
+url = "https://spectris.wd3.myworkdayjobs.com/en-US/PMS_Careers"
+
+[[source]]
+kind = "workday"
+name = "Patterson"
+url = "https://pattersoncompanies.wd501.myworkdayjobs.com/en-US/PDCO"
+
+[[source]]
+kind = "workday"
+name = "Patterson Companies"
+url = "https://pattersoncompanies.wd501.myworkdayjobs.com/en-US/pdco"
+
+[[source]]
+kind = "workday"
+name = "PEAK6"
+url = "https://peak6group.wd1.myworkdayjobs.com/en-US/CapMan"
+
+[[source]]
+kind = "workday"
+name = "Pennant Group"
+url = "https://pennant.wd1.myworkdayjobs.com/en-US/PennantServicesCareerSite"
+
+[[source]]
+kind = "workday"
+name = "Pennsylvania State University"
+url = "https://psu.wd1.myworkdayjobs.com/en-US/PSU_Staff"
+
+[[source]]
+kind = "workday"
+name = "Pentair"
+url = "https://pentair.wd5.myworkdayjobs.com/en-US/pentair_careers"
+
+[[source]]
+kind = "workday"
+name = "Perseus Group"
+url = "https://talentmanagementsolution.wd3.myworkdayjobs.com/en-US/perseus-careers"
+
+[[source]]
+kind = "workday"
+name = "Peter Millar"
+url = "https://petermillarllc.wd12.myworkdayjobs.com/en-US/PMI"
+
+[[source]]
+kind = "workday"
+name = "Pfizer"
+url = "https://pfizer.wd1.myworkdayjobs.com/en-US/PfizerCareers"
+
+[[source]]
+kind = "workday"
+name = "PGIM"
+url = "https://pru.wd5.myworkdayjobs.com/en-US/pgim_careers"
+
+[[source]]
+kind = "workday"
+name = "PHI Air Medical"
+url = "https://phigroup.wd12.myworkdayjobs.com/en-US/phihealthcareers"
+
+[[source]]
+kind = "workday"
+name = "Philips"
+url = "https://philips.wd3.myworkdayjobs.com/en-US/jobs-and-careers"
+
+[[source]]
+kind = "workday"
+name = "PHINIA"
+url = "https://phinia.wd5.myworkdayjobs.com/en-US/PHINIA_Careers"
+
+[[source]]
+kind = "workday"
+name = "Pine Rest"
+url = "https://pinerest.wd5.myworkdayjobs.com/en-US/PineRest"
+
+[[source]]
+kind = "workday"
+name = "Piper Sandler"
+url = "https://pipersandler.wd501.myworkdayjobs.com/en-US/Piper_Sandler_Careers"
+
+[[source]]
+kind = "workday"
+name = "Pitney Bowes"
+url = "https://pitneybowes.wd1.myworkdayjobs.com/en-US/pbcareers"
+
+[[source]]
+kind = "workday"
+name = "Plug Power"
+url = "https://plugpower.wd5.myworkdayjobs.com/en-US/Plug_Power_Inc"
+
+[[source]]
+kind = "workday"
+name = "Pluralsight"
+url = "https://pluralsight.wd1.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "PNC Financial Services"
+url = "https://pnc.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Polaris"
+url = "https://polaris.wd5.myworkdayjobs.com/en-US/PolarisJobs"
+
+[[source]]
+kind = "workday"
+name = "Prairie View A&M University"
+url = "https://tamus.wd1.myworkdayjobs.com/en-US/pvamu_external"
+
+[[source]]
+kind = "workday"
+name = "Premera Blue Cross"
+url = "https://premera.wd5.myworkdayjobs.com/en-US/premera"
+
+[[source]]
+kind = "workday"
+name = "Premier (external_professional)"
+url = "https://premierinc.wd1.myworkdayjobs.com/en-US/external_professional"
+
+[[source]]
+kind = "workday"
+name = "Premier (External_Professional)"
+url = "https://premierinc.wd1.myworkdayjobs.com/en-US/External_Professional"
+
+[[source]]
+kind = "workday"
+name = "PricewaterhouseCoopers (PwC) (Global_Campus_Careers)"
+url = "https://pwc.wd3.myworkdayjobs.com/en-US/Global_Campus_Careers"
+
+[[source]]
+kind = "workday"
+name = "PricewaterhouseCoopers (PwC) (Global_Experienced_Careers)"
+url = "https://pwc.wd3.myworkdayjobs.com/en-US/Global_Experienced_Careers"
+
+[[source]]
+kind = "workday"
+name = "PricewaterhouseCoopers (PwC) (US_Entry_Level_Careers)"
+url = "https://pwc.wd3.myworkdayjobs.com/en-US/US_Entry_Level_Careers"
+
+[[source]]
+kind = "workday"
+name = "Primerica"
+url = "https://primerica.wd1.myworkdayjobs.com/en-US/pri"
+
+[[source]]
+kind = "workday"
+name = "Procter & Gamble (P&G)"
+url = "https://pg.wd5.myworkdayjobs.com/en-US/1000"
+
+[[source]]
+kind = "workday"
+name = "Progyny"
+url = "https://progyny.wd5.myworkdayjobs.com/en-US/progyny"
+
+[[source]]
+kind = "workday"
+name = "Proofpoint"
+url = "https://proofpoint.wd5.myworkdayjobs.com/en-US/proofpointcareers"
+
+[[source]]
+kind = "workday"
+name = "ProPharma Group"
+url = "https://propharmagroup.wd1.myworkdayjobs.com/en-US/ppgcareers"
+
+[[source]]
+kind = "workday"
+name = "Protech Automotive Solutions"
+url = "https://calibercollision.wd1.myworkdayjobs.com/en-US/protech"
+
+[[source]]
+kind = "workday"
+name = "Protiviti"
+url = "https://roberthalf.wd1.myworkdayjobs.com/en-US/protivitiexperiencedcareers"
+
+[[source]]
+kind = "workday"
+name = "Prudential Financial"
+url = "https://pru.wd5.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Prysmian Cables & Systems"
+url = "https://prysmiangroup.wd3.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "PSECU"
+url = "https://psecu.wd12.myworkdayjobs.com/en-US/PSECU"
+
+[[source]]
+kind = "workday"
+name = "PSP Investments"
+url = "https://investpsp.wd3.myworkdayjobs.com/en-US/psp_careers"
+
+[[source]]
+kind = "workday"
+name = "PTC"
+url = "https://ptc.wd1.myworkdayjobs.com/en-US/ptc"
+
+[[source]]
+kind = "workday"
+name = "QTS"
+url = "https://qtsdatacenters.wd5.myworkdayjobs.com/en-US/qts"
+
+[[source]]
+kind = "workday"
+name = "QuidelOrtho"
+url = "https://orthoclinical.wd1.myworkdayjobs.com/en-US/Search"
+
+[[source]]
+kind = "workday"
+name = "RaceTrac"
+url = "https://racetrac.wd5.myworkdayjobs.com/en-US/ssc"
+
+[[source]]
+kind = "workday"
+name = "Radiance Technologies"
+url = "https://radiancetech.wd12.myworkdayjobs.com/en-US/Radiance_External"
+
+[[source]]
+kind = "workday"
+name = "Rakuten"
+url = "https://rakuten.wd1.myworkdayjobs.com/en-US/RakutenRewards"
+
+[[source]]
+kind = "workday"
+name = "Rakuten Advertising"
+url = "https://rakuten.wd1.myworkdayjobs.com/en-US/RakutenAdvertising"
+
+[[source]]
+kind = "workday"
+name = "Rakuten International"
+url = "https://rakuten.wd1.myworkdayjobs.com/en-US/RakutenAmericas"
+
+[[source]]
+kind = "workday"
+name = "Raymond James Financial"
+url = "https://raymondjames.wd1.myworkdayjobs.com/en-US/RaymondJamesEarlyCareers"
+
+[[source]]
+kind = "workday"
+name = "Realty Income"
+url = "https://realtyincome.wd108.myworkdayjobs.com/en-US/realty_income_careers"
+
+[[source]]
+kind = "workday"
+name = "Red Bull Advanced Technologies"
+url = "https://redbulltechnology.wd3.myworkdayjobs.com/en-US/RB_Racing"
+
+[[source]]
+kind = "workday"
+name = "Red Hat"
+url = "https://redhat.wd5.myworkdayjobs.com/en-US/jobs"
+
+[[source]]
+kind = "workday"
+name = "Regal Rexnord"
+url = "https://regalrexnord.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Regions Bank"
+url = "https://regions.wd5.myworkdayjobs.com/en-US/regions_careers"
+
+[[source]]
+kind = "workday"
+name = "Rehlko"
+url = "https://rehlko.wd12.myworkdayjobs.com/en-US/Reh"
+
+[[source]]
+kind = "workday"
+name = "Relativity"
+url = "https://kcura.wd1.myworkdayjobs.com/en-US/External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "RELX"
+url = "https://relx.wd3.myworkdayjobs.com/en-US/relx"
+
+[[source]]
+kind = "workday"
+name = "Repsol"
+url = "https://repsol.wd3.myworkdayjobs.com/en-US/Repsol"
+
+[[source]]
+kind = "workday"
+name = "Resmed"
+url = "https://resmed.wd3.myworkdayjobs.com/en-US/ResMed_External_Careers"
+
+[[source]]
+kind = "workday"
+name = "Resolve Tech Solutions"
+url = "https://resolvetech.wd1.myworkdayjobs.com/en-US/rts"
+
+[[source]]
+kind = "workday"
+name = "Revantage Corporate Services"
+url = "https://revantage.wd1.myworkdayjobs.com/en-US/Revantage"
+
+[[source]]
+kind = "workday"
+name = "Revvity"
+url = "https://revvity.wd103.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "RFCUNY"
+url = "https://rfcuny.wd108.myworkdayjobs.com/en-US/RFCUNY"
+
+[[source]]
+kind = "workday"
+name = "RGA Reinsurance Company"
+url = "https://rgare.wd1.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "RIB Software"
+url = "https://aveva.wd3.myworkdayjobs.com/en-US/RIB_Careers"
+
+[[source]]
+kind = "workday"
+name = "Richemont"
+url = "https://richemont.wd3.myworkdayjobs.com/en-US/richemont"
+
+[[source]]
+kind = "workday"
+name = "Rite Hite"
+url = "https://ritehite.wd12.myworkdayjobs.com/en-US/RHH"
+
+[[source]]
+kind = "workday"
+name = "Robert Half"
+url = "https://roberthalf.wd1.myworkdayjobs.com/en-US/roberthalfcareers"
+
+[[source]]
+kind = "workday"
+name = "Roche"
+url = "https://roche.wd3.myworkdayjobs.com/en-US/roche-ext"
+
+[[source]]
+kind = "workday"
+name = "Rochester Regional Health"
+url = "https://rrhs.wd5.myworkdayjobs.com/en-US/RRH"
+
+[[source]]
+kind = "workday"
+name = "Rocket Mortgage"
+url = "https://quickenloans.wd5.myworkdayjobs.com/en-US/rocket_careers"
+
+[[source]]
+kind = "workday"
+name = "Rockwell Automation (External-Rockwell-Automation-Early-Careers)"
+url = "https://rockwellautomation.wd1.myworkdayjobs.com/en-US/External-Rockwell-Automation-Early-Careers"
+
+[[source]]
+kind = "workday"
+name = "Rockwell Automation (External_Rockwell_Automation)"
+url = "https://rockwellautomation.wd1.myworkdayjobs.com/en-US/External_Rockwell_Automation"
+
+[[source]]
+kind = "workday"
+name = "ROCKWOOL Group"
+url = "https://rockwoolgroup.wd3.myworkdayjobs.com/en-US/ROCKWOOL"
+
+[[source]]
+kind = "workday"
+name = "Rogers Behavioral Health"
+url = "https://rogersbh.wd1.myworkdayjobs.com/en-US/rbhcareer"
+
+[[source]]
+kind = "workday"
+name = "Rolls-Royce"
+url = "https://rollsroyce.wd3.myworkdayjobs.com/en-US/Intern_Graduate"
+
+[[source]]
+kind = "workday"
+name = "Royal Bank of Canada (ExternalPrivatePostingStudents)"
+url = "https://rbc.wd3.myworkdayjobs.com/en-US/ExternalPrivatePostingStudents"
+
+[[source]]
+kind = "workday"
+name = "Royal Bank of Canada (RBCEARLYTALENT1)"
+url = "https://rbc.wd3.myworkdayjobs.com/en-US/RBCEARLYTALENT1"
+
+[[source]]
+kind = "workday"
+name = "Royal Bank of Canada (rbcglobal1)"
+url = "https://rbc.wd3.myworkdayjobs.com/en-US/rbcglobal1"
+
+[[source]]
+kind = "workday"
+name = "RSM"
+url = "https://rsm.wd1.myworkdayjobs.com/en-US/RSMCareers"
+
+[[source]]
+kind = "workday"
+name = "RTX"
+url = "https://globalhr.wd5.myworkdayjobs.com/en-US/rec_rtx_ext_gateway"
+
+[[source]]
+kind = "workday"
+name = "RXO"
+url = "https://rxo.wd501.myworkdayjobs.com/en-US/rxojobs"
+
+[[source]]
+kind = "workday"
+name = "Ryan (RyanCareers)"
+url = "https://ryan.wd1.myworkdayjobs.com/en-US/RyanCareers"
+
+[[source]]
+kind = "workday"
+name = "Ryan (Students-Graduates)"
+url = "https://ryan.wd1.myworkdayjobs.com/en-US/Students-Graduates"
+
+[[source]]
+kind = "workday"
+name = "Ryan Specialty"
+url = "https://ryansg.wd5.myworkdayjobs.com/en-US/Ryan_Specialty_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Ryder System"
+url = "https://ryder.wd5.myworkdayjobs.com/en-US/RyderCareers"
+
+[[source]]
+kind = "workday"
+name = "S&P Global"
+url = "https://spgi.wd5.myworkdayjobs.com/en-US/SPGI_Careers"
+
+[[source]]
+kind = "workday"
+name = "S&T Bank"
+url = "https://stbancorp.wd5.myworkdayjobs.com/en-US/ST_Bank_Careers"
+
+[[source]]
+kind = "workday"
+name = "Saab"
+url = "https://saabusa.wd1.myworkdayjobs.com/en-US/saab_careers"
+
+[[source]]
+kind = "workday"
+name = "SailPoint"
+url = "https://sailpoint.wd1.myworkdayjobs.com/en-US/SailPoint"
+
+[[source]]
+kind = "workday"
+name = "Saks Global"
+url = "https://saks.wd1.myworkdayjobs.com/en-US/careers_at_saks"
+
+[[source]]
+kind = "workday"
+name = "Salesforce (External_Career_Site)"
+url = "https://salesforce.wd12.myworkdayjobs.com/en-US/External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Salesforce (Futureforce_Internships)"
+url = "https://salesforce.wd12.myworkdayjobs.com/en-US/Futureforce_Internships"
+
+[[source]]
+kind = "workday"
+name = "Salesforce (futureforce_newgradroles)"
+url = "https://salesforce.wd12.myworkdayjobs.com/en-US/futureforce_newgradroles"
+
+[[source]]
+kind = "workday"
+name = "Salesforce (Futureforce_NewGradRoles)"
+url = "https://salesforce.wd12.myworkdayjobs.com/en-US/Futureforce_NewGradRoles"
+
+[[source]]
+kind = "workday"
+name = "Salesforce (Salesforce_Research)"
+url = "https://salesforce.wd12.myworkdayjobs.com/en-US/Salesforce_Research"
+
+[[source]]
+kind = "workday"
+name = "Samsung"
+url = "https://sec.wd3.myworkdayjobs.com/en-US/Samsung_Careers"
+
+[[source]]
+kind = "workday"
+name = "Sandvik"
+url = "https://sandvik.wd3.myworkdayjobs.com/en-US/sandvik-jobs"
+
+[[source]]
+kind = "workday"
+name = "Sanofi"
+url = "https://sanofi.wd3.myworkdayjobs.com/en-US/SanofiCareers"
+
+[[source]]
+kind = "workday"
+name = "Santander"
+url = "https://santander.wd3.myworkdayjobs.com/en-US/SantanderCareers"
+
+[[source]]
+kind = "workday"
+name = "Saputo"
+url = "https://saputo.wd5.myworkdayjobs.com/en-US/saputo_external_careers"
+
+[[source]]
+kind = "workday"
+name = "Sarasota County"
+url = "https://scgov.wd5.myworkdayjobs.com/en-US/SCGOV"
+
+[[source]]
+kind = "workday"
+name = "Sarepta"
+url = "https://sarepta.wd5.myworkdayjobs.com/en-US/sarepta_external"
+
+[[source]]
+kind = "workday"
+name = "Sartorius"
+url = "https://sartorius.wd3.myworkdayjobs.com/en-US/sartoriuscareers"
+
+[[source]]
+kind = "workday"
+name = "Savage X Fenty"
+url = "https://justfab.wd1.myworkdayjobs.com/en-US/savagex"
+
+[[source]]
+kind = "workday"
+name = "SBA Communications Corporation"
+url = "https://sbasite.wd5.myworkdayjobs.com/en-US/SBA_Communications_Careers"
+
+[[source]]
+kind = "workday"
+name = "SC Johnson"
+url = "https://scj.wd5.myworkdayjobs.com/en-US/External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "SCAN"
+url = "https://scanhealthplan.wd108.myworkdayjobs.com/en-US/scancareers"
+
+[[source]]
+kind = "workday"
+name = "Schnucks"
+url = "https://schnucks.wd5.myworkdayjobs.com/en-US/SchnucksCareers"
+
+[[source]]
+kind = "workday"
+name = "Schweitzer Engineering Laboratories"
+url = "https://selinc.wd1.myworkdayjobs.com/en-US/SEL"
+
+[[source]]
+kind = "workday"
+name = "Scottish Water"
+url = "https://scottishwater.wd3.myworkdayjobs.com/en-US/External_Careers"
+
+[[source]]
+kind = "workday"
+name = "Sedgwick Claims Management Services"
+url = "https://sedgwick.wd1.myworkdayjobs.com/en-US/Sedgwick"
+
+[[source]]
+kind = "workday"
+name = "SEI"
+url = "https://seic.wd1.myworkdayjobs.com/en-US/SEI_Global_Services"
+
+[[source]]
+kind = "workday"
+name = "SEKO Logistics"
+url = "https://sekologistics.wd503.myworkdayjobs.com/en-US/Seko_Logistics"
+
+[[source]]
+kind = "workday"
+name = "Semtech (SemtechCareers)"
+url = "https://semtech.wd1.myworkdayjobs.com/en-US/SemtechCareers"
+
+[[source]]
+kind = "workday"
+name = "Semtech (SemtechJobs)"
+url = "https://semtech.wd1.myworkdayjobs.com/en-US/SemtechJobs"
+
+[[source]]
+kind = "workday"
+name = "Sensata"
+url = "https://sensata.wd1.myworkdayjobs.com/en-US/Sensata-Careers"
+
+[[source]]
+kind = "workday"
+name = "Sentara Health"
+url = "https://sentara.wd1.myworkdayjobs.com/en-US/SCS"
+
+[[source]]
+kind = "workday"
+name = "Sentry Insurance"
+url = "https://sentryinsurance.wd1.myworkdayjobs.com/en-US/SentryCareers"
+
+[[source]]
+kind = "workday"
+name = "Shake Shack"
+url = "https://shakeshack.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Sharecare"
+url = "https://sharecare.wd1.myworkdayjobs.com/en-US/Sharecare_Careers"
+
+[[source]]
+kind = "workday"
+name = "Shaw Industries Group"
+url = "https://shawinc.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "SHI International"
+url = "https://shi.wd12.myworkdayjobs.com/en-US/shicareers"
+
+[[source]]
+kind = "workday"
+name = "Shoppers Drug Mart"
+url = "https://myview.wd3.myworkdayjobs.com/en-US/sdm_careers"
+
+[[source]]
+kind = "workday"
+name = "Sierra Nevada Corporation"
+url = "https://snc.wd1.myworkdayjobs.com/en-US/snc_external_career_site"
+
+[[source]]
+kind = "workday"
+name = "Sierra Space"
+url = "https://sierraspace.wd1.myworkdayjobs.com/en-US/Sierra_Space_External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "SiFive"
+url = "https://sifive.wd1.myworkdayjobs.com/en-US/sifivecareers"
+
+[[source]]
+kind = "workday"
+name = "Signet Jewelers"
+url = "https://signetjewelers.wd1.myworkdayjobs.com/en-US/SignetCorporateCareers"
+
+[[source]]
+kind = "workday"
+name = "Signify"
+url = "https://lighting.wd3.myworkdayjobs.com/en-US/jobs-and-careers"
+
+[[source]]
+kind = "workday"
+name = "Silicon Laboratories"
+url = "https://silabs.wd1.myworkdayjobs.com/en-US/SiliconlabsCareers"
+
+[[source]]
+kind = "workday"
+name = "Simmons Bank"
+url = "https://simmonsbank.wd5.myworkdayjobs.com/en-US/SimmonsCareers"
+
+[[source]]
+kind = "workday"
+name = "Simons Foundation"
+url = "https://simonsfoundation.wd1.myworkdayjobs.com/en-US/simonsfoundationcareers"
+
+[[source]]
+kind = "workday"
+name = "SitusAMC (SitusAMC)"
+url = "https://situsamc.wd1.myworkdayjobs.com/en-US/SitusAMC"
+
+[[source]]
+kind = "workday"
+name = "SitusAMC (situsamc)"
+url = "https://situsamc.wd1.myworkdayjobs.com/en-US/situsamc"
+
+[[source]]
+kind = "workday"
+name = "Skechers (one-career-site)"
+url = "https://skechers.wd5.myworkdayjobs.com/en-US/one-career-site"
+
+[[source]]
+kind = "workday"
+name = "Skechers (One-career-site)"
+url = "https://skechers.wd5.myworkdayjobs.com/en-US/One-career-site"
+
+[[source]]
+kind = "workday"
+name = "Slate Auto"
+url = "https://recar.wd108.myworkdayjobs.com/en-US/SLATEcareers"
+
+[[source]]
+kind = "workday"
+name = "Smith+Nephew"
+url = "https://smithnephew.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Smithfield Foods"
+url = "https://smithfieldfoods.wd1.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Snap Finance"
+url = "https://snapfinance.wd1.myworkdayjobs.com/en-US/snap_external_careers"
+
+[[source]]
+kind = "workday"
+name = "Snyk"
+url = "https://snyk.wd103.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Solar Turbines"
+url = "https://cat.wd5.myworkdayjobs.com/en-US/solarturbines"
+
+[[source]]
+kind = "workday"
+name = "Solenis"
+url = "https://solenis.wd1.myworkdayjobs.com/en-US/Solenis"
+
+[[source]]
+kind = "workday"
+name = "Sonoco"
+url = "https://sonoco.wd1.myworkdayjobs.com/en-US/CorporateCareers"
+
+[[source]]
+kind = "workday"
+name = "Sonos"
+url = "https://sonos.wd1.myworkdayjobs.com/en-US/Sonos"
+
+[[source]]
+kind = "workday"
+name = "Sony"
+url = "https://sonyglobal.wd1.myworkdayjobs.com/en-US/SonyGlobalCareers"
+
+[[source]]
+kind = "workday"
+name = "Sony Pictures Entertainment"
+url = "https://spe.wd1.myworkdayjobs.com/en-US/SonyPicturesEntertainment"
+
+[[source]]
+kind = "workday"
+name = "SOTI (Careers)"
+url = "https://soti.wd3.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "SOTI (SOTI-Next-Gen)"
+url = "https://soti.wd3.myworkdayjobs.com/en-US/SOTI-Next-Gen"
+
+[[source]]
+kind = "workday"
+name = "Southern New Hampshire University"
+url = "https://snhu.wd503.myworkdayjobs.com/en-US/External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Southwest Airlines"
+url = "https://swa.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Spectrum Control"
+url = "https://spectrumcontrol.wd1.myworkdayjobs.com/en-US/spectrumcontrol"
+
+[[source]]
+kind = "workday"
+name = "Spellman High Voltage Electronics"
+url = "https://spellmanhv.wd1.myworkdayjobs.com/en-US/SpellmanHVCareers"
+
+[[source]]
+kind = "workday"
+name = "Sprinklr"
+url = "https://sprinklr.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "SS&C"
+url = "https://ssctech.wd1.myworkdayjobs.com/en-US/ssctechnologies"
+
+[[source]]
+kind = "workday"
+name = "St. Louis University"
+url = "https://slu.wd5.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "St. Luke's University Health Network"
+url = "https://sluhn.wd1.myworkdayjobs.com/en-US/SLUHN"
+
+[[source]]
+kind = "workday"
+name = "Standard Insurance"
+url = "https://standard.wd1.myworkdayjobs.com/en-US/search"
+
+[[source]]
+kind = "workday"
+name = "Stanley Black & Decker"
+url = "https://sbdinc.wd1.myworkdayjobs.com/en-US/Stanley_Black_Decker_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Starr Insurance"
+url = "https://starrcompanies.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Starz"
+url = "https://starz.wd5.myworkdayjobs.com/en-US/Starz"
+
+[[source]]
+kind = "workday"
+name = "State Employees' Credit Union (SECU)"
+url = "https://ncsecu.wd1.myworkdayjobs.com/en-US/secu"
+
+[[source]]
+kind = "workday"
+name = "State of Nebraska"
+url = "https://son.wd108.myworkdayjobs.com/en-US/NebraskaStateCareers"
+
+[[source]]
+kind = "workday"
+name = "State of North Carolina"
+url = "https://nc.wd108.myworkdayjobs.com/en-US/NC_Careers"
+
+[[source]]
+kind = "workday"
+name = "State of Wisconsin Investment Board"
+url = "https://swib.wd12.myworkdayjobs.com/en-US/ext"
+
+[[source]]
+kind = "workday"
+name = "State Street (equest)"
+url = "https://statestreet.wd1.myworkdayjobs.com/en-US/equest"
+
+[[source]]
+kind = "workday"
+name = "State Street (global)"
+url = "https://statestreet.wd1.myworkdayjobs.com/en-US/global"
+
+[[source]]
+kind = "workday"
+name = "State Street (Global)"
+url = "https://statestreet.wd1.myworkdayjobs.com/en-US/Global"
+
+[[source]]
+kind = "workday"
+name = "Stevens Institute of Technology"
+url = "https://stevens.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Stewart"
+url = "https://stewart.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Stoneridge"
+url = "https://stoneridge.wd5.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Strategic Education"
+url = "https://strayer.wd1.myworkdayjobs.com/en-US/SEI"
+
+[[source]]
+kind = "workday"
+name = "Stride"
+url = "https://strideinc.wd1.myworkdayjobs.com/en-US/SK"
+
+[[source]]
+kind = "workday"
+name = "STRS Ohio"
+url = "https://strsoh.wd1.myworkdayjobs.com/en-US/STRS_Jobs"
+
+[[source]]
+kind = "workday"
+name = "Stryker"
+url = "https://stryker.wd1.myworkdayjobs.com/en-US/StrykerCareers"
+
+[[source]]
+kind = "workday"
+name = "Sun Life"
+url = "https://sunlife.wd3.myworkdayjobs.com/en-US/Campus"
+
+[[source]]
+kind = "workday"
+name = "Suncor"
+url = "https://suncor.wd1.myworkdayjobs.com/en-US/Suncor_External"
+
+[[source]]
+kind = "workday"
+name = "SWBC"
+url = "https://swbc.wd1.myworkdayjobs.com/en-US/swbccareers"
+
+[[source]]
+kind = "workday"
+name = "Swift"
+url = "https://swift.wd3.myworkdayjobs.com/en-US/join-swift"
+
+[[source]]
+kind = "workday"
+name = "Symbotic"
+url = "https://symbotic.wd504.myworkdayjobs.com/en-US/Symbotic"
+
+[[source]]
+kind = "workday"
+name = "Synchrony Financial"
+url = "https://synchronyfinancial.wd5.myworkdayjobs.com/en-US/University"
+
+[[source]]
+kind = "workday"
+name = "Syneos Health"
+url = "https://syneoshealth.wd12.myworkdayjobs.com/en-US/Syneos_Health_External_Site"
+
+[[source]]
+kind = "workday"
+name = "T-Mobile (contractorconversion)"
+url = "https://tmobile.wd1.myworkdayjobs.com/en-US/contractorconversion"
+
+[[source]]
+kind = "workday"
+name = "T-Mobile (External)"
+url = "https://tmobile.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "T-Mobile (external)"
+url = "https://tmobile.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "T. Rowe Price"
+url = "https://troweprice.wd5.myworkdayjobs.com/en-US/TRowePrice"
+
+[[source]]
+kind = "workday"
+name = "T.D. Williamson"
+url = "https://tdwilliamson.wd1.myworkdayjobs.com/en-US/TDWCareers"
+
+[[source]]
+kind = "workday"
+name = "Tandem Diabetes Care"
+url = "https://tandemdiabetes.wd12.myworkdayjobs.com/en-US/tandemdiabetes"
+
+[[source]]
+kind = "workday"
+name = "Target"
+url = "https://target.wd5.myworkdayjobs.com/en-US/targetcareers"
+
+[[source]]
+kind = "workday"
+name = "Taylor Corporation"
+url = "https://taylor.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "TC Energy"
+url = "https://tcenergy.wd3.myworkdayjobs.com/en-US/CAREER_SITE_TC"
+
+[[source]]
+kind = "workday"
+name = "TD Bank"
+url = "https://td.wd3.myworkdayjobs.com/en-US/TD_Bank_Careers"
+
+[[source]]
+kind = "workday"
+name = "TD Synnex"
+url = "https://synnex.wd5.myworkdayjobs.com/en-US/tdsynnexcareers"
+
+[[source]]
+kind = "workday"
+name = "Techtronic Industries"
+url = "https://tti.wd1.myworkdayjobs.com/en-US/tti_pe"
+
+[[source]]
+kind = "workday"
+name = "Teledyne"
+url = "https://flir.wd1.myworkdayjobs.com/en-US/flircareers"
+
+[[source]]
+kind = "workday"
+name = "TelevisaUnivision"
+url = "https://univision.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Tempus"
+url = "https://tempus.wd5.myworkdayjobs.com/en-US/Tempus_Careers"
+
+[[source]]
+kind = "workday"
+name = "Tencent (Lightspeed)"
+url = "https://tencent.wd1.myworkdayjobs.com/en-US/Lightspeed"
+
+[[source]]
+kind = "workday"
+name = "Tencent (OA_Huoshui_Platform)"
+url = "https://tencent.wd1.myworkdayjobs.com/en-US/OA_Huoshui_Platform"
+
+[[source]]
+kind = "workday"
+name = "Tencent (Tencent_Careers)"
+url = "https://tencent.wd1.myworkdayjobs.com/en-US/Tencent_Careers"
+
+[[source]]
+kind = "workday"
+name = "Terex"
+url = "https://terex.wd1.myworkdayjobs.com/en-US/terexcareers"
+
+[[source]]
+kind = "workday"
+name = "Texas A&M International University"
+url = "https://tamus.wd1.myworkdayjobs.com/en-US/TAMIU_Student_Employment"
+
+[[source]]
+kind = "workday"
+name = "Texas A&M University System"
+url = "https://tamus.wd1.myworkdayjobs.com/en-US/System-wide_External"
+
+[[source]]
+kind = "workday"
+name = "Texas Capital Bank"
+url = "https://texascapitalbank.wd12.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Texas Rangers"
+url = "https://rangersmlb.wd5.myworkdayjobs.com/en-US/Rangers"
+
+[[source]]
+kind = "workday"
+name = "Thales"
+url = "https://thales.wd3.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "The Access Group"
+url = "https://theaccessgroup.wd103.myworkdayjobs.com/en-US/Access_Group_External_Careers"
+
+[[source]]
+kind = "workday"
+name = "The Aerospace Corporation"
+url = "https://aero.wd5.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "The Andersons"
+url = "https://andersonsinc.wd1.myworkdayjobs.com/en-US/TheAndersonsCareers"
+
+[[source]]
+kind = "workday"
+name = "The Boeing Company (EXTERNAL_CAREERS)"
+url = "https://boeing.wd1.myworkdayjobs.com/en-US/EXTERNAL_CAREERS"
+
+[[source]]
+kind = "workday"
+name = "The Boeing Company (external_subsidiary)"
+url = "https://boeing.wd1.myworkdayjobs.com/en-US/external_subsidiary"
+
+[[source]]
+kind = "workday"
+name = "The Boeing Company (INTERN)"
+url = "https://boeing.wd1.myworkdayjobs.com/en-US/INTERN"
+
+[[source]]
+kind = "workday"
+name = "The Boyd Group"
+url = "https://boydgroup.wd1.myworkdayjobs.com/en-US/boydcareers"
+
+[[source]]
+kind = "workday"
+name = "The Campbell's Company"
+url = "https://campbellsoup.wd5.myworkdayjobs.com/en-US/externalcareers_globalsite"
+
+[[source]]
+kind = "workday"
+name = "The Coca-Cola Company"
+url = "https://coke.wd1.myworkdayjobs.com/en-US/coca-cola-careers"
+
+[[source]]
+kind = "workday"
+name = "The Federal Reserve System"
+url = "https://rb.wd5.myworkdayjobs.com/en-US/FRS"
+
+[[source]]
+kind = "workday"
+name = "The Hartford"
+url = "https://thehartford.wd5.myworkdayjobs.com/en-US/Careers_External"
+
+[[source]]
+kind = "workday"
+name = "The Home Depot (careerdepot)"
+url = "https://homedepot.wd5.myworkdayjobs.com/en-US/careerdepot"
+
+[[source]]
+kind = "workday"
+name = "The Home Depot (CareerDepotCanada)"
+url = "https://homedepot.wd5.myworkdayjobs.com/en-US/CareerDepotCanada"
+
+[[source]]
+kind = "workday"
+name = "The Kinetic Group"
+url = "https://thekineticgroup.wd1.myworkdayjobs.com/en-US/EXTERNAL_TKG"
+
+[[source]]
+kind = "workday"
+name = "The New School"
+url = "https://newschool.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "The Toro Company"
+url = "https://ttc.wd1.myworkdayjobs.com/en-US/Toro_External_Careers"
+
+[[source]]
+kind = "workday"
+name = "The Walt Disney Company (disneycareer)"
+url = "https://disney.wd5.myworkdayjobs.com/en-US/disneycareer"
+
+[[source]]
+kind = "workday"
+name = "The Walt Disney Company (disneycareerdc)"
+url = "https://disney.wd5.myworkdayjobs.com/en-US/disneycareerdc"
+
+[[source]]
+kind = "workday"
+name = "The Weir Group"
+url = "https://weir.wd3.myworkdayjobs.com/en-US/weir_external_careers"
+
+[[source]]
+kind = "workday"
+name = "Thermo Fisher Scientific"
+url = "https://thermofisher.wd5.myworkdayjobs.com/en-US/ThermoFisherCareers"
+
+[[source]]
+kind = "workday"
+name = "Thomson Reuters"
+url = "https://thomsonreuters.wd5.myworkdayjobs.com/en-US/External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "thyssenkrupp"
+url = "https://thyssenkruppmaterialsna.wd12.myworkdayjobs.com/en-US/1"
+
+[[source]]
+kind = "workday"
+name = "Ticketmaster"
+url = "https://livenation.wd503.myworkdayjobs.com/en-US/TMExternalSite"
+
+[[source]]
+kind = "workday"
+name = "TJX"
+url = "https://tjx.wd1.myworkdayjobs.com/en-US/tjx_external"
+
+[[source]]
+kind = "workday"
+name = "TKO Group Holdings, Inc"
+url = "https://wwecorp.wd5.myworkdayjobs.com/en-US/tko"
+
+[[source]]
+kind = "workday"
+name = "TMX Group"
+url = "https://tmx.wd3.myworkdayjobs.com/en-US/TMX_Careers"
+
+[[source]]
+kind = "workday"
+name = "TNS"
+url = "https://tnsi.wd1.myworkdayjobs.com/en-US/Search"
+
+[[source]]
+kind = "workday"
+name = "Tokio Marine Kiln"
+url = "https://tokiomarinekiln.wd3.myworkdayjobs.com/en-US/tmk_careers"
+
+[[source]]
+kind = "workday"
+name = "Tokyo Electron"
+url = "https://tel.wd3.myworkdayjobs.com/en-US/tel-careers"
+
+[[source]]
+kind = "workday"
+name = "Torch Technologies"
+url = "https://starfish.wd501.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Transamerica"
+url = "https://transamerica.wd5.myworkdayjobs.com/en-US/US"
+
+[[source]]
+kind = "workday"
+name = "TransPerfect"
+url = "https://transperfect.wd5.myworkdayjobs.com/en-US/transperfect"
+
+[[source]]
+kind = "workday"
+name = "TransUnion"
+url = "https://transunion.wd5.myworkdayjobs.com/en-US/TransUnion"
+
+[[source]]
+kind = "workday"
+name = "Travelers"
+url = "https://travelers.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Trellix"
+url = "https://trellix.wd1.myworkdayjobs.com/en-US/EnterpriseCareers"
+
+[[source]]
+kind = "workday"
+name = "Trend Micro"
+url = "https://trendmicro.wd3.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Tricentis"
+url = "https://tricentis.wd1.myworkdayjobs.com/en-US/tricentis_careers"
+
+[[source]]
+kind = "workday"
+name = "Trimble"
+url = "https://trimble.wd1.myworkdayjobs.com/en-US/TrimbleCareers"
+
+[[source]]
+kind = "workday"
+name = "Triumph"
+url = "https://tbkbank.wd1.myworkdayjobs.com/en-US/tfin"
+
+[[source]]
+kind = "workday"
+name = "TRUMPF"
+url = "https://trumpf.wd3.myworkdayjobs.com/en-US/TRUMPF_Students"
+
+[[source]]
+kind = "workday"
+name = "TruStage"
+url = "https://trustage.wd1.myworkdayjobs.com/en-US/TruStage"
+
+[[source]]
+kind = "workday"
+name = "TSC"
+url = "https://tsc.wd12.myworkdayjobs.com/en-US/TSC-Careers"
+
+[[source]]
+kind = "workday"
+name = "Tutor Perini Corporation"
+url = "https://tutorperini.wd12.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Tyson Foods"
+url = "https://tysonfoods.wd5.myworkdayjobs.com/en-US/TSN"
+
+[[source]]
+kind = "workday"
+name = "U.S. Bank"
+url = "https://usbank.wd1.myworkdayjobs.com/en-US/US_Bank_Careers"
+
+[[source]]
+kind = "workday"
+name = "U.S. Venture"
+url = "https://usventure.wd1.myworkdayjobs.com/en-US/usvexternal"
+
+[[source]]
+kind = "workday"
+name = "Uhaul"
+url = "https://uhaul.wd1.myworkdayjobs.com/en-US/UhaulJobs"
+
+[[source]]
+kind = "workday"
+name = "UL Standards & Engagement"
+url = "https://ulse.wd5.myworkdayjobs.com/en-US/ulsecareers"
+
+[[source]]
+kind = "workday"
+name = "Uline"
+url = "https://uline.wd1.myworkdayjobs.com/en-US/Uline_Careers"
+
+[[source]]
+kind = "workday"
+name = "Ultra"
+url = "https://ultra.wd3.myworkdayjobs.com/en-US/ultra-careers"
+
+[[source]]
+kind = "workday"
+name = "Ultra Intelligence and Communications"
+url = "https://ultra.wd3.myworkdayjobs.com/en-US/uiccareers"
+
+[[source]]
+kind = "workday"
+name = "UMB"
+url = "https://umb.wd1.myworkdayjobs.com/en-US/UMBExternal"
+
+[[source]]
+kind = "workday"
+name = "Underwriters Laboratories"
+url = "https://ulse.wd5.myworkdayjobs.com/en-US/ulricareers"
+
+[[source]]
+kind = "workday"
+name = "Unilever"
+url = "https://unilever.wd3.myworkdayjobs.com/en-US/Unilever_Experienced_Professionals"
+
+[[source]]
+kind = "workday"
+name = "Unisys"
+url = "https://unisys.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "United Parcel Service (UPS)"
+url = "https://hcmportal.wd5.myworkdayjobs.com/en-US/Search"
+
+[[source]]
+kind = "workday"
+name = "Universal Music Group Careers"
+url = "https://umusic.wd5.myworkdayjobs.com/en-US/umgus"
+
+[[source]]
+kind = "workday"
+name = "University Corporation for Atmospheric Research"
+url = "https://ucar.wd5.myworkdayjobs.com/en-US/UCAR_Careers"
+
+[[source]]
+kind = "workday"
+name = "University of Arkansas (UAF_External_Career_Site)"
+url = "https://uasys.wd5.myworkdayjobs.com/en-US/UAF_External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "University of Arkansas (uasys)"
+url = "https://uasys.wd5.myworkdayjobs.com/en-US/uasys"
+
+[[source]]
+kind = "workday"
+name = "University of British Columbia"
+url = "https://ubc.wd10.myworkdayjobs.com/en-US/ubcstaffjobs"
+
+[[source]]
+kind = "workday"
+name = "University of Chicago"
+url = "https://uchicago.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "University of Maryland - College Park"
+url = "https://umd.wd1.myworkdayjobs.com/en-US/UMCP"
+
+[[source]]
+kind = "workday"
+name = "University of Nevada, Reno"
+url = "https://nshe.wd1.myworkdayjobs.com/en-US/UNR-external"
+
+[[source]]
+kind = "workday"
+name = "University of Ottawa"
+url = "https://uottawa.wd3.myworkdayjobs.com/en-US/uOttawa_External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "University of Rochester"
+url = "https://rochester.wd5.myworkdayjobs.com/en-US/UR_Staff"
+
+[[source]]
+kind = "workday"
+name = "University of Texas - Austin"
+url = "https://utaustin.wd1.myworkdayjobs.com/en-US/UTstaff"
+
+[[source]]
+kind = "workday"
+name = "University of Texas at Austin"
+url = "https://utaustin.wd1.myworkdayjobs.com/en-US/utstudent"
+
+[[source]]
+kind = "workday"
+name = "University of Virginia"
+url = "https://uva.wd1.myworkdayjobs.com/en-US/uvastudentjobs"
+
+[[source]]
+kind = "workday"
+name = "University System of New Hampshire"
+url = "https://usnh.wd5.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "USAA"
+url = "https://usaa.wd1.myworkdayjobs.com/en-US/USAAJOBSWD"
+
+[[source]]
+kind = "workday"
+name = "UserTesting"
+url = "https://usertesting.wd12.myworkdayjobs.com/en-US/UserTesting"
+
+[[source]]
+kind = "workday"
+name = "Valeo"
+url = "https://valeo.wd3.myworkdayjobs.com/en-US/valeo_jobs"
+
+[[source]]
+kind = "workday"
+name = "Valmont"
+url = "https://valmont.wd1.myworkdayjobs.com/en-US/ValmontCareers"
+
+[[source]]
+kind = "workday"
+name = "Vanderlande Industries"
+url = "https://vanderlande.wd3.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Vanguard (contractors_restricted)"
+url = "https://vanguard.wd5.myworkdayjobs.com/en-US/contractors_restricted"
+
+[[source]]
+kind = "workday"
+name = "Vanguard (vanguard_external)"
+url = "https://vanguard.wd5.myworkdayjobs.com/en-US/vanguard_external"
+
+[[source]]
+kind = "workday"
+name = "Vantage Data Centers"
+url = "https://vantagedc.wd1.myworkdayjobs.com/en-US/Vantage"
+
+[[source]]
+kind = "workday"
+name = "Varex Imaging Corporation"
+url = "https://vareximaging.wd103.myworkdayjobs.com/en-US/External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Varian"
+url = "https://onehealthineers.wd3.myworkdayjobs.com/en-US/SHSJB"
+
+[[source]]
+kind = "workday"
+name = "Velera (veleracareers)"
+url = "https://velera.wd5.myworkdayjobs.com/en-US/veleracareers"
+
+[[source]]
+kind = "workday"
+name = "Velera (VeleraCareers)"
+url = "https://velera.wd5.myworkdayjobs.com/en-US/VeleraCareers"
+
+[[source]]
+kind = "workday"
+name = "Vera Bradley"
+url = "https://verabradley.wd5.myworkdayjobs.com/en-US/vbcareers"
+
+[[source]]
+kind = "workday"
+name = "Veralto"
+url = "https://veralto.wd1.myworkdayjobs.com/en-US/hachjobs"
+
+[[source]]
+kind = "workday"
+name = "Verizon Communications"
+url = "https://verizon.wd12.myworkdayjobs.com/en-US/verizon-careers"
+
+[[source]]
+kind = "workday"
+name = "Vermeer"
+url = "https://vermeer.wd5.myworkdayjobs.com/en-US/externalcareersite"
+
+[[source]]
+kind = "workday"
+name = "Vertex Pharmaceuticals"
+url = "https://vrtx.wd501.myworkdayjobs.com/en-US/vertex_careers"
+
+[[source]]
+kind = "workday"
+name = "VF"
+url = "https://vfc.wd5.myworkdayjobs.com/en-US/vfc_careers"
+
+[[source]]
+kind = "workday"
+name = "Viatris"
+url = "https://viatris.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Viavi Solutions"
+url = "https://viavisolutions.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Viridien"
+url = "https://cgg.wd103.myworkdayjobs.com/en-US/viridiencareers"
+
+[[source]]
+kind = "workday"
+name = "Virtua Health"
+url = "https://virtua.wd1.myworkdayjobs.com/en-US/Virtua_Health_External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "Visa"
+url = "https://visa.wd5.myworkdayjobs.com/en-US/Visa"
+
+[[source]]
+kind = "workday"
+name = "Vishay Intertechnology"
+url = "https://vishay.wd3.myworkdayjobs.com/en-US/VishayCareers"
+
+[[source]]
+kind = "workday"
+name = "Vistra"
+url = "https://vst.wd5.myworkdayjobs.com/en-US/vistra_careers"
+
+[[source]]
+kind = "workday"
+name = "Vitalant"
+url = "https://vitalant.wd12.myworkdayjobs.com/en-US/Careers"
+
+[[source]]
+kind = "workday"
+name = "Vizient"
+url = "https://vizient.wd1.myworkdayjobs.com/en-US/Vizient_Careers"
+
+[[source]]
+kind = "workday"
+name = "Volaris Group"
+url = "https://volarisgroup.wd3.myworkdayjobs.com/en-US/volaris"
+
+[[source]]
+kind = "workday"
+name = "Voya Financial"
+url = "https://godirect.wd5.myworkdayjobs.com/en-US/voya_jobs"
+
+[[source]]
+kind = "workday"
+name = "VSP Vision"
+url = "https://vsp.wd1.myworkdayjobs.com/en-US/vspvisioncareers"
+
+[[source]]
+kind = "workday"
+name = "VyStar Credit Union"
+url = "https://vystarcu.wd1.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "Warner Bros."
+url = "https://warnerbros.wd5.myworkdayjobs.com/en-US/global"
+
+[[source]]
+kind = "workday"
+name = "Wash U"
+url = "https://wustl.wd1.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Washpost"
+url = "https://washpost.wd5.myworkdayjobs.com/en-US/washingtonpostcareers"
+
+[[source]]
+kind = "workday"
+name = "Watts Water"
+url = "https://wattswater.wd5.myworkdayjobs.com/en-US/external"
+
+[[source]]
+kind = "workday"
+name = "Waystar"
+url = "https://waystar.wd1.myworkdayjobs.com/en-US/Waystar"
+
+[[source]]
+kind = "workday"
+name = "Webster Bank"
+url = "https://websteronline.wd12.myworkdayjobs.com/en-US/WebsterExternalCareerSite"
+
+[[source]]
+kind = "workday"
+name = "WellSky"
+url = "https://wellsky.wd1.myworkdayjobs.com/en-US/WellSkyCareers"
+
+[[source]]
+kind = "workday"
+name = "Welocalize"
+url = "https://welocalize.wd1.myworkdayjobs.com/en-US/welocalize"
+
+[[source]]
+kind = "workday"
+name = "Western Union"
+url = "https://westernunion.wd5.myworkdayjobs.com/en-US/WesternUnionJobs"
+
+[[source]]
+kind = "workday"
+name = "Westlake"
+url = "https://westlake.wd1.myworkdayjobs.com/en-US/westlake"
+
+[[source]]
+kind = "workday"
+name = "Wex"
+url = "https://wexinc.wd5.myworkdayjobs.com/en-US/WEXInc"
+
+[[source]]
+kind = "workday"
+name = "Wilbur-Ellis"
+url = "https://wilburellis.wd12.myworkdayjobs.com/en-US/wilbur-ellis"
+
+[[source]]
+kind = "workday"
+name = "Williams"
+url = "https://williams.wd5.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Wisk"
+url = "https://wisk.wd108.myworkdayjobs.com/en-US/Wisk_Careers"
+
+[[source]]
+kind = "workday"
+name = "Woodward Governor"
+url = "https://woodward.wd5.myworkdayjobs.com/en-US/woodward"
+
+[[source]]
+kind = "workday"
+name = "Worcester Polytechnic Institute"
+url = "https://wpi.wd5.myworkdayjobs.com/en-US/WPI_External_Career_Site"
+
+[[source]]
+kind = "workday"
+name = "World Kinect"
+url = "https://wfscorp.wd5.myworkdayjobs.com/en-US/wfscareers"
+
+[[source]]
+kind = "workday"
+name = "Wounded Warrior Project"
+url = "https://woundedwarriorproject.wd5.myworkdayjobs.com/en-US/wwp"
+
+[[source]]
+kind = "workday"
+name = "WWE"
+url = "https://wwecorp.wd5.myworkdayjobs.com/en-US/wwecorp"
+
+[[source]]
+kind = "workday"
+name = "X-energy"
+url = "https://xenergy.wd5.myworkdayjobs.com/en-US/X-energyUS"
+
+[[source]]
+kind = "workday"
+name = "Xcel Energy"
+url = "https://xcelenergy.wd1.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Xylem"
+url = "https://xylem.wd5.myworkdayjobs.com/en-US/xylem-careers"
+
+[[source]]
+kind = "workday"
+name = "Yai"
+url = "https://yai.wd5.myworkdayjobs.com/en-US/careers"
+
+[[source]]
+kind = "workday"
+name = "YMCA of Metropolitan Atlanta"
+url = "https://ymcaatlanta.wd1.myworkdayjobs.com/en-US/ymca-careers"
+
+[[source]]
+kind = "workday"
+name = "Zayo"
+url = "https://zayo.wd1.myworkdayjobs.com/en-US/zayo_careers"
+
+[[source]]
+kind = "workday"
+name = "Zeiss"
+url = "https://zeissgroup.wd3.myworkdayjobs.com/en-US/External"
+
+[[source]]
+kind = "workday"
+name = "Zendesk"
+url = "https://zendesk.wd1.myworkdayjobs.com/en-US/zendesk"
+
+[[source]]
+kind = "workday"
+name = "Zillow"
+url = "https://zillow.wd5.myworkdayjobs.com/en-US/Zillow_Group_External"
+
+[[source]]
+kind = "workday"
+name = "Zoetis"
+url = "https://zoetis.wd5.myworkdayjobs.com/en-US/zoetis"
+
+[[source]]
+kind = "workday"
+name = "ZOLL Medical Corporation"
+url = "https://zoll.wd5.myworkdayjobs.com/en-US/ZOLLMedicalCorp"
+
+[[source]]
+kind = "workday"
+name = "Zoom"
+url = "https://zoom.wd5.myworkdayjobs.com/en-US/zoom"
+
+[[source]]
+kind = "workday"
+name = "Zurn Elkay Water Solutions"
+url = "https://elkay.wd1.myworkdayjobs.com/en-US/Elkay_External"

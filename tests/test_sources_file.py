@@ -51,6 +51,7 @@ def test_adapter_alias_maps_to_config_key(tmp_path: Path) -> None:
         ('[[source]]\nkind = "greenhosue"\nname = "S"\nslug = "s"\n', "unknown kind"),
         ('[[source]]\nkind = "greenhouse"\nname = "S"\n', "need a 'slug'"),
         ('[[source]]\nkind = "scrape"\nname = "S"\nslug = "s"\n', "need a 'url'"),
+        ('[[source]]\nkind = "workday"\nname = "S"\nslug = "s"\n', "workday sources need a 'url'"),
         ('[[source]]\nkind = "greenhouse"\nname = "S"\nslug = "s"\netag = "x"\n', "cannot be set"),
         ('[[source]]\nkind = "greenhouse"\nname = "S"\nslug = "s"\nnope = 1\n', "unknown key"),
         ('title = "oops"\n', "must contain at least one"),
@@ -59,6 +60,22 @@ def test_adapter_alias_maps_to_config_key(tmp_path: Path) -> None:
 def test_rejects_invalid_files(tmp_path: Path, body: str, message: str) -> None:
     with pytest.raises(SourcesFileError, match=message):
         load_sources_file(write(tmp_path, body))
+
+
+def test_workday_tuning_keys_are_file_managed(tmp_path: Path) -> None:
+    body = (
+        '[[source]]\nkind = "workday"\nname = "Acme"\n'
+        'url = "https://acme.wd5.myworkdayjobs.com/en-US/AcmeCareers"\n'
+        'tenant = "acme-inc"\nsite = "Careers"\nworker_sub_types = ["abc"]\nmax_pages = 5\n'
+    )
+    (spec,) = load_sources_file(write(tmp_path, body))
+    assert spec.config == {
+        "url": "https://acme.wd5.myworkdayjobs.com/en-US/AcmeCareers",
+        "tenant": "acme-inc",
+        "site": "Careers",
+        "worker_sub_types": ["abc"],
+        "max_pages": 5,
+    }
 
 
 def test_rejects_duplicates(tmp_path: Path) -> None:

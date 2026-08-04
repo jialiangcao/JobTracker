@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Self-hosted job-listing watcher: polls ATS public APIs (Greenhouse, Lever, Ashby, SmartRecruiters, Workable) every 30 minutes, normalizes listings via per-source adapters, filters for CS internships with DB-stored regex rules, dedups against history, and posts new matches as Discord embeds. `implementation_plan.md` is the full design doc (schema, endpoints, rationale).
+Self-hosted job-listing watcher: polls ATS public APIs (Greenhouse, Lever, Ashby, SmartRecruiters, Workable, Workday) every 30 minutes, normalizes listings via per-source adapters, filters for CS internships with DB-stored regex rules, dedups against history, and posts new matches as Discord embeds. `implementation_plan.md` is the full design doc (schema, endpoints, rationale).
 
 ## Commands
 
@@ -31,7 +31,7 @@ One run flows through `pipeline.py`: fetch → adapt → filter → dedup → pe
 
 Two protocol/registry pairs decouple the stages:
 
-- **Fetchers** (`sources/`): `Fetcher.fetch(SourceRef, PoliteClient) -> FetchResult` per ATS kind, resolved by `sources/registry.py`. All HTTP goes through `sources/polite_http.py` — per-host semaphores, jittered pacing, backoff honoring `Retry-After`, ETag/Last-Modified conditional requests (cached in `sources.config`), and per-source politeness overrides. `sources/scrape/` is a stub for future browser-based fetching.
+- **Fetchers** (`sources/`): `Fetcher.fetch(SourceRef, PoliteClient) -> FetchResult` per ATS kind, resolved by `sources/registry.py`. All HTTP goes through `sources/polite_http.py` — per-host semaphores, jittered pacing, backoff honoring `Retry-After`, ETag/Last-Modified conditional requests (cached in `sources.config`), and per-source politeness overrides. Providers in `_SHARED_LIMIT_DOMAINS` (Workday) pace and cap as one group across all their subdomains, since they rate-limit per client IP no matter which tenant is addressed; `_GROUP_POLITENESS` sets that group's rate. `sources/scrape/` is a stub for future browser-based fetching.
 - **Adapters** (`adapters/`): `Adapter.map(RawPosting) -> JobPosting | None` (None = unparseable, counted not fatal), resolved from `source.kind` by `adapters/registry.py`; `config.adapter_override` on a source wins. `adapters/fallback.py` is a heuristic key-search adapter used for unknown kinds.
 
 `RawPosting` is the fetcher→adapter boundary type; `JobPosting` (both in `schema.py`) is the internal normalized schema everything downstream consumes.

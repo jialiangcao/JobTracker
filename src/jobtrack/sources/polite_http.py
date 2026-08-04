@@ -8,6 +8,7 @@ import urllib.robotparser
 from contextlib import AsyncExitStack
 from dataclasses import dataclass
 from email.utils import parsedate_to_datetime
+from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
 import httpx
@@ -18,6 +19,19 @@ from jobtrack.observability.logging import get_logger
 log = get_logger(__name__)
 
 _RETRYABLE_STATUSES = {429, 500, 502, 503, 504}
+
+# Providers that hand every customer its own subdomain but enforce one rate limit per
+# client IP behind them. Pacing and concurrency key on the group, not the hostname —
+# otherwise a thousand tenants read as a thousand idle hosts and all start at once.
+# Measured: *.myworkdayjobs.com serves 15 req/s indefinitely and starts 429ing at 25.
+_SHARED_LIMIT_DOMAINS = ("myworkdayjobs.com",)
+
+
+def _limit_group(host: str) -> str:
+    for domain in _SHARED_LIMIT_DOMAINS:
+        if host == domain or host.endswith(f".{domain}"):
+            return domain
+    return host
 
 
 class FetchError(Exception):
@@ -33,6 +47,12 @@ class Politeness:
     max_concurrency: int | None = None
     min_delay_ms: int | None = None
     max_delay_ms: int | None = None
+
+
+# The whole group shares one pacing clock, so its delay sets the provider-wide request
+# rate: ~80ms between starts is ~12 req/s, comfortably under the measured 15 req/s
+# ceiling. A source declaring its own politeness replaces this entirely.
+_GROUP_POLITENESS = {"myworkdayjobs.com": Politeness(min_delay_ms=60, max_delay_ms=100)}
 
 
 class _HostState:
@@ -137,7 +157,36 @@ class PoliteClient:
     ) -> httpx.Response:
         """GET with pacing and retries. Returns any non-retryable response (including
         304/404); raises FetchError once retryable failures exhaust attempts."""
-        host = urlsplit(url).netloc.lower()
+        return await self._request("GET", url, headers=headers, politeness=politeness)
+
+    async def post(
+        self,
+        url: str,
+        *,
+        json: Any = None,
+        headers: dict[str, str] | None = None,
+        politeness: Politeness | None = None,
+    ) -> httpx.Response:
+        """POST with the same pacing and retries as `get`.
+
+        Only for endpoints where POST is a *read* — the retry loop replays the request
+        verbatim, so anything with side effects would be repeated. Workday's search
+        endpoint, the one caller today, takes its query in the body and mutates nothing.
+        """
+        return await self._request("POST", url, json=json, headers=headers, politeness=politeness)
+
+    async def _request(
+        self,
+        method: str,
+        url: str,
+        *,
+        json: Any = None,
+        headers: dict[str, str] | None = None,
+        politeness: Politeness | None = None,
+    ) -> httpx.Response:
+        host = _limit_group(urlsplit(url).netloc.lower())
+        if politeness is None:
+            politeness = _GROUP_POLITENESS.get(host)
         state = self._host_state(host)
         source_limit = self._source_limit(host, politeness)
         s = self._settings
@@ -154,7 +203,7 @@ class PoliteClient:
                 await stack.enter_async_context(self._global)
                 await stack.enter_async_context(state.semaphore)
                 try:
-                    response = await self._client.get(url, headers=headers)
+                    response = await self._client.request(method, url, headers=headers, json=json)
                 except httpx.HTTPError as exc:
                     last_error = f"{type(exc).__name__}: {exc}"
 
@@ -174,7 +223,7 @@ class PoliteClient:
             await asyncio.sleep(backoff)
 
         raise FetchError(
-            f"GET {url} failed after {s.max_retries} attempts: {last_error}", last_status
+            f"{method} {url} failed after {s.max_retries} attempts: {last_error}", last_status
         )
 
     async def robots_allowed(self, url: str) -> bool:

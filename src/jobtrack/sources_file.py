@@ -11,8 +11,23 @@ from typing import Any
 
 from jobtrack.sources.registry import FETCHERS
 
-MANAGED_KEYS = ("slug", "url", "adapter_override", "politeness", "needs_browser", "proxy_pool")
+MANAGED_KEYS = (
+    "slug",
+    "url",
+    "adapter_override",
+    "politeness",
+    "needs_browser",
+    "proxy_pool",
+    # Workday: overrides for the tenant/site derived from the careers URL, plus crawl tuning.
+    "tenant",
+    "site",
+    "worker_sub_types",
+    "max_pages",
+)
 RUNTIME_KEYS = ("etag", "last_modified")
+
+# Kinds addressed by a full URL rather than a board slug.
+URL_KINDS = frozenset({"scrape", "workday"})
 
 # TOML key → config key, where they differ.
 _ALIASES = {"adapter": "adapter_override"}
@@ -89,9 +104,9 @@ def _spec_from(entry: Any, index: int) -> SourceSpec:
             raise SourcesFileError(f"{kind}/{name}: unknown key {key!r}")
         config[config_key] = value
 
-    if kind == "scrape":
+    if kind in URL_KINDS:
         if "url" not in config:
-            raise SourcesFileError(f"{kind}/{name}: scrape sources need a 'url'")
+            raise SourcesFileError(f"{kind}/{name}: {kind} sources need a 'url'")
     elif "slug" not in config:
         raise SourcesFileError(f"{kind}/{name}: {kind} sources need a 'slug'")
 
