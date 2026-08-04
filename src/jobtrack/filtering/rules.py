@@ -70,11 +70,14 @@ def matches(job: JobPosting, rules: RuleSet) -> bool:
 # sits next to them. Bare "data", "platform", "security", "mobile", "ai" and "engineer" are
 # never CS signals on their own — alone they match Data Entry, Platform Marketing, Physical
 # Security, Mobile Marketing, AI Policy and Mechanical Engineer postings.
-_ROLE_NOUN = r"(?:engineer(?:ing)?|developer|development|scien(?:ce|tist)|programm(?:er|ing))"
+_ROLE_NOUN = (
+    r"(?:engineer(?:ing)?|developer|development|scien(?:ce|tist)|programm(?:er|ing)"
+    r"|analyst)"
+)
 _CS_DOMAIN = (
     r"(?:data|ml|ai|artificial\s+intelligence|machine\s+learning|cloud|platform"
     r"|infrastructure|infra|security|cyber(?:security)?|mobile|graphics|game|database"
-    r"|network(?:ing)?)"
+    r"|network(?:ing)?|technolog(?:y|ies)|technical|information\s+systems?|analytics)"
 )
 # Up to two qualifier words (plus separators) may sit between the pair: "Data Platform
 # Engineer", "Engineer, Machine Learning". Bounded so the two halves can't come from
@@ -94,7 +97,13 @@ SEED_RULES: list[tuple[str, str, str, str]] = [
         "role",
         "include",
         "title",
-        r"\bintern(?:ship)?s?\b|\bco[-\s]?ops?\b|\bindustrial\s+placement\b",
+        r"\bintern(?:ship)?s?\b|\bco[-\s]?ops?\b|\bindustrial\s+placement\b"
+        # Banks and large enterprises label internships by season instead: "2027 Summer
+        # Analyst - Technology", "Summer Associate, Engineering". The cs group still has
+        # to match, so the non-technical majority of these never reaches the output.
+        r"|\bsummer\s+(?:analyst|associate|scholar)\b|\b(?:spring|fall|winter)\s+analyst\b"
+        r"|\bapprentice(?:ship)?\b|\bplacement\s+(?:student|year)\b|\bworking\s+student\b"
+        r"|\bstudent\s+(?:worker|assistant|trainee)\b|\bgraduate\s+programme\b",
     ),
     # Terms that mean software on their own, no qualifier needed.
     (
@@ -110,6 +119,21 @@ SEED_RULES: list[tuple[str, str, str, str]] = [
     ),
     ("cs:domain", "include", "title", rf"\b{_CS_DOMAIN}\b{_GAP}{_ROLE_NOUN}\b"),
     ("cs:domain-reversed", "include", "title", rf"\b{_ROLE_NOUN}\b{_GAP}{_CS_DOMAIN}\b"),
+    # Bare role noun with no domain qualifier: "Engineering Intern", "Software Development
+    # Co-op", "Developer Intern". At a software company these are almost always SWE; the
+    # not-other-eng exclude below is what keeps the mechanical/civil/biomed ones out, so
+    # these two rules are only as safe as that list is complete.
+    ("cs:bare-eng", "include", "title", r"\bengineer(?:ing|s)?\b|\bdevelop(?:er|ment)\b"),
+    # Enterprise/bank phrasing that never says "software": "2027 Summer Analyst —
+    # Technology", "Intern - Technology Division", "Technical Intern", "IT Intern".
+    (
+        "cs:tech-bare",
+        "include",
+        "title",
+        # (?-i:IT) stays case-sensitive inside the IGNORECASE compile so the pronoun "it"
+        # in a title like "Build It" can't match.
+        r"\btech(?:nolog(?:y|ies)|nical)?\b|\b(?-i:IT)\b|\bdigital\b",
+    ),
     # Adjacent engineering and science disciplines, which reach cs:domain through their own
     # use of "engineering" — "Manufacturing Systems Engineering Intern" and the like.
     (
@@ -118,8 +142,29 @@ SEED_RULES: list[tuple[str, str, str, str]] = [
         "title",
         r"\bmechanical\b|\belectrical\b|\bmechatronics\b|\bcivil\b|\bchemical\b|\bstructural\b"
         r"|\baerospace\b|\bnuclear\b|\bpetroleum\b|\bmaterials\b|\bmanufacturing\b|\bthermal\b"
-        r"|\bindustrial\s+engineer|\bprocess\s+engineer|\bhardware\b|\bphysical\s+security\b"
-        r"|\bbio(?:medical|logy|logical|informatics|chem\w*)\b|\bclinical\b|\bchemistry\b",
+        r"|\bindustrial\s+engineer|\bprocess\s+engineer|\bphysical\s+security\b"
+        r"|\bbio(?:medical|logy|logical|informatics|chem\w*|tech\w*)\b|\bclinical\b|\bchemistry\b"
+        # Added alongside cs:bare-eng — a bare "X Engineering Intern" now reaches the include
+        # side, so every non-CS discipline has to be named here or it comes through.
+        r"|\benvironmental\b|\bgeo(?:technical|logical|physics|spatial)\b|\bmining\b|\bmarine\b"
+        r"|\bnaval\b|\bautomotive\b|\bagricultur\w*|\bagronom\w*|\bfood\b|\btextile\b"
+        r"|\bpackaging\b|\bwelding\b|\btooling\b|\bfacilities\b|\bhvac\b|\bplumbing\b"
+        r"|\bpower\s+systems?\b|\bwastewater\b|\bhydraulic\b|\btransportation\b|\btraffic\b"
+        r"|\bsurvey(?:ing|or)\b|\bdrafting\b|\barchitectur(?:e|al)\b|\bconstruction\b"
+        r"|\bmetallurg\w*|\bpolymer\b|\bceramic\w*|\bcorrosion\b|\bweld\w*"
+        r"|\boptic(?:s|al)\b|\bphotonics?\b|\blasers?\b|\bacoustics?\b|\bnano\w*"
+        r"|\bsemiconductor\b|\basics?\b|\bvlsi\b|\bpcb\b|\bcircuits?\b|\bantennas?\b|\brf\b"
+        r"|\banalog\b|\bsilicon\b|\bwafer\b|\bfoundry\b|\bdigital\s+design\b"
+        r"|\bphysics\b|\bpharma\w*|\bdrug\b|\bgenom\w*|\bprotein\b|\bmolecular\b|\bneuro\w*"
+        r"|\bveterinary\b|\bnursing\b|\bdental\b|\bmedical\b|\bhealthcare\b",
+    ),
+    # "Hardware" alone excludes, but not when the title also carries an explicit software
+    # signal — "Software Engineer Intern, Hardware Platforms" is a SWE role at Apple/NVIDIA.
+    (
+        "not-hardware",
+        "exclude",
+        "title",
+        r"^(?!.*(?:\bsoftware\b|\bfirmware\b|\bembedded\b|\bswe\b))(?=.*\bhardware\b)",
     ),
     # Non-engineering functions that borrow engineering vocabulary in their titles.
     (
@@ -130,6 +175,18 @@ SEED_RULES: list[tuple[str, str, str, str]] = [
         r"|\bbusiness\s+(?:development|analyst|operations)\b|\bcustomer\s+(?:success|service)\b"
         r"|\b(?:customer|technical)\s+support\b|\bsupply\s+chain\b|\bsolutions\s+engineer"
         r"|\b(?:product|program|project)\s+manage\w*|\bdeveloper\s+(?:relations|advocate)\b"
-        r"|\bux\b|\bui\s*/\s*ux\b|\b(?:graphic|product|industrial)\s+design\b",
+        r"|\bux\b|\bui\s*/\s*ux\b|\b(?:graphic|product|industrial)\s+design\b"
+        # Added alongside cs:tech-bare — bare "technology"/"digital" now reaches the include
+        # side, and these are the functions that use those words without being CS roles.
+        r"|\bwriter\b|\bwriting\b|\bcontent\b|\bcommunications\b|\bsocial\s+media\b"
+        r"|\bpublic\s+relations\b|\bjournalis\w*|\beditor(?:ial)?\b|\bcopywrit\w*|\bseo\b"
+        r"|\bconsult(?:ant|ing)\b|\bstrategy\b|\blegal\b|\bcounsel\b|\bparalegal\b"
+        r"|\bcompliance\b|\baudit(?:or|ing)?\b|\baccounting\b|\btax\b|\bprocurement\b"
+        r"|\blogistics\b|\bwarehouse\b|\bretail\b|\bmerchandis\w*|\bbuyer\b"
+        r"|\binsurance\b|\bclaims\b|\bunderwrit\w*|\bactuarial\b|\breal\s+estate\b"
+        r"|\bteach\w*|\btutor\w*|\binstructor\b|\bcurriculum\b|\badmissions\b"
+        r"|\bevents?\b|\badministrative\b|\bexecutive\s+assistant\b|\btranslat\w*"
+        r"|\bphotograph\w*|\bvideograph\w*|\bbrand\b|\bcreative\b|\bcopy\b"
+        r"|\btraining\b|\bpolicy\b|\bgovernance\b|\bprivacy\b|\bethics\b",
     ),
 ]
