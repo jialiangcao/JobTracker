@@ -3,8 +3,10 @@
 from jobtrack.adapters.ashby import AshbyAdapter
 from jobtrack.adapters.base import Adapter
 from jobtrack.adapters.fallback import FallbackAdapter
+from jobtrack.adapters.gem import GemAdapter
 from jobtrack.adapters.greenhouse import GreenhouseAdapter
 from jobtrack.adapters.lever import LeverAdapter
+from jobtrack.adapters.rippling import RipplingAdapter
 from jobtrack.adapters.smartrecruiters import SmartRecruitersAdapter
 from jobtrack.adapters.workable import WorkableAdapter
 from jobtrack.adapters.workday import WorkdayAdapter
@@ -18,6 +20,8 @@ ADAPTERS: dict[str, Adapter] = {
     "smartrecruiters": SmartRecruitersAdapter(),
     "workable": WorkableAdapter(),
     "workday": WorkdayAdapter(),
+    "gem": GemAdapter(),
+    "rippling": RipplingAdapter(),
     "fallback": _FALLBACK,
 }
 

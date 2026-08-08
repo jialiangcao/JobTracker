@@ -127,8 +127,23 @@ slug = "10xgenomics"
 
 [[source]]
 kind = "greenhouse"
+name = "10xLabs"
+slug = "10xlabs"
+
+[[source]]
+kind = "greenhouse"
+name = "12twenty"
+slug = "12twenty"
+
+[[source]]
+kind = "greenhouse"
 name = "2K"
 slug = "2k"
+
+[[source]]
+kind = "greenhouse"
+name = "2K Madrid"
+slug = "2kmadrid"
 
 [[source]]
 kind = "greenhouse"
@@ -182,6 +197,11 @@ slug = "accenturefederalservices"
 
 [[source]]
 kind = "greenhouse"
+name = "accessiBe"
+slug = "accessibe"
+
+[[source]]
+kind = "greenhouse"
 name = "AccuWeather"
 slug = "accuweather"
 
@@ -214,6 +234,11 @@ slug = "ada18"
 kind = "greenhouse"
 name = "Addepar"
 slug = "addepar1"
+
+[[source]]
+kind = "greenhouse"
+name = "Adjust"
+slug = "adjustjobs"
 
 [[source]]
 kind = "greenhouse"
@@ -252,6 +277,11 @@ slug = "aevexaerospace"
 
 [[source]]
 kind = "greenhouse"
+name = "AffiniPay"
+slug = "affinipay1"
+
+[[source]]
+kind = "greenhouse"
 name = "Affirm"
 slug = "affirm"
 
@@ -274,6 +304,16 @@ slug = "agoda"
 kind = "greenhouse"
 name = "AgWest Farm Credit"
 slug = "agwestfarmcredit"
+
+[[source]]
+kind = "greenhouse"
+name = "AI Security Institute"
+slug = "aisi"
+
+[[source]]
+kind = "greenhouse"
+name = "AiDash"
+slug = "aidashinc"
 
 [[source]]
 kind = "greenhouse"
@@ -322,6 +362,11 @@ slug = "alchemer"
 
 [[source]]
 kind = "greenhouse"
+name = "Aligned"
+slug = "aligned"
+
+[[source]]
+kind = "greenhouse"
 name = "AlixPartners"
 slug = "alixpartners"
 
@@ -334,6 +379,11 @@ slug = "alku"
 kind = "greenhouse"
 name = "Alloy"
 slug = "alloy"
+
+[[source]]
+kind = "greenhouse"
+name = "Alma"
+slug = "alma31"
 
 [[source]]
 kind = "greenhouse"
@@ -357,6 +407,11 @@ slug = "alphasense"
 
 [[source]]
 kind = "greenhouse"
+name = "AlphaSense (Helsinki)"
+slug = "alphasensehelsinki"
+
+[[source]]
+kind = "greenhouse"
 name = "AlphaSights"
 slug = "alphasights"
 
@@ -377,6 +432,11 @@ slug = "amarok"
 
 [[source]]
 kind = "greenhouse"
+name = "Amdaris"
+slug = "amdaris"
+
+[[source]]
+kind = "greenhouse"
 name = "American Institutes for Research"
 slug = "americaninstitutesforresearch"
 
@@ -384,6 +444,16 @@ slug = "americaninstitutesforresearch"
 kind = "greenhouse"
 name = "Amp Robotics"
 slug = "ampsortation"
+
+[[source]]
+kind = "greenhouse"
+name = "Amperity"
+slug = "amperity"
+
+[[source]]
+kind = "greenhouse"
+name = "Amperon"
+slug = "amperon"
 
 [[source]]
 kind = "greenhouse"
@@ -397,8 +467,23 @@ slug = "amwins"
 
 [[source]]
 kind = "greenhouse"
+name = "Analyst1"
+slug = "analyst1"
+
+[[source]]
+kind = "greenhouse"
 name = "Anaplan"
 slug = "anaplan"
+
+[[source]]
+kind = "greenhouse"
+name = "Andesite AI"
+slug = "andesite"
+
+[[source]]
+kind = "greenhouse"
+name = "Andreessen Horowitz"
+slug = "a16z"
 
 [[source]]
 kind = "greenhouse"
@@ -442,13 +527,33 @@ slug = "appian"
 
 [[source]]
 kind = "greenhouse"
+name = "Appinio"
+slug = "appinio"
+
+[[source]]
+kind = "greenhouse"
 name = "AppLovin"
 slug = "applovin"
 
 [[source]]
 kind = "greenhouse"
+name = "AppsFlyer"
+slug = "appsflyer"
+
+[[source]]
+kind = "greenhouse"
+name = "Apptegy"
+slug = "apptegy"
+
+[[source]]
+kind = "greenhouse"
 name = "Apptronik"
 slug = "apptronik"
+
+[[source]]
+kind = "greenhouse"
+name = "AppViewX"
+slug = "appviewx"
 
 [[source]]
 kind = "greenhouse"
@@ -492,6 +597,11 @@ slug = "arizeai"
 
 [[source]]
 kind = "greenhouse"
+name = "Arkose Labs"
+slug = "arkoselabs"
+
+[[source]]
+kind = "greenhouse"
 name = "Armada"
 slug = "armada"
 
@@ -502,6 +612,11 @@ slug = "array"
 
 [[source]]
 kind = "greenhouse"
+name = "Arsys"
+slug = "arsys"
+
+[[source]]
+kind = "greenhouse"
 name = "Artefact"
 slug = "artefactlinkedin"
 
@@ -509,6 +624,11 @@ slug = "artefactlinkedin"
 kind = "greenhouse"
 name = "Artisan Partners"
 slug = "artisanpartners"
+
+[[source]]
+kind = "greenhouse"
+name = "Arva Intelligence"
+slug = "arvaintelligence"
 
 [[source]]
 kind = "greenhouse"
@@ -597,6 +717,26 @@ slug = "audaxgroup"
 
 [[source]]
 kind = "greenhouse"
+name = "AudioEye"
+slug = "audioeye"
+
+[[source]]
+kind = "greenhouse"
+name = "AudioMob"
+slug = "audiomob"
+
+[[source]]
+kind = "greenhouse"
+name = "Augment Computing"
+slug = "augmentcomputing"
+
+[[source]]
+kind = "greenhouse"
+name = "Augury"
+slug = "augury"
+
+[[source]]
+kind = "greenhouse"
 name = "Aura"
 slug = "aura"
 
@@ -609,6 +749,11 @@ slug = "aurorainnovation"
 kind = "greenhouse"
 name = "Authentic"
 slug = "authenticbrandsgroup"
+
+[[source]]
+kind = "greenhouse"
+name = "Automox"
+slug = "automox"
 
 [[source]]
 kind = "greenhouse"
@@ -722,6 +867,16 @@ slug = "aypapower"
 
 [[source]]
 kind = "greenhouse"
+name = "Azra Games"
+slug = "azragames"
+
+[[source]]
+kind = "greenhouse"
+name = "B2C2"
+slug = "b2c2"
+
+[[source]]
+kind = "greenhouse"
 name = "Babel Street"
 slug = "babelstreet"
 
@@ -744,6 +899,16 @@ slug = "bandwidth"
 kind = "greenhouse"
 name = "Baselayer"
 slug = "baselayer"
+
+[[source]]
+kind = "greenhouse"
+name = "BCB Group"
+slug = "bcbgroup"
+
+[[source]]
+kind = "greenhouse"
+name = "BearingPoint"
+slug = "bearingpoint"
 
 [[source]]
 kind = "greenhouse"
@@ -3394,6 +3559,11 @@ slug = "muonspace"
 kind = "greenhouse"
 name = "Murj"
 slug = "murj"
+
+[[source]]
+kind = "greenhouse"
+name = "MyHeritage"
+slug = "MyHeritage"
 
 [[source]]
 kind = "greenhouse"
@@ -13200,6 +13370,11 @@ slug = "connectwise"
 
 [[source]]
 kind = "ashby"
+name = "0G Labs"
+slug = "0g"
+
+[[source]]
+kind = "ashby"
 name = "1Password"
 slug = "1password"
 
@@ -13280,6 +13455,11 @@ slug = "airbyte"
 
 [[source]]
 kind = "ashby"
+name = "AirGarage"
+slug = "airgarage"
+
+[[source]]
+kind = "ashby"
 name = "Airspace Intelligence"
 slug = "airspace-intelligence.com"
 
@@ -13315,6 +13495,11 @@ slug = "alljoined"
 
 [[source]]
 kind = "ashby"
+name = "Alloy Enterprises"
+slug = "alloyenterprises"
+
+[[source]]
+kind = "ashby"
 name = "AlphaLife Sciences"
 slug = "alphalifesci"
 
@@ -13327,6 +13512,16 @@ slug = "ridealso"
 kind = "ashby"
 name = "Alta Ares"
 slug = "alta-ares"
+
+[[source]]
+kind = "ashby"
+name = "Altruistiq"
+slug = "altruistiq"
+
+[[source]]
+kind = "ashby"
+name = "AMBOSS"
+slug = "amboss"
 
 [[source]]
 kind = "ashby"
@@ -13407,6 +13602,11 @@ slug = "apron"
 kind = "ashby"
 name = "Aptura"
 slug = "aptura"
+
+[[source]]
+kind = "ashby"
+name = "Aquant"
+slug = "Aquant"
 
 [[source]]
 kind = "ashby"
@@ -13510,6 +13710,11 @@ slug = "backbone"
 
 [[source]]
 kind = "ashby"
+name = "Bad Robot Games"
+slug = "badrobotgames"
+
+[[source]]
+kind = "ashby"
 name = "Base Power"
 slug = "base-power"
 
@@ -13540,8 +13745,18 @@ slug = "beaconsoftware"
 
 [[source]]
 kind = "ashby"
+name = "Bem"
+slug = "bem"
+
+[[source]]
+kind = "ashby"
 name = "Benchling"
 slug = "benchling"
+
+[[source]]
+kind = "ashby"
+name = "BetterCloud"
+slug = "bettercloud"
 
 [[source]]
 kind = "ashby"
@@ -13600,6 +13815,11 @@ slug = "braintrust"
 
 [[source]]
 kind = "ashby"
+name = "Brale"
+slug = "brale"
+
+[[source]]
+kind = "ashby"
 name = "Bree"
 slug = "bree"
 
@@ -13620,6 +13840,11 @@ slug = "broccoli"
 
 [[source]]
 kind = "ashby"
+name = "Browse AI"
+slug = "browse.ai"
+
+[[source]]
+kind = "ashby"
 name = "Browserbase"
 slug = "browserbase"
 
@@ -13627,6 +13852,11 @@ slug = "browserbase"
 kind = "ashby"
 name = "Bubble"
 slug = "bubble"
+
+[[source]]
+kind = "ashby"
+name = "Builder Prime"
+slug = "builder-prime"
 
 [[source]]
 kind = "ashby"
@@ -13650,8 +13880,18 @@ slug = "cantina"
 
 [[source]]
 kind = "ashby"
+name = "Canvas Medical"
+slug = "canvas-medical"
+
+[[source]]
+kind = "ashby"
 name = "Capy"
 slug = "capy"
+
+[[source]]
+kind = "ashby"
+name = "cargo.one"
+slug = "cargo-one"
 
 [[source]]
 kind = "ashby"
@@ -13667,6 +13907,11 @@ slug = "carwow"
 kind = "ashby"
 name = "Castle"
 slug = "castle"
+
+[[source]]
+kind = "ashby"
+name = "Catio"
+slug = "Catio"
 
 [[source]]
 kind = "ashby"
@@ -13700,6 +13945,11 @@ slug = "charge-robotics"
 
 [[source]]
 kind = "ashby"
+name = "Chatbase"
+slug = "chatbase"
+
+[[source]]
+kind = "ashby"
 name = "Checkout.com"
 slug = "checkout.com"
 
@@ -13712,6 +13962,11 @@ slug = "circleback"
 kind = "ashby"
 name = "Citizen Health"
 slug = "citizen"
+
+[[source]]
+kind = "ashby"
+name = "Civic Roundtable"
+slug = "Civic Roundtable"
 
 [[source]]
 kind = "ashby"
@@ -13762,6 +14017,11 @@ slug = "clipboard"
 kind = "ashby"
 name = "Close"
 slug = "close"
+
+[[source]]
+kind = "ashby"
+name = "CoachHub"
+slug = "CoachHub Careers"
 
 [[source]]
 kind = "ashby"
@@ -14265,6 +14525,11 @@ slug = "fundamentalresearchlabs"
 
 [[source]]
 kind = "ashby"
+name = "FundamentalXR"
+slug = "FundamentalXR"
+
+[[source]]
+kind = "ashby"
 name = "Funding Circle"
 slug = "fundingcircle"
 
@@ -14337,6 +14602,11 @@ slug = "genies"
 kind = "ashby"
 name = "GenMD"
 slug = "genmd"
+
+[[source]]
+kind = "ashby"
+name = "Geoforce"
+slug = "Geoforce"
 
 [[source]]
 kind = "ashby"
@@ -14417,6 +14687,11 @@ slug = "gridcare"
 kind = "ashby"
 name = "Gritt Robotics Inc"
 slug = "gritt"
+
+[[source]]
+kind = "ashby"
+name = "GrowthX AI"
+slug = "GrowthX AI"
 
 [[source]]
 kind = "ashby"
@@ -14635,6 +14910,11 @@ slug = "insitro"
 
 [[source]]
 kind = "ashby"
+name = "Inspectiv"
+slug = "Inspectiv"
+
+[[source]]
+kind = "ashby"
 name = "Internship"
 slug = "interplay"
 
@@ -14747,6 +15027,11 @@ slug = "kong"
 kind = "ashby"
 name = "kos.ai"
 slug = "kos.ai"
+
+[[source]]
+kind = "ashby"
+name = "Koyfin"
+slug = "Koyfin"
 
 [[source]]
 kind = "ashby"
@@ -14875,6 +15160,11 @@ slug = "logos-space"
 
 [[source]]
 kind = "ashby"
+name = "Lorikeet"
+slug = "Lorikeet"
+
+[[source]]
+kind = "ashby"
 name = "Lovable"
 slug = "lovable"
 
@@ -14892,6 +15182,11 @@ slug = "lumaai"
 kind = "ashby"
 name = "Lumin Digital"
 slug = "lumin-digital"
+
+[[source]]
+kind = "ashby"
+name = "Luminovo"
+slug = "Luminovo"
 
 [[source]]
 kind = "ashby"
@@ -15055,6 +15350,11 @@ slug = "mintlify"
 
 [[source]]
 kind = "ashby"
+name = "MioDottore"
+slug = "MioDottore"
+
+[[source]]
+kind = "ashby"
 name = "Miovision"
 slug = "miovision"
 
@@ -15122,6 +15422,11 @@ slug = "mubi"
 kind = "ashby"
 name = "Mudflap"
 slug = "mudflap"
+
+[[source]]
+kind = "ashby"
+name = "MUI"
+slug = "MUI"
 
 [[source]]
 kind = "ashby"
@@ -15222,6 +15527,11 @@ slug = "notion"
 kind = "ashby"
 name = "NOX METALS"
 slug = "nox-metals"
+
+[[source]]
+kind = "ashby"
+name = "Noyo"
+slug = "Noyo"
 
 [[source]]
 kind = "ashby"
@@ -15510,6 +15820,11 @@ slug = "plaid"
 
 [[source]]
 kind = "ashby"
+name = "Pocket Worlds"
+slug = "Pocket Worlds"
+
+[[source]]
+kind = "ashby"
 name = "Pogo Technologies, Inc."
 slug = "joinpogo"
 
@@ -15785,8 +16100,18 @@ slug = "root-access"
 
 [[source]]
 kind = "ashby"
+name = "Roots Automation"
+slug = "Roots-Automation"
+
+[[source]]
+kind = "ashby"
 name = "Ropes"
 slug = "ropes"
+
+[[source]]
+kind = "ashby"
+name = "Rose Rocket"
+slug = "Rose Rocket"
 
 [[source]]
 kind = "ashby"
@@ -15827,6 +16152,16 @@ slug = "saronic"
 kind = "ashby"
 name = "Sauna"
 slug = "sauna.ai"
+
+[[source]]
+kind = "ashby"
+name = "SearchStax"
+slug = "Searchstax"
+
+[[source]]
+kind = "ashby"
+name = "Second Dinner"
+slug = "SecondDinner"
 
 [[source]]
 kind = "ashby"
@@ -15980,6 +16315,11 @@ slug = "span"
 
 [[source]]
 kind = "ashby"
+name = "Speckle"
+slug = "Speckle"
+
+[[source]]
+kind = "ashby"
 name = "Specter"
 slug = "specter"
 
@@ -16047,6 +16387,16 @@ slug = "stytch"
 kind = "ashby"
 name = "Substack"
 slug = "substack"
+
+[[source]]
+kind = "ashby"
+name = "Sui Foundation"
+slug = "Sui Foundation"
+
+[[source]]
+kind = "ashby"
+name = "Sunday GmbH"
+slug = "Sunday-GmbH"
 
 [[source]]
 kind = "ashby"
@@ -16165,6 +16515,11 @@ slug = "voleon"
 
 [[source]]
 kind = "ashby"
+name = "The Zebra"
+slug = "The Zebra"
+
+[[source]]
+kind = "ashby"
 name = "Thumbtack"
 slug = "thumbtack"
 
@@ -16217,6 +16572,11 @@ slug = "trading212"
 kind = "ashby"
 name = "Trainline"
 slug = "trainline"
+
+[[source]]
+kind = "ashby"
+name = "Transfr"
+slug = "Transfr"
 
 [[source]]
 kind = "ashby"
@@ -16292,6 +16652,11 @@ slug = "unit"
 kind = "ashby"
 name = "United Talent Agency"
 slug = "united-talent-agency"
+
+[[source]]
+kind = "ashby"
+name = "Unlearn.AI"
+slug = "Unlearn"
 
 [[source]]
 kind = "ashby"
@@ -16452,6 +16817,11 @@ slug = "workos"
 kind = "ashby"
 name = "Worldly"
 slug = "worldly"
+
+[[source]]
+kind = "ashby"
+name = "XMTP Labs"
+slug = "XMTP Labs"
 
 [[source]]
 kind = "ashby"
@@ -45184,3 +45554,814 @@ url = "https://zoetis.wd5.myworkdayjobs.com/broadbean_external"
 kind = "workday"
 name = "https://zoetis.wd5.myworkdayjobs.com/zoetis_intl"
 url = "https://zoetis.wd5.myworkdayjobs.com/zoetis_intl"
+
+# --- VC portfolio boards (Getro networks, added 2026-08-08) --------------------
+# Harvested from 21 VC/accelerator job boards running Getro (Accel, General Catalyst,
+# Insight, Thrive, 8VC, Lux, Techstars, Menlo, DCVC, Sapphire, GGV, F-Prime, Craft,
+# Entrepreneur First, SignalFire, Scale VP, Uncork, Earlybird, Underscore, OpenOcean,
+# Glasswing). Getro server-renders 20 jobs into __NEXT_DATA__ at
+# https://<board>/jobs?q=<term> (initialState.jobs.found); each job's `url` is the real
+# ATS apply link, so slugs are read off real URLs and never guessed. ?page is ignored by
+# SSR -- slice the corpus with different ?q= terms instead.
+# Every slug below was verified live on 2026-08-08 and returned at least one posting.
+
+# Greenhouse (61)
+[[source]]
+kind = "greenhouse"
+name = "Aidoc"
+slug = "aidocmedical"
+
+[[source]]
+kind = "greenhouse"
+name = "Aiven"
+slug = "aiven36"
+
+[[source]]
+kind = "greenhouse"
+name = "Altruist"
+slug = "altruist"
+
+[[source]]
+kind = "greenhouse"
+name = "Amca"
+slug = "amca"
+
+[[source]]
+kind = "greenhouse"
+name = "Avalyn Pharma"
+slug = "avalynpharma"
+
+[[source]]
+kind = "greenhouse"
+name = "Cambridge Mobile Telematics (cambridgemobiletelematics)"
+slug = "cambridgemobiletelematics"
+
+[[source]]
+kind = "greenhouse"
+name = "Casa"
+slug = "casa"
+
+[[source]]
+kind = "greenhouse"
+name = "Coherus BioSciences"
+slug = "coherusbiosciences"
+
+[[source]]
+kind = "greenhouse"
+name = "Colla Health"
+slug = "collahealth"
+
+[[source]]
+kind = "greenhouse"
+name = "CompanyCam"
+slug = "companycam"
+
+[[source]]
+kind = "greenhouse"
+name = "Connecteam"
+slug = "connecteam"
+
+[[source]]
+kind = "greenhouse"
+name = "Current (current81)"
+slug = "current81"
+
+[[source]]
+kind = "greenhouse"
+name = "Dealpath"
+slug = "dealpath"
+
+[[source]]
+kind = "greenhouse"
+name = "Dotmatics"
+slug = "dotmatics"
+
+[[source]]
+kind = "greenhouse"
+name = "Dremio"
+slug = "dremio"
+
+[[source]]
+kind = "greenhouse"
+name = "Exactera"
+slug = "exactera"
+
+[[source]]
+kind = "greenhouse"
+name = "Expel"
+slug = "expel"
+
+[[source]]
+kind = "greenhouse"
+name = "Feedzai"
+slug = "feedzai"
+
+[[source]]
+kind = "greenhouse"
+name = "Fingerprint"
+slug = "fingerprint"
+
+[[source]]
+kind = "greenhouse"
+name = "Zipline"
+slug = "flyzipline"
+
+[[source]]
+kind = "greenhouse"
+name = "Form Health"
+slug = "formhealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Hi Marley"
+slug = "himarley"
+
+[[source]]
+kind = "greenhouse"
+name = "Hive"
+slug = "hive"
+
+[[source]]
+kind = "greenhouse"
+name = "Honor"
+slug = "honor"
+
+[[source]]
+kind = "greenhouse"
+name = "HOVER"
+slug = "hover"
+
+[[source]]
+kind = "greenhouse"
+name = "Inovalon"
+slug = "inovalon"
+
+[[source]]
+kind = "greenhouse"
+name = "InStride Health"
+slug = "instridehealth"
+
+[[source]]
+kind = "greenhouse"
+name = "Labviva"
+slug = "labviva"
+
+[[source]]
+kind = "greenhouse"
+name = "Lightricks"
+slug = "lightricks"
+
+[[source]]
+kind = "greenhouse"
+name = "Marvel Fusion"
+slug = "marvelfusion"
+
+[[source]]
+kind = "greenhouse"
+name = "Orion Security"
+slug = "orioncscybersecurityltd"
+
+[[source]]
+kind = "greenhouse"
+name = "Pantheon"
+slug = "pantheon"
+
+[[source]]
+kind = "greenhouse"
+name = "PicsArt"
+slug = "picsart"
+
+[[source]]
+kind = "greenhouse"
+name = "Pivot Bio"
+slug = "pivotbio"
+
+[[source]]
+kind = "greenhouse"
+name = "Pliant Therapeutics"
+slug = "plianttherapeuticsinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Precisely International Jobs"
+slug = "preciselyinternationaljobs"
+
+[[source]]
+kind = "greenhouse"
+name = "Precisely US Jobs"
+slug = "preciselyusjobs"
+
+[[source]]
+kind = "greenhouse"
+name = "Prophia"
+slug = "prophia"
+
+[[source]]
+kind = "greenhouse"
+name = "PubNub"
+slug = "pubnub"
+
+[[source]]
+kind = "greenhouse"
+name = "Recycleye"
+slug = "recycleye"
+
+[[source]]
+kind = "greenhouse"
+name = "RedCircle"
+slug = "redcircle"
+
+[[source]]
+kind = "greenhouse"
+name = "Route"
+slug = "route"
+
+[[source]]
+kind = "greenhouse"
+name = "Saildrone"
+slug = "saildroneinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Drift"
+slug = "salesloft"
+
+[[source]]
+kind = "greenhouse"
+name = "Salsify"
+slug = "salsify"
+
+[[source]]
+kind = "greenhouse"
+name = "Science 37"
+slug = "science37"
+
+[[source]]
+kind = "greenhouse"
+name = "SentinelOne"
+slug = "sentinellabs"
+
+[[source]]
+kind = "greenhouse"
+name = "SimScale"
+slug = "simscale"
+
+[[source]]
+kind = "greenhouse"
+name = "Siteline"
+slug = "siteline"
+
+[[source]]
+kind = "greenhouse"
+name = "Galileo Financial Technologies"
+slug = "sofitechsolutions"
+
+[[source]]
+kind = "greenhouse"
+name = "Staffbase"
+slug = "staffbase"
+
+[[source]]
+kind = "greenhouse"
+name = "Strivacity"
+slug = "strivacity"
+
+[[source]]
+kind = "greenhouse"
+name = "Supermetrics"
+slug = "supermetricsoy"
+
+[[source]]
+kind = "greenhouse"
+name = "Torii"
+slug = "toriihq"
+
+[[source]]
+kind = "greenhouse"
+name = "TraceLink"
+slug = "tracelinkinc"
+
+[[source]]
+kind = "greenhouse"
+name = "Tulip Interfaces"
+slug = "tulip"
+
+[[source]]
+kind = "greenhouse"
+name = "Unison Home Ownership Investors"
+slug = "unisonhomeownershipinvestors"
+
+[[source]]
+kind = "greenhouse"
+name = "Verusen"
+slug = "verusen"
+
+[[source]]
+kind = "greenhouse"
+name = "Wheelhouse"
+slug = "wheelhouse"
+
+[[source]]
+kind = "greenhouse"
+name = "Whop"
+slug = "whop"
+
+[[source]]
+kind = "greenhouse"
+name = "Zenoti"
+slug = "zenoti"
+
+# Lever (30)
+[[source]]
+kind = "lever"
+name = "Aeva"
+slug = "aeva"
+
+[[source]]
+kind = "lever"
+name = "Bigfinite Inc."
+slug = "aizon"
+
+[[source]]
+kind = "lever"
+name = "ARTBIO"
+slug = "artbio"
+
+[[source]]
+kind = "lever"
+name = "Betr"
+slug = "betr"
+
+[[source]]
+kind = "lever"
+name = "BlaBlaCar"
+slug = "blablacar"
+
+[[source]]
+kind = "lever"
+name = "GenEdit"
+slug = "BreezeBio"
+
+[[source]]
+kind = "lever"
+name = "Burro"
+slug = "Burro"
+
+[[source]]
+kind = "lever"
+name = "Crux OCM"
+slug = "cruxocm"
+
+[[source]]
+kind = "lever"
+name = "DroneDeploy"
+slug = "dronedeploy"
+
+[[source]]
+kind = "lever"
+name = "EGenesis"
+slug = "egenesisbio"
+
+[[source]]
+kind = "lever"
+name = "Everly Health"
+slug = "everlywell"
+
+[[source]]
+kind = "lever"
+name = "Finch"
+slug = "finch"
+
+[[source]]
+kind = "lever"
+name = "Iru"
+slug = "iru"
+
+[[source]]
+kind = "lever"
+name = "Karius"
+slug = "kariusdx"
+
+[[source]]
+kind = "lever"
+name = "Layup Parts"
+slug = "layup"
+
+[[source]]
+kind = "lever"
+name = "Loft Orbital"
+slug = "loftorbital"
+
+[[source]]
+kind = "lever"
+name = "Mainspring Energy"
+slug = "mainspringenergy"
+
+[[source]]
+kind = "lever"
+name = "MoonPay"
+slug = "moonpay"
+
+[[source]]
+kind = "lever"
+name = "Mythic"
+slug = "mythic-ai.com"
+
+[[source]]
+kind = "lever"
+name = "Odaseva"
+slug = "odaseva"
+
+[[source]]
+kind = "lever"
+name = "PDI Technologies"
+slug = "pditechnologies"
+
+[[source]]
+kind = "lever"
+name = "Phoenix Tailings"
+slug = "PhoenixTailings"
+
+[[source]]
+kind = "lever"
+name = "Pipedrive"
+slug = "pipedrive"
+
+[[source]]
+kind = "lever"
+name = "Plume"
+slug = "plume"
+
+[[source]]
+kind = "lever"
+name = "Propel Software"
+slug = "propelsoftware"
+
+[[source]]
+kind = "lever"
+name = "Qonto"
+slug = "qonto"
+
+[[source]]
+kind = "lever"
+name = "Reveal Technology"
+slug = "revealtech"
+
+[[source]]
+kind = "lever"
+name = "Ro"
+slug = "ro"
+
+[[source]]
+kind = "lever"
+name = "Sonatype"
+slug = "sonatype"
+
+[[source]]
+kind = "lever"
+name = "Tala"
+slug = "tala"
+
+# Ashby (33)
+[[source]]
+kind = "ashby"
+name = "Affinity"
+slug = "affinity.co"
+
+[[source]]
+kind = "ashby"
+name = "BeyondMath"
+slug = "beyondmath"
+
+[[source]]
+kind = "ashby"
+name = "Branch"
+slug = "BranchInsurance"
+
+[[source]]
+kind = "ashby"
+name = "Chief"
+slug = "chief"
+
+[[source]]
+kind = "ashby"
+name = "Clair"
+slug = "clair"
+
+[[source]]
+kind = "ashby"
+name = "Cloaked"
+slug = "cloaked"
+
+[[source]]
+kind = "ashby"
+name = "The Duckbill Group"
+slug = "duckbill"
+
+[[source]]
+kind = "ashby"
+name = "Flipside"
+slug = "edisyl"
+
+[[source]]
+kind = "ashby"
+name = "Edra.ai"
+slug = "edra"
+
+[[source]]
+kind = "ashby"
+name = "Emidat"
+slug = "emidat"
+
+[[source]]
+kind = "ashby"
+name = "Expressable"
+slug = "expressable"
+
+[[source]]
+kind = "ashby"
+name = "finmid"
+slug = "finmid.com"
+
+[[source]]
+kind = "ashby"
+name = "Fourier"
+slug = "Fourier"
+
+[[source]]
+kind = "ashby"
+name = "Genesis Therapeutics"
+slug = "genesis-molecular-ai"
+
+[[source]]
+kind = "ashby"
+name = "Genomics"
+slug = "genomics"
+
+[[source]]
+kind = "ashby"
+name = "Inspiren"
+slug = "inspiren"
+
+[[source]]
+kind = "ashby"
+name = "Kantiv"
+slug = "kantiv"
+
+[[source]]
+kind = "ashby"
+name = "Neo.Tax"
+slug = "neo-tax"
+
+[[source]]
+kind = "ashby"
+name = "Nest Health"
+slug = "nest-health"
+
+[[source]]
+kind = "ashby"
+name = "Numos"
+slug = "numosai"
+
+[[source]]
+kind = "ashby"
+name = "Openly"
+slug = "openly"
+
+[[source]]
+kind = "ashby"
+name = "People Data Labs"
+slug = "people-data-labs"
+
+[[source]]
+kind = "ashby"
+name = "Porters"
+slug = "porters"
+
+[[source]]
+kind = "ashby"
+name = "Reprise"
+slug = "reprise"
+
+[[source]]
+kind = "ashby"
+name = "Roger Healthcare"
+slug = "rogerhealthcare"
+
+[[source]]
+kind = "ashby"
+name = "Sable "
+slug = "sable"
+
+[[source]]
+kind = "ashby"
+name = "SignalFire"
+slug = "SignalFire"
+
+[[source]]
+kind = "ashby"
+name = "Sofar Ocean"
+slug = "sofarocean"
+
+[[source]]
+kind = "ashby"
+name = "Spekit"
+slug = "spekit"
+
+[[source]]
+kind = "ashby"
+name = "Wellth"
+slug = "wellth"
+
+[[source]]
+kind = "ashby"
+name = "xDOF"
+slug = "xdof"
+
+# Workday (7)
+[[source]]
+kind = "workday"
+name = "Momentive Software"
+url = "https://communitybrands.wd1.myworkdayjobs.com/momentive_external_careers"
+
+[[source]]
+kind = "workday"
+name = "Cotality"
+url = "https://cotality.wd115.myworkdayjobs.com/global"
+
+[[source]]
+kind = "workday"
+name = "Lower"
+url = "https://lower.wd1.myworkdayjobs.com/lower_external_careers"
+
+[[source]]
+kind = "workday"
+name = "nCino"
+url = "https://ncino.wd5.myworkdayjobs.com/ncinocareers"
+
+[[source]]
+kind = "workday"
+name = "Omniome"
+url = "https://pacbio.wd12.myworkdayjobs.com/pacbio-"
+
+[[source]]
+kind = "workday"
+name = "National Resilience"
+url = "https://resilience.wd1.myworkdayjobs.com/resilience_careers"
+
+[[source]]
+kind = "workday"
+name = "Teladoc Health"
+url = "https://teladoc.wd503.myworkdayjobs.com/teladochealth_is_hiring"
+
+# Gem and Rippling (added 2026-08-08) ------------------------------------------
+# Two ATS platforms found in the same Getro harvest, each now with a fetcher+adapter.
+# Unlike the slug-per-subdomain providers above, every board on these two lives on ONE
+# host (jobs.gem.com, api.rippling.com), so polite_http's per-host clock already paces
+# them as a group -- no _SHARED_LIMIT_DOMAINS entry needed.
+#
+#   curl -s -X POST https://jobs.gem.com/api/public/graphql -H 'Content-Type: application/json' \
+#     -d '{"query":"query($b:String!){oatsExternalJobPostings(boardId:$b){jobPostings{extId}}}","variables":{"b":"<slug>"}}'
+#   curl -s https://api.rippling.com/platform/api/ats/v1/board/<slug>/jobs | jq length
+#
+# Gem's boardId is the URL slug, NOT the board UUID the page embeds (the UUID returns an
+# empty list). Rippling boards served on a vanity host (<slug>.rippling-ats.com) use that
+# same slug against api.rippling.com -- 'black-kite' below is one of those.
+# All 27 verified live on 2026-08-08.
+
+# Gem (11)
+[[source]]
+kind = "gem"
+name = "Bilt Rewards"
+slug = "bilt"
+
+[[source]]
+kind = "gem"
+name = "Bolna"
+slug = "bolna"
+
+[[source]]
+kind = "gem"
+name = "CodeSignal"
+slug = "codesignal"
+
+[[source]]
+kind = "gem"
+name = "Firestorm"
+slug = "firestorm"
+
+[[source]]
+kind = "gem"
+name = "Function Health"
+slug = "function-health"
+
+[[source]]
+kind = "gem"
+name = "Hallow"
+slug = "hallow"
+
+[[source]]
+kind = "gem"
+name = "Nominal"
+slug = "nominal"
+
+[[source]]
+kind = "gem"
+name = "Rivia"
+slug = "rivia"
+
+[[source]]
+kind = "gem"
+name = "sennder"
+slug = "senndertechnologies-gmbh"
+
+[[source]]
+kind = "gem"
+name = "Supio"
+slug = "supio"
+
+[[source]]
+kind = "gem"
+name = "The Boring Company"
+slug = "the-boring-company"
+
+# Rippling (16)
+[[source]]
+kind = "rippling"
+name = "AgentSync"
+slug = "agentsync-careers"
+
+[[source]]
+kind = "rippling"
+name = "Black Kite"
+slug = "black-kite"
+
+[[source]]
+kind = "rippling"
+name = "Boom Supersonic"
+slug = "boom-supersonic"
+
+[[source]]
+kind = "rippling"
+name = "Carbon Health"
+slug = "carbon-health"
+
+[[source]]
+kind = "rippling"
+name = "Hearth"
+slug = "hearth-careers"
+
+[[source]]
+kind = "rippling"
+name = "NOCD"
+slug = "nocd"
+
+[[source]]
+kind = "rippling"
+name = "Opendoor"
+slug = "opendoor"
+
+[[source]]
+kind = "rippling"
+name = "ProcessUnity"
+slug = "processunity"
+
+[[source]]
+kind = "rippling"
+name = "QuotaPath"
+slug = "quotapath"
+
+[[source]]
+kind = "rippling"
+name = "Root Insurance"
+slug = "joinroot"
+
+[[source]]
+kind = "rippling"
+name = "Sanas"
+slug = "sanas"
+
+[[source]]
+kind = "rippling"
+name = "Shippo"
+slug = "shippo"
+
+[[source]]
+kind = "rippling"
+name = "Slang"
+slug = "slangai"
+
+[[source]]
+kind = "rippling"
+name = "Tive"
+slug = "tive-careers"
+
+[[source]]
+kind = "rippling"
+name = "Trustlayer"
+slug = "trustlayer-inc"
+
+[[source]]
+kind = "rippling"
+name = "Wander"
+slug = "wander"

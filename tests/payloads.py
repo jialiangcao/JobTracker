@@ -91,3 +91,46 @@ WORKDAY_LIST_PAGE: dict[str, Any] = {
         },
     ],
 }
+
+
+# Gem's public GraphQL board query, one posting. Captured from jobs.gem.com; the
+# description keeps its inline styling because that is what the endpoint really returns.
+GEM_JOB: dict[str, Any] = {
+    "id": "T2F0c0pvYlBvc3Q6OTI5MTI=",
+    "extId": "5175038004",
+    "title": "Software Engineering Intern",
+    "descriptionHtml": (
+        '<div><span style="color: rgb(38, 38, 38);">Join our Summer 2027 internship.'
+        "</span></div><ul><li>Write <b>Python</b></li></ul>"
+    ),
+    # Epoch seconds as an int here; other boards send the same field as a string, which is
+    # why the adapter coerces before parsing.
+    "firstPublishedTsSec": 1775439282,
+    "locations": [
+        {
+            "id": "20069",
+            "name": "New York",
+            "city": "New York",
+            "isoCountry": "USA",
+            "isRemote": False,
+        },
+        {"id": "20070", "name": "Remote (US)", "city": "", "isoCountry": None, "isRemote": True},
+    ],
+    "job": {
+        "id": "T2F0c0pvYjoxMDA0NTQ=",
+        "department": {"id": "32076", "name": "Content Engineering"},
+        "locationType": "IN_OFFICE",
+        "employmentType": "INTERN",
+    },
+    "_board_slug": "acme",
+}
+
+# Rippling's board list endpoint returns a bare array of these. Note there is no
+# description and no timestamp — the list endpoint carries neither.
+RIPPLING_JOB: dict[str, Any] = {
+    "uuid": "9a4d79c0-d602-4cb4-a1d3-629b13faaa74",
+    "name": "Software Engineering Intern",
+    "department": {"id": "Build Engineering", "label": "Build Engineering"},
+    "url": "https://ats.rippling.com/acme/jobs/9a4d79c0-d602-4cb4-a1d3-629b13faaa74",
+    "workLocation": {"label": "Centennial, CO", "id": "Centennial, CO"},
+}
