@@ -742,11 +742,6 @@ slug = "aura"
 
 [[source]]
 kind = "greenhouse"
-name = "Aurora Innovation"
-slug = "aurorainnovation"
-
-[[source]]
-kind = "greenhouse"
 name = "Authentic"
 slug = "authenticbrandsgroup"
 
@@ -1087,11 +1082,6 @@ slug = "brightai"
 
 [[source]]
 kind = "greenhouse"
-name = "Brooklinen"
-slug = "brooklinen"
-
-[[source]]
-kind = "greenhouse"
 name = "Bugcrowd"
 slug = "bugcrowd"
 
@@ -1384,11 +1374,6 @@ slug = "clerkie"
 kind = "greenhouse"
 name = "Climate Corps"
 slug = "cc"
-
-[[source]]
-kind = "greenhouse"
-name = "ClimateAI"
-slug = "climateai"
 
 [[source]]
 kind = "greenhouse"
@@ -2112,11 +2097,6 @@ slug = "fireblocks"
 
 [[source]]
 kind = "greenhouse"
-name = "Fireworks AI"
-slug = "fireworksai"
-
-[[source]]
-kind = "greenhouse"
 name = "First Day"
 slug = "firstday"
 
@@ -2744,11 +2724,6 @@ slug = "industrialelectricmanufacturing"
 kind = "greenhouse"
 name = "IEQ Capital"
 slug = "ieqcapital"
-
-[[source]]
-kind = "greenhouse"
-name = "iHerb"
-slug = "iherb"
 
 [[source]]
 kind = "greenhouse"
@@ -4367,11 +4342,6 @@ slug = "rebuildmanufacturing"
 
 [[source]]
 kind = "greenhouse"
-name = "Reach Financial"
-slug = "reach"
-
-[[source]]
-kind = "greenhouse"
 name = "Real Chemistry"
 slug = "realchemistry"
 
@@ -5134,11 +5104,6 @@ slug = "tecovas"
 kind = "greenhouse"
 name = "TEGNA"
 slug = "tegnainc"
-
-[[source]]
-kind = "greenhouse"
-name = "Tekion"
-slug = "tekion"
 
 [[source]]
 kind = "greenhouse"
@@ -7027,11 +6992,6 @@ slug = "aechelontechnology"
 kind = "greenhouse"
 name = "AEG Worldwide"
 slug = "aegworldwide"
-
-[[source]]
-kind = "greenhouse"
-name = "Aerospike"
-slug = "aerospike"
 
 [[source]]
 kind = "greenhouse"
@@ -11130,11 +11090,6 @@ slug = "openfx"
 
 [[source]]
 kind = "greenhouse"
-name = "Operant AI"
-slug = "operantai"
-
-[[source]]
-kind = "greenhouse"
 name = "Oportun"
 slug = "oportun"
 
@@ -14505,11 +14460,6 @@ slug = "foxglove"
 
 [[source]]
 kind = "ashby"
-name = "Fractional AI"
-slug = "fractional-ai"
-
-[[source]]
-kind = "ashby"
 name = "Frec Markets, Inc."
 slug = "frec"
 
@@ -14517,11 +14467,6 @@ slug = "frec"
 kind = "ashby"
 name = "Frontier Health"
 slug = "frontier-health"
-
-[[source]]
-kind = "ashby"
-name = "Fundamental Research Labs"
-slug = "fundamentalresearchlabs"
 
 [[source]]
 kind = "ashby"
@@ -17097,11 +17042,6 @@ slug = "automat"
 kind = "ashby"
 name = "Avallon AI"
 slug = "avallon"
-
-[[source]]
-kind = "ashby"
-name = "Aviator"
-slug = "aviator"
 
 [[source]]
 kind = "ashby"
@@ -23453,11 +23393,6 @@ slug = "Perk"
 
 [[source]]
 kind = "ashby"
-name = "phare-r1-r37"
-slug = "phare-r1-r37"
-
-[[source]]
-kind = "ashby"
 name = "Phinitylabs"
 slug = "Phinitylabs"
 
@@ -24758,11 +24693,6 @@ slug = "syndica"
 
 [[source]]
 kind = "ashby"
-name = "synthflow"
-slug = "synthflow"
-
-[[source]]
-kind = "ashby"
 name = "t1energy"
 slug = "t1energy"
 
@@ -25080,11 +25010,6 @@ slug = "tread"
 kind = "ashby"
 name = "triedge-investments"
 slug = "triedge-investments"
-
-[[source]]
-kind = "ashby"
-name = "trove"
-slug = "trove"
 
 [[source]]
 kind = "ashby"

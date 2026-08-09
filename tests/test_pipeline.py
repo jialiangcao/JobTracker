@@ -123,6 +123,104 @@ async def test_source_failure_is_contained_and_breaker_trips(
 
 
 @respx.mock
+async def test_throttling_never_trips_the_breaker(
+    settings: Settings, session_factory: SessionFactory
+) -> None:
+    """A 429 means we polled too fast, not that the board is gone. Counting it toward
+    auto-disable once took out half the fleet over a pacing bug."""
+    settings = settings.model_copy(
+        update={"discord_bot_token": "", "discord_channel_id": "", "circuit_breaker_threshold": 2}
+    )
+    source_id = await seed(session_factory)
+    respx.get(GH_URL).mock(return_value=httpx.Response(429))
+
+    for _ in range(3):  # well past the threshold
+        await run_pipeline(settings, session_factory)
+
+    async with session_factory() as session:
+        source = await session.get(Source, source_id)
+        assert source is not None
+        assert source.enabled is True
+        assert source.consecutive_failures == 0
+        # The failure is still recorded per-run — it is just not held against the source.
+        results = list(await session.scalars(select(RunSourceResult)))
+        assert len(results) == 3
+        assert all(r.status == "error" and r.http_status == 429 for r in results)
+
+
+async def test_reenable_all_revives_only_breaker_trips(session_factory: SessionFactory) -> None:
+    """Recovering from a fleet-wide cause must not resurrect hand-disabled sources."""
+    async with session_factory() as session:
+        tripped = await repo.add_source(session, "greenhouse", "Acme", {"slug": "acme"})
+        manual = await repo.add_source(session, "lever", "Globex", {"slug": "globex"})
+        await repo.record_source_failure(session, tripped, "HTTP 500", 1)
+        await repo.set_source_enabled(session, manual.id, False)
+        await session.commit()
+        assert tripped.enabled is False
+        assert tripped.disabled_reason is not None
+
+        assert await repo.reenable_auto_disabled(session) == 1
+        await session.commit()
+
+    async with session_factory() as session:
+        revived = await session.get(Source, tripped.id)
+        assert revived is not None
+        assert revived.enabled is True
+        assert revived.consecutive_failures == 0
+        assert revived.disabled_reason is None
+        still_off = await session.get(Source, manual.id)
+        assert still_off is not None
+        assert still_off.enabled is False
+
+
+@respx.mock
+async def test_rotation_budget_cycles_through_sources(
+    settings: Settings, session_factory: SessionFactory
+) -> None:
+    """With a budget smaller than the fleet, consecutive runs cover different sources."""
+    settings = settings.model_copy(
+        update={"discord_bot_token": "", "discord_channel_id": "", "max_sources_per_run": 1}
+    )
+    await seed(session_factory)
+    async with session_factory() as session:
+        await repo.add_source(session, "lever", "Globex", {"slug": "globex"})
+        await session.commit()
+    gh = respx.get(GH_URL).mock(return_value=httpx.Response(200, json={"jobs": [GREENHOUSE_JOB]}))
+    lever = respx.get(LEVER_URL).mock(return_value=httpx.Response(200, json=[LEVER_JOB]))
+
+    # Both never polled → the tie breaks on id, so the older source goes first.
+    summary = await run_pipeline(settings, session_factory)
+    assert summary.sources_total == 1
+    assert gh.called
+    assert not lever.called
+
+    # Second run: the first source now has a last_polled_at, so the other one is due.
+    summary2 = await run_pipeline(settings, session_factory)
+    assert summary2.sources_total == 1
+    assert lever.called
+    assert gh.call_count == 1  # not polled twice while another source waited
+
+    # Third run wraps back around.
+    await run_pipeline(settings, session_factory)
+    assert gh.call_count == 2
+
+
+@respx.mock
+async def test_dry_run_does_not_advance_the_rotation(
+    settings: Settings, session_factory: SessionFactory
+) -> None:
+    """Previewing a slice must not push those sources to the back of the queue."""
+    source_id = await seed(session_factory)
+    respx.get(GH_URL).mock(return_value=httpx.Response(200, json={"jobs": [GREENHOUSE_JOB]}))
+
+    await run_pipeline(settings, session_factory, dry_run=True)
+    async with session_factory() as session:
+        source = await session.get(Source, source_id)
+        assert source is not None
+        assert source.last_polled_at is None
+
+
+@respx.mock
 async def test_dry_run_writes_nothing(settings: Settings, session_factory: SessionFactory) -> None:
     await seed(session_factory)
     respx.get(GH_URL).mock(

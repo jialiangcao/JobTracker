@@ -263,7 +263,18 @@ class WorkdayFetcher:
                 f"POST {coords.jobs_url} returned HTTP {response.status_code}",
                 response.status_code,
             )
-        data = response.json()
+        # Bot mitigation answers HTTP 200 with an HTML challenge page, so a status check
+        # is not enough to know we got JSON. Report what actually arrived — a bare
+        # JSONDecodeError here says nothing about why a thousand boards stopped working.
+        try:
+            data = response.json()
+        except ValueError as exc:
+            snippet = " ".join(response.text[:200].split())
+            raise FetchError(
+                f"POST {coords.jobs_url} returned HTTP {response.status_code} but not JSON "
+                f"(content-type={response.headers.get('content-type', 'none')}): {snippet!r}",
+                response.status_code,
+            ) from exc
         if not isinstance(data, dict):
             raise FetchError(f"POST {coords.jobs_url} returned a non-object body")
         return data, response.status_code

@@ -45,6 +45,7 @@ uv run pytest
 | `jobtrack db-upgrade` | Apply Alembic migrations |
 | `jobtrack sources sync [path] [--prune]` | Apply `sources.toml` (the normal way to manage sources) |
 | `jobtrack sources add/list/enable/disable` | One-off source edits (`--slug` for ATS boards, `--url` for scrape) |
+| `jobtrack sources reenable-all` | Revive every circuit-breaker-disabled source, clearing failure streaks |
 | `jobtrack rules seed/add/list/enable/disable` | Manage regex filter rules |
 
 Filter semantics: rules are grouped by name prefix (`cs:*` is one group); a job must
@@ -121,7 +122,17 @@ Nightly DB backup (host crontab, `crontab -e`):
 ## Operations notes
 
 - A source that fails 5 consecutive runs is auto-disabled (circuit breaker) with a Sentry
-  event; re-enable after fixing with `jobtrack sources enable <id>`.
+  event; re-enable after fixing with `jobtrack sources enable <id>`. Throttling (HTTP 429
+  and 503) is exempt — that is a pacing problem on our side, and counting it would let one
+  too-fast provider group auto-disable every board behind it.
+- After fixing a fleet-wide cause, `jobtrack sources reenable-all` revives every
+  breaker-disabled source at once. Hand-disabled and `--prune`d sources are left off.
+- With more boards than one interval can politely poll, set `MAX_SOURCES_PER_RUN`: each run
+  takes that many least-recently-polled sources and the rest come round on later runs.
+  Budget it from the *busiest host*, not the total — hosts are paced independently, so a
+  run lasts about (requests on the busiest host × its delay). Check the arithmetic against
+  `RUN_INTERVAL_SECONDS` whenever the fleet grows; overshooting it shows up as throttling
+  rather than as a late run.
 - Unsent matches persist in the `candidates` outbox and are retried next run — a crash or
   Discord outage never drops or duplicates a notification.
 - `sources.config.politeness` can slow down individual sources, e.g.

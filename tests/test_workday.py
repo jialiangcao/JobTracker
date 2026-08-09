@@ -276,3 +276,24 @@ async def test_http_error_becomes_a_fetch_error(settings: Settings) -> None:
         with pytest.raises(FetchError) as excinfo:
             await WorkdayFetcher().fetch(ref(), client)
     assert excinfo.value.http_status == 400
+
+
+@respx.mock
+async def test_a_200_challenge_page_reports_what_arrived(settings: Settings) -> None:
+    """Bot mitigation answers 200 with HTML. The error has to name that, or a fleet-wide
+    block reads as an unexplained JSONDecodeError on every board at once."""
+    respx.post(JOBS_URL).mock(
+        return_value=httpx.Response(
+            200,
+            html="<html><head><title>Just a moment...</title></head><body>checking</body></html>",
+        )
+    )
+    async with PoliteClient(settings) as client:
+        with pytest.raises(FetchError) as excinfo:
+            await WorkdayFetcher().fetch(ref(), client)
+
+    message = str(excinfo.value)
+    assert "not JSON" in message
+    assert "text/html" in message
+    assert "Just a moment" in message
+    assert excinfo.value.http_status == 200

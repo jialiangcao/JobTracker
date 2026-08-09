@@ -1,9 +1,9 @@
 """Query layer: run bookkeeping, source management, dedup upserts, and the send outbox."""
 
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, cast
 
-from sqlalchemy import select, update
+from sqlalchemy import CursorResult, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.attributes import flag_modified
 
@@ -17,12 +17,28 @@ def utcnow() -> datetime:
     return datetime.now(UTC)
 
 
+# Statuses that mean "come back later", not "this board is gone" — see record_source_failure.
+_THROTTLE_STATUSES = frozenset({429, 503})
+
+
 # --- sources ---------------------------------------------------------------
 
 
-async def get_enabled_sources(session: AsyncSession) -> list[Source]:
-    result = await session.scalars(select(Source).where(Source.enabled).order_by(Source.id))
-    return list(result)
+async def get_enabled_sources(session: AsyncSession, limit: int | None = None) -> list[Source]:
+    """Enabled sources, least-recently-polled first (never-polled ahead of everything).
+
+    With more boards than one interval can politely poll, `limit` takes a slice and the
+    ordering rotates through the rest on later runs: every source is still reached, just
+    every few runs instead of every run. Ties break on id so the order is deterministic.
+    """
+    query = (
+        select(Source)
+        .where(Source.enabled)
+        .order_by(Source.last_polled_at.is_(None).desc(), Source.last_polled_at, Source.id)
+    )
+    if limit is not None and limit > 0:
+        query = query.limit(limit)
+    return list(await session.scalars(query))
 
 
 async def add_source(session: AsyncSession, kind: str, name: str, config: dict[str, Any]) -> Source:
@@ -74,6 +90,28 @@ async def set_source_enabled(session: AsyncSession, source_id: int, enabled: boo
     await session.execute(update(Source).where(Source.id == source_id).values(**values))
 
 
+async def reenable_auto_disabled(session: AsyncSession) -> int:
+    """Re-enable every source the circuit breaker disabled, clearing its streak.
+
+    Scoped to breaker trips (`disabled_reason` set) so sources disabled by hand or by
+    `sources sync --prune` stay off. Returns how many were revived."""
+    result = cast(
+        CursorResult[Any],
+        await session.execute(
+            update(Source)
+            .where(~Source.enabled, Source.disabled_reason.is_not(None))
+            .values(enabled=True, consecutive_failures=0, disabled_reason=None)
+        ),
+    )
+    return result.rowcount
+
+
+async def mark_source_polled(session: AsyncSession, source: Source) -> None:
+    """Advance the rotation cursor. Called for failures too — a board that errors must
+    not monopolize the next run's budget by staying permanently least-recently-polled."""
+    source.last_polled_at = utcnow()
+
+
 async def record_source_success(
     session: AsyncSession,
     source: Source,
@@ -92,10 +130,21 @@ async def record_source_success(
 
 
 async def record_source_failure(
-    session: AsyncSession, source: Source, error: str, breaker_threshold: int
+    session: AsyncSession,
+    source: Source,
+    error: str,
+    breaker_threshold: int,
+    http_status: int | None = None,
 ) -> bool:
     """Increment the failure streak; trip the circuit breaker at the threshold.
-    Returns True if the source was auto-disabled by this failure."""
+    Returns True if the source was auto-disabled by this failure.
+
+    Throttling does not count. A 429 means *we* polled too fast and a 503 means the
+    provider is shedding load — neither says the board is gone, and counting them let a
+    pacing bug auto-disable half the fleet. The streak is left untouched (not reset), so
+    a source alternating between throttled and genuinely broken still trips eventually."""
+    if http_status in _THROTTLE_STATUSES:
+        return False
     source.consecutive_failures += 1
     if source.consecutive_failures >= breaker_threshold:
         source.enabled = False

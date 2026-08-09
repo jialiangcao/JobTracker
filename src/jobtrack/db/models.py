@@ -13,6 +13,7 @@ from sqlalchemy import (
     Integer,
     Text,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -28,7 +29,17 @@ class Base(DeclarativeBase):
 
 class Source(Base):
     __tablename__ = "sources"
-    __table_args__ = (UniqueConstraint("kind", "name", name="uq_sources_kind_name"),)
+    __table_args__ = (
+        UniqueConstraint("kind", "name", name="uq_sources_kind_name"),
+        # Serves the rotation ordering in repo.get_enabled_sources; partial on Postgres
+        # because disabled sources are never selected (the kwarg is ignored on SQLite).
+        Index(
+            "ix_sources_rotation",
+            "last_polled_at",
+            "id",
+            postgresql_where=text("enabled"),
+        ),
+    )
 
     id: Mapped[int] = mapped_column(PKInteger, primary_key=True, autoincrement=True)
     kind: Mapped[str] = mapped_column(Text)  # greenhouse | lever | ashby | ... | scrape | board
@@ -40,6 +51,9 @@ class Source(Base):
     consecutive_failures: Mapped[int] = mapped_column(Integer, default=0)
     disabled_reason: Mapped[str | None] = mapped_column(Text, default=None)
     last_success_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
+    # Rotation cursor: advanced on every poll attempt, success or failure. Ordering by it
+    # (nulls first) is what makes a per-run budget fair — see repo.get_enabled_sources.
+    last_polled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 

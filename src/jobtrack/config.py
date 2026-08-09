@@ -46,7 +46,14 @@ class Settings(BaseSettings):
     backoff_cap_seconds: float = 60.0
     user_agent: str = "jobtrack/0.1 (personal job-listing aggregator)"
 
-    # Circuit breaker: auto-disable a source after this many consecutive failures
+    # Rotation budget: poll at most this many sources per run, least-recently-polled
+    # first, so the fleet can outgrow what one interval will politely fetch. 0 = no cap
+    # (every enabled source every run), which is only safe while the pacing math above
+    # says the busiest host fits inside run_interval_seconds.
+    max_sources_per_run: int = 0
+
+    # Circuit breaker: auto-disable a source after this many consecutive failures.
+    # Throttling (429/503) is exempt — see repo.record_source_failure.
     circuit_breaker_threshold: int = 5
 
     # Named proxy pools for future scraping sources, e.g. {"residential": "http://..."}

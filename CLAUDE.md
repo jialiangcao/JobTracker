@@ -29,9 +29,11 @@ Schema changes require a hand-written Alembic migration in `alembic/versions/` a
 
 One run flows through `pipeline.py`: fetch → adapt → filter → dedup → persist → send. Fetch/adapt/filter run concurrently per source with no DB access; the DB phase is serial in one session. Per-source failures are contained (run status `partial`, not `failed`).
 
+A run polls the `MAX_SOURCES_PER_RUN` least-recently-polled enabled sources (`sources.last_polled_at`, advanced on every non-dry poll), so the fleet can be larger than one interval will politely fetch. `0` disables the cap.
+
 Two protocol/registry pairs decouple the stages:
 
-- **Fetchers** (`sources/`): `Fetcher.fetch(SourceRef, PoliteClient) -> FetchResult` per ATS kind, resolved by `sources/registry.py`. All HTTP goes through `sources/polite_http.py` — per-host semaphores, jittered pacing, backoff honoring `Retry-After`, ETag/Last-Modified conditional requests (cached in `sources.config`), and per-source politeness overrides. Providers in `_SHARED_LIMIT_DOMAINS` (Workday) pace and cap as one group across all their subdomains, since they rate-limit per client IP no matter which tenant is addressed; `_GROUP_POLITENESS` sets that group's rate. `sources/scrape/` is a stub for future browser-based fetching.
+- **Fetchers** (`sources/`): `Fetcher.fetch(SourceRef, PoliteClient) -> FetchResult` per ATS kind, resolved by `sources/registry.py`. All HTTP goes through `sources/polite_http.py` — per-host semaphores, jittered pacing, backoff honoring `Retry-After`, ETag/Last-Modified conditional requests (cached in `sources.config`), and per-source politeness overrides. Providers in `_SHARED_LIMIT_DOMAINS` (Workday) pace and cap as one group across all their subdomains, since they rate-limit per client IP no matter which tenant is addressed; `_GROUP_POLITENESS` sets the rate for those groups and for single hosts serving the whole fleet (`apply.workable.com`). Note that Workday enforces its real ceiling with a bot-mitigation challenge served as **HTTP 200 with an HTML body**, not a 429 — rate probes cannot see it, so treat a JSON parse failure there as a throttling signal. `sources/scrape/` is a stub for future browser-based fetching.
 - **Adapters** (`adapters/`): `Adapter.map(RawPosting) -> JobPosting | None` (None = unparseable, counted not fatal), resolved from `source.kind` by `adapters/registry.py`; `config.adapter_override` on a source wins. `adapters/fallback.py` is a heuristic key-search adapter used for unknown kinds.
 
 `RawPosting` is the fetcher→adapter boundary type; `JobPosting` (both in `schema.py`) is the internal normalized schema everything downstream consumes.
@@ -39,7 +41,7 @@ Two protocol/registry pairs decouple the stages:
 Behavior that lives in the DB, not code:
 
 - **Filter rules** (`filter_rules` table, applied by `filtering/rules.py`): rules sharing a name prefix (`season:*`) form a group; a job must match every enabled include group (OR within a group) and no exclude rule. Change criteria via `jobtrack rules`, not deploys.
-- **Sources** (`sources` table): `config` jsonb holds slug/URL, adapter override, politeness, cached ETags. A source failing `circuit_breaker_threshold` (5) consecutive runs is auto-disabled with a Sentry event.
+- **Sources** (`sources` table): `config` jsonb holds slug/URL, adapter override, politeness, cached ETags. A source failing `circuit_breaker_threshold` (5) consecutive runs is auto-disabled with a Sentry event — except on 429/503, which mean our pacing is wrong, not that the board is gone. `jobtrack sources reenable-all` undoes breaker trips in bulk.
 - **Discord outbox** (`candidates` table): matches are inserted `pending`, then `notify/discord.py` drains the outbox serially with rate-limit pacing. A crash or Discord outage never drops or duplicates a notification — leftovers send next run.
 
 Dedup (`filtering/dedup.py` + `seen_jobs` table) keys on `external_id`, then normalized canonical URL, then content hash.

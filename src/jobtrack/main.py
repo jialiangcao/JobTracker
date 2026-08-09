@@ -207,6 +207,20 @@ def sources_enable(source_id: int) -> None:
     typer.echo(f"source #{source_id} enabled")
 
 
+@sources_app.command("reenable-all")
+def sources_reenable_all() -> None:
+    """Re-enable every source the circuit breaker auto-disabled, clearing failure streaks.
+
+    For recovering from a fleet-wide cause (a pacing change, an outage) once it is fixed.
+    Sources disabled by hand or by `sources sync --prune` are left alone."""
+
+    async def fn(session: AsyncSession) -> None:
+        count = await repo.reenable_auto_disabled(session)
+        typer.echo(f"re-enabled {count} auto-disabled sources")
+
+    _with_session(fn)
+
+
 @sources_app.command("disable")
 def sources_disable(source_id: int) -> None:
     _with_session(lambda s: repo.set_source_enabled(s, source_id, False))

@@ -49,10 +49,20 @@ class Politeness:
     max_delay_ms: int | None = None
 
 
-# The whole group shares one pacing clock, so its delay sets the provider-wide request
-# rate: ~80ms between starts is ~12 req/s, comfortably under the measured 15 req/s
-# ceiling. A source declaring its own politeness replaces this entirely.
-_GROUP_POLITENESS = {"myworkdayjobs.com": Politeness(min_delay_ms=60, max_delay_ms=100)}
+# A host or group shares one pacing clock, so its delay sets the provider-wide request
+# rate. A source declaring its own politeness replaces this entirely.
+#
+# Workday: the 15 req/s figure above is the *429* ceiling, and staying under it was not
+# enough — sustained volume trips bot mitigation instead, which answers HTTP 200 with an
+# HTML challenge body rather than a status code. A rate probe cannot see that, so it read
+# as success right up until the JSON parse. ~325ms (~3 req/s) held across a full run.
+#
+# Workable: one host for every board, and 150-400ms (~3.6 req/s) drew 429s across roughly
+# half the fleet. ~1.25s is one board per second, which the widget endpoint tolerates.
+_GROUP_POLITENESS = {
+    "myworkdayjobs.com": Politeness(min_delay_ms=250, max_delay_ms=400),
+    "apply.workable.com": Politeness(min_delay_ms=1000, max_delay_ms=1500),
+}
 
 
 class _HostState:

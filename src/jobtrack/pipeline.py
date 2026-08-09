@@ -161,6 +161,10 @@ async def _persist_outcome(
 
     delta = SourceDelta()
     new_count = 0
+    # A dry run must not disturb the rotation cursor: previewing a slice would otherwise
+    # push those sources to the back of the queue and delay their next real poll.
+    if not dry_run:
+        await repo.mark_source_polled(session, source)
     if outcome.status == "ok":
         delta.sources_ok = 1
         delta.jobs_fetched = outcome.fetched_count
@@ -189,7 +193,11 @@ async def _persist_outcome(
     else:
         delta.sources_failed = 1
         tripped = await repo.record_source_failure(
-            session, source, error or "unknown", settings.circuit_breaker_threshold
+            session,
+            source,
+            error or "unknown",
+            settings.circuit_breaker_threshold,
+            outcome.http_status,
         )
         if tripped:
             message = f"circuit breaker: source {source.kind}/{source.name} disabled ({error})"
@@ -243,11 +251,14 @@ async def run_pipeline(
     max_sources: int | None = None,
     ignore_seen: bool = False,
 ) -> RunSummary:
-    """`max_sources` polls only the first N enabled sources (by id); `ignore_seen` treats
-    every match as new, ignoring seen_jobs. Both are debugging aids for manual runs."""
+    """`max_sources` polls only the first N of the selected sources; `ignore_seen` treats
+    every match as new, ignoring seen_jobs. Both are debugging aids for manual runs.
+
+    Which sources a run selects at all is `settings.max_sources_per_run` — the rotation
+    budget, not a debugging aid — applied in the query as a least-recently-polled slice."""
     async with session_factory() as session:
         run = await repo.create_run(session)
-        source_rows = await repo.get_enabled_sources(session)
+        source_rows = await repo.get_enabled_sources(session, limit=settings.max_sources_per_run)
         rule_rows = await repo.get_enabled_rules(session)
         await session.commit()
         run_id = run.id
