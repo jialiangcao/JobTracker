@@ -58,10 +58,18 @@ class Politeness:
 # as success right up until the JSON parse. ~325ms (~3 req/s) held across a full run.
 #
 # Workable: one host for every board, and 150-400ms (~3.6 req/s) drew 429s across roughly
-# half the fleet. ~1.25s is one board per second, which the widget endpoint tolerates.
+# half the fleet. ~1.25s (one board per second) was the first rate that held, and 600-900ms
+# (~1.33 req/s) is a bisect of that untested gap, taken to shorten the run — 1075 boards on
+# one clock was the longest pole in a run that overran its 30-minute interval.
+#
+# Watch source_results for http_status 429 on workable sources after changing this. A 429
+# here is self-defeating rather than merely impolite: it is exempt from the circuit breaker
+# (record_source_failure), so nothing gets disabled and nothing goes quiet — the retries
+# just add wall clock to the run this delay was lowered to shorten. If they appear, go back
+# to 1000-1500 rather than splitting again.
 _GROUP_POLITENESS = {
     "myworkdayjobs.com": Politeness(min_delay_ms=250, max_delay_ms=400),
-    "apply.workable.com": Politeness(min_delay_ms=1000, max_delay_ms=1500),
+    "apply.workable.com": Politeness(min_delay_ms=600, max_delay_ms=900),
 }
 
 
