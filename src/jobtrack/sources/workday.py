@@ -9,9 +9,9 @@ Three things make this fetcher longer than the other ATS ones:
 
 Every request here shares one pacing clock with every other Workday tenant (see
 `_SHARED_LIMIT_DOMAINS`), so requests-per-board, not boards, is what sets the run's wall
-clock. Two things keep that count down: a discovered facet is cached back into
-`sources.config` so the probe is paid once rather than every 30 minutes, and the
-no-facet fallback crawls far fewer pages than the faceted path (`_MAX_PAGES_UNFACETED`).
+clock — measured at ~2.0 with the facet cache warm, which is what makes a full-fleet sweep
+fit inside one interval. Keeping it there is what the cached facet below is for: without
+it, every board pays a discovery probe every single run.
 """
 
 import re
@@ -28,14 +28,15 @@ from jobtrack.sources.polite_http import FetchError, PoliteClient
 log = get_logger(__name__)
 
 _PAGE_SIZE = 20  # server-side hard cap; limit=50 answers HTTP 400
-_MAX_PAGES = 25  # safety valve for a faceted crawl (500 intern postings)
-# The unfaceted fallback is a different bargain: it pages the *whole* board, most of which
-# is not early-career, and the boards that need it are the majority of the fleet — 25 pages
-# each is what put the Workday clock past the run interval. Workday returns newest-first,
-# and `max_posting_age_days` discards the old tail anyway, so a shallow crawl every 30
-# minutes sees new postings as they appear. config.max_pages overrides this per source for
-# a board worth crawling deeper.
-_MAX_PAGES_UNFACETED = 8  # 160 most-recent postings
+# Safety valve, not a budget: one cap for both the faceted and the unfaceted crawl.
+#
+# The unfaceted fallback pages the whole board rather than just its interns, so capping it
+# shorter looks like the obvious saving — but measured across a rotation slice, 412 of 427
+# boards finished within 4 pages and exactly two went deep. Trimming the tail would have
+# bought ~30s out of a ~1290s Workday clock while truncating the only boards big enough for
+# truncation to lose postings. config.max_pages narrows an individual board if one ever
+# does get out of hand; the "hit the page cap" warning below is what to watch for.
+_MAX_PAGES = 25  # 500 postings
 # How long a discovered facet is trusted before it is probed for again. A tenant only
 # reshuffles its job families on a re-implementation, so this is about eventually noticing
 # a change, not about catching it quickly: across the fleet it amortizes to a few hundred
@@ -153,11 +154,11 @@ def _early_career_facet(facets: Any) -> tuple[str, list[str]] | None:
     return next(iter(matched.items()), None)
 
 
-def _max_pages(source: SourceRef, *, faceted: bool) -> int:
+def _max_pages(source: SourceRef) -> int:
     configured = source.config.get("max_pages")
     if isinstance(configured, int) and configured > 0:
         return configured
-    return _MAX_PAGES if faceted else _MAX_PAGES_UNFACETED
+    return _MAX_PAGES
 
 
 def _configured_facet(source: SourceRef) -> tuple[str, list[str]] | None:
@@ -268,7 +269,7 @@ class WorkdayFetcher:
         postings: list[RawPosting] = []
         last_status = status
         total: int | None = None
-        limit = _max_pages(source, faceted=facet is not None)
+        limit = _max_pages(source)
 
         for page in range(limit):
             if page == 0 and first is not None:

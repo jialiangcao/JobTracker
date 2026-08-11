@@ -26,8 +26,13 @@ class Settings(BaseSettings):
     max_posting_age_days: int = 30  # 0 disables; postings with no date are always kept
     us_only: bool = True
 
-    # Scheduler
-    run_interval_seconds: int = 1800
+    # Scheduler. Sized from the busiest pacing clock, not from how fresh we'd like the
+    # results: a full-fleet sweep is bounded by Workday at ~1290s (1962 boards x ~2.0
+    # requests x 325ms), so 2700 leaves roughly 2x headroom for fleet growth and for the
+    # occasional run that re-probes facets. Shortening this below ~1600s means runs start
+    # overlapping the sweep they are meant to replace — check the pacing math in
+    # polite_http._GROUP_POLITENESS before lowering it.
+    run_interval_seconds: int = 2700
 
     # Polite HTTP defaults (per-source overrides live in sources.config.politeness)
     #
@@ -50,6 +55,13 @@ class Settings(BaseSettings):
     # first, so the fleet can outgrow what one interval will politely fetch. 0 = no cap
     # (every enabled source every run), which is only safe while the pacing math above
     # says the busiest host fits inside run_interval_seconds.
+    #
+    # Prefer widening run_interval_seconds to setting this. A count-based cap slices a
+    # queue ordered by last_polled_at, and that order stays correlated with `kind` (it
+    # inherits sources.toml's grouping), so a slice is never a representative sample of
+    # the fleet: at 4000 it put every Workday board in the same slice and made every third
+    # run take 54 minutes while the other two took 8. If it is ever needed again, size it
+    # so the expensive kinds are spread across slices rather than concentrated in one.
     max_sources_per_run: int = 0
 
     # Circuit breaker: auto-disable a source after this many consecutive failures.

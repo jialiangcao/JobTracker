@@ -1,6 +1,6 @@
 # jobtrack
 
-Self-hosted job-listing watcher. Every 30 minutes it polls job sources (ATS public APIs:
+Self-hosted job-listing watcher. Every 45 minutes it polls job sources (ATS public APIs:
 Greenhouse, Lever, Ashby, SmartRecruiters, Workable, Workday), normalizes listings via per-source
 adapters, filters for CS internships with DB-configurable regex rules, dedups against
 history, and posts new matches as Discord embeds. Per-run results land in Postgres;
@@ -23,7 +23,7 @@ uv run jobtrack sources sync             # apply sources.toml
 uv run jobtrack run-once --dry-run       # fetch + filter, print would-be matches, no writes
 uv run jobtrack run-once -n 3 --dry-run  # same, but only the first 3 enabled sources
 uv run jobtrack run-once                 # real run (sends to Discord if configured)
-uv run jobtrack serve                    # the 30-minute loop
+uv run jobtrack serve                    # the poll loop (RUN_INTERVAL_SECONDS)
 ```
 
 Checks:
@@ -87,7 +87,7 @@ The file is bind-mounted read-only into the app container, so no rebuild is need
 
 - **Sentry**: create a Python project, put its DSN in `SENTRY_DSN`. Fetch/run errors and
   circuit-breaker trips show up grouped per issue.
-- **healthchecks.io**: create a check with period 30 min, grace 15 min; put the ping URL
+- **healthchecks.io**: create a check with period 45 min, grace 20 min; put the ping URL
   in `HEALTHCHECKS_URL`. If the loop, container, or VPS dies silently, you get alerted.
 
 ## Deploying (Hetzner)

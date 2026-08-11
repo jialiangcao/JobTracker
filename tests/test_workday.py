@@ -356,38 +356,20 @@ async def test_rediscovery_finding_nothing_retracts_the_cached_facet(settings: S
 
 
 @respx.mock
-async def test_the_unfaceted_fallback_crawls_far_fewer_pages_than_a_faceted_one(
+async def test_the_unfaceted_fallback_gets_the_same_page_cap_as_a_faceted_crawl(
     settings: Settings,
 ) -> None:
-    """The no-facet path pages the whole board, and those boards are most of the fleet —
-    it gets a much shallower cap than a faceted crawl, which only pages real interns."""
-    unfaceted = respx.post(JOBS_URL).mock(
-        return_value=httpx.Response(200, json=page(20, total=100_000))
-    )
-    async with PoliteClient(settings) as client:
-        shallow = await WorkdayFetcher().fetch(ref(), client)
-    assert unfaceted.call_count == 8
-    assert len(shallow.postings) == 160
-
-    respx.reset()
-    faceted = respx.post(JOBS_URL).mock(
-        return_value=httpx.Response(200, json=page(20, total=100_000))
-    )
-    async with PoliteClient(settings) as client:
-        deep = await WorkdayFetcher().fetch(ref(worker_sub_types=["x"]), client)
-    assert faceted.call_count == 25
-    assert len(deep.postings) == 500
-
-
-@respx.mock
-async def test_max_pages_overrides_the_unfaceted_cap(settings: Settings) -> None:
+    """Deep boards are ~0.5% of the fleet, so a shorter cap here would save ~30s of the
+    Workday clock and truncate the only boards large enough to lose postings by it."""
     route = respx.post(JOBS_URL).mock(
         return_value=httpx.Response(200, json=page(20, total=100_000))
     )
     async with PoliteClient(settings) as client:
-        await WorkdayFetcher().fetch(ref(max_pages=12), client)
+        result = await WorkdayFetcher().fetch(ref(), client)
 
-    assert route.call_count == 12
+    assert route.call_count == 25
+    assert all(b["appliedFacets"] == {} for b in bodies(route))
+    assert len(result.postings) == 500
 
 
 @respx.mock
