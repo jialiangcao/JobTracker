@@ -112,6 +112,31 @@ async def test_sync_adds_updates_and_preserves_runtime_keys(
         assert source.config == {"slug": "stripe2", "etag": 'W/"abc"'}
 
 
+async def test_config_updates_are_stored_retracted_and_survive_a_sync(
+    tmp_path: Path, session_factory: SessionFactory
+) -> None:
+    """Workday caches its discovered facet through this path — it has to outlive a sync
+    the same way an ETag does, and a None must retract it rather than store a null."""
+    body = '[[source]]\nkind = "workday"\nname = "Acme"\nurl = "https://acme.wd5.myworkdayjobs.com/en-US/C"\n'
+    (spec,) = load_sources_file(write(tmp_path, body))
+    async with session_factory() as session:
+        await repo.sync_source(session, spec)
+        source = await repo.find_source(session, "workday", "Acme")
+        assert source is not None
+
+        facet = {"parameter": "workerSubType", "values": ["intern-id"]}
+        await repo.record_source_success(session, source, config_updates={"facet": facet})
+        await session.commit()
+        assert source.config["facet"] == facet
+
+        assert await repo.sync_source(session, spec) in ("unchanged", "updated")
+        assert source.config["facet"] == facet
+
+        await repo.record_source_success(session, source, config_updates={"facet": None})
+        await session.commit()
+        assert "facet" not in source.config
+
+
 async def test_sync_leaves_enabled_alone_unless_declared(
     tmp_path: Path, session_factory: SessionFactory
 ) -> None:

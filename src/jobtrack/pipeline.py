@@ -50,6 +50,7 @@ class SourceOutcome:
     matched: list[JobPosting] = field(default_factory=list)
     etag: str | None = None
     last_modified: str | None = None
+    config_updates: dict[str, object] | None = None
 
 
 @dataclass
@@ -101,6 +102,7 @@ async def _process_source(
     outcome.http_status = result.http_status
     outcome.etag = result.etag
     outcome.last_modified = result.last_modified
+    outcome.config_updates = result.config_updates
     outcome.fetched_count = len(result.postings)
 
     override = ref.config.get("adapter_override")
@@ -176,6 +178,7 @@ async def _persist_outcome(
             source,
             etag=None if dry_run else outcome.etag,
             last_modified=None if dry_run else outcome.last_modified,
+            config_updates=None if dry_run else outcome.config_updates,
         )
         for job in outcome.matched:
             if dry_run:

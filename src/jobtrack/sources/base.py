@@ -44,6 +44,10 @@ class FetchResult:
     # New validators to persist into sources.config for the next run's conditional request.
     etag: str | None = None
     last_modified: str | None = None
+    # Anything else the fetch learned that is worth keeping in sources.config — e.g. a
+    # discovered facet that saves a probe next run. Merged on success only; a None value
+    # deletes the key, which is how a fetcher retracts something that has gone stale.
+    config_updates: dict[str, Any] | None = None
 
 
 class Fetcher(Protocol):

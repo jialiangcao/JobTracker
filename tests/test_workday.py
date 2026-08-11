@@ -1,6 +1,7 @@
 """Workday fetcher: URL parsing, facet narrowing, and the paging safety valve."""
 
 import json
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import httpx
@@ -40,6 +41,11 @@ def page(count: int, *, total: int, facets: list[Any] | None = None) -> dict[str
 
 def bodies(route: respx.Route) -> list[Any]:
     return [json.loads(call.request.content) for call in route.calls]
+
+
+def stamp(*, days: int) -> str:
+    """`discovered_at` for a cached facet found `days` ago."""
+    return (datetime.now(UTC) - timedelta(days=days)).isoformat()
 
 
 def test_coordinates_from_a_careers_url() -> None:
@@ -258,6 +264,130 @@ async def test_max_pages_caps_a_runaway_board(settings: Settings) -> None:
 
     assert route.call_count == 3
     assert len(result.postings) == 60
+
+
+@respx.mock
+async def test_discovered_facet_is_written_back_for_the_next_run(settings: Settings) -> None:
+    """Every board shares one pacing clock with every other Workday tenant, so the probe
+    is the expensive part. Discovery caches its result into sources.config."""
+    respx.post(JOBS_URL).mock(
+        side_effect=[
+            httpx.Response(200, json=WORKDAY_LIST_PAGE),
+            httpx.Response(200, json=page(2, total=2)),
+        ]
+    )
+    async with PoliteClient(settings) as client:
+        result = await WorkdayFetcher().fetch(ref(), client)
+
+    assert result.config_updates is not None
+    facet = result.config_updates["facet"]
+    assert facet["parameter"] == "workerSubType"
+    assert facet["values"] == ["ncg-id", "intern-id"]
+    # Stamped, because the cache ages out on time rather than on an inline staleness check.
+    assert datetime.fromisoformat(facet["discovered_at"]) <= datetime.now(UTC)
+
+
+@respx.mock
+async def test_a_cached_facet_skips_the_probe(settings: Settings) -> None:
+    route = respx.post(JOBS_URL).mock(return_value=httpx.Response(200, json=page(3, total=3)))
+    cached = {"parameter": "jobFamilyGroup", "values": ["fam-id"], "discovered_at": stamp(days=2)}
+    async with PoliteClient(settings) as client:
+        result = await WorkdayFetcher().fetch(ref(facet=cached), client)
+
+    assert route.call_count == 1
+    assert bodies(route)[0]["appliedFacets"] == {"jobFamilyGroup": ["fam-id"]}
+    # Nothing was rediscovered, so nothing is rewritten — the steady state is a plain read.
+    assert result.config_updates is None
+
+
+@respx.mock
+@pytest.mark.parametrize(
+    "cached",
+    [
+        pytest.param(
+            {"parameter": "workerSubType", "values": ["old"], "discovered_at": stamp(days=30)},
+            id="expired",
+        ),
+        pytest.param({"parameter": "workerSubType", "values": ["old"]}, id="unstamped"),
+        pytest.param({"values": ["old"], "discovered_at": stamp(days=1)}, id="malformed"),
+    ],
+)
+async def test_an_unusable_cached_facet_is_rediscovered(
+    settings: Settings, cached: dict[str, Any]
+) -> None:
+    route = respx.post(JOBS_URL).mock(
+        side_effect=[
+            httpx.Response(200, json=WORKDAY_LIST_PAGE),
+            httpx.Response(200, json=page(2, total=2)),
+        ]
+    )
+    async with PoliteClient(settings) as client:
+        result = await WorkdayFetcher().fetch(ref(facet=cached), client)
+
+    assert route.call_count == 2
+    assert bodies(route)[0]["appliedFacets"] == {}  # probed again
+    assert result.config_updates is not None
+    assert result.config_updates["facet"]["values"] == ["ncg-id", "intern-id"]
+
+
+@respx.mock
+async def test_a_hand_pinned_facet_wins_over_the_cache(settings: Settings) -> None:
+    route = respx.post(JOBS_URL).mock(return_value=httpx.Response(200, json=page(1, total=1)))
+    cached = {"parameter": "jobFamily", "values": ["stale"], "discovered_at": stamp(days=1)}
+    async with PoliteClient(settings) as client:
+        result = await WorkdayFetcher().fetch(
+            ref(worker_sub_types=["pinned"], facet=cached), client
+        )
+
+    assert bodies(route)[0]["appliedFacets"] == {"workerSubType": ["pinned"]}
+    assert result.config_updates is None
+
+
+@respx.mock
+async def test_rediscovery_finding_nothing_retracts_the_cached_facet(settings: Settings) -> None:
+    """A tenant that reorganized its job families must not be left with ids we just failed
+    to reproduce — that would re-probe forever and never converge."""
+    respx.post(JOBS_URL).mock(return_value=httpx.Response(200, json=page(3, total=3)))
+    expired = {"parameter": "workerSubType", "values": ["gone"], "discovered_at": stamp(days=30)}
+    async with PoliteClient(settings) as client:
+        result = await WorkdayFetcher().fetch(ref(facet=expired), client)
+
+    assert result.config_updates == {"facet": None}
+
+
+@respx.mock
+async def test_the_unfaceted_fallback_crawls_far_fewer_pages_than_a_faceted_one(
+    settings: Settings,
+) -> None:
+    """The no-facet path pages the whole board, and those boards are most of the fleet —
+    it gets a much shallower cap than a faceted crawl, which only pages real interns."""
+    unfaceted = respx.post(JOBS_URL).mock(
+        return_value=httpx.Response(200, json=page(20, total=100_000))
+    )
+    async with PoliteClient(settings) as client:
+        shallow = await WorkdayFetcher().fetch(ref(), client)
+    assert unfaceted.call_count == 8
+    assert len(shallow.postings) == 160
+
+    respx.reset()
+    faceted = respx.post(JOBS_URL).mock(
+        return_value=httpx.Response(200, json=page(20, total=100_000))
+    )
+    async with PoliteClient(settings) as client:
+        deep = await WorkdayFetcher().fetch(ref(worker_sub_types=["x"]), client)
+    assert faceted.call_count == 25
+    assert len(deep.postings) == 500
+
+
+@respx.mock
+async def test_max_pages_overrides_the_unfaceted_cap(settings: Settings) -> None:
+    route = respx.post(JOBS_URL).mock(
+        return_value=httpx.Response(200, json=page(20, total=100_000))
+    )
+    async with PoliteClient(settings) as client:
+        await WorkdayFetcher().fetch(ref(max_pages=12), client)
+
+    assert route.call_count == 12
 
 
 @respx.mock

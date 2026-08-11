@@ -6,9 +6,16 @@ Three things make this fetcher longer than the other ATS ones:
 - a board is addressed by host + tenant + site rather than one slug;
 - `limit` is capped at 20 server-side, so a 2000-posting tenant is 100 requests unless
   the crawl is narrowed. The `workerSubType` facet is that narrowing — see `_intern_facets`.
+
+Every request here shares one pacing clock with every other Workday tenant (see
+`_SHARED_LIMIT_DOMAINS`), so requests-per-board, not boards, is what sets the run's wall
+clock. Two things keep that count down: a discovered facet is cached back into
+`sources.config` so the probe is paid once rather than every 30 minutes, and the
+no-facet fallback crawls far fewer pages than the faceted path (`_MAX_PAGES_UNFACETED`).
 """
 
 import re
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -21,7 +28,19 @@ from jobtrack.sources.polite_http import FetchError, PoliteClient
 log = get_logger(__name__)
 
 _PAGE_SIZE = 20  # server-side hard cap; limit=50 answers HTTP 400
-_MAX_PAGES = 25  # safety valve for boards with no usable intern facet (500 postings)
+_MAX_PAGES = 25  # safety valve for a faceted crawl (500 intern postings)
+# The unfaceted fallback is a different bargain: it pages the *whole* board, most of which
+# is not early-career, and the boards that need it are the majority of the fleet — 25 pages
+# each is what put the Workday clock past the run interval. Workday returns newest-first,
+# and `max_posting_age_days` discards the old tail anyway, so a shallow crawl every 30
+# minutes sees new postings as they appear. config.max_pages overrides this per source for
+# a board worth crawling deeper.
+_MAX_PAGES_UNFACETED = 8  # 160 most-recent postings
+# How long a discovered facet is trusted before it is probed for again. A tenant only
+# reshuffles its job families on a re-implementation, so this is about eventually noticing
+# a change, not about catching it quickly: across the fleet it amortizes to a few hundred
+# probes a week instead of one per board per run.
+_FACET_TTL = timedelta(days=7)
 _DEFAULT_LOCALE = "en-US"
 _LOCALE = re.compile(r"^[a-z]{2}(?:-[A-Za-z]{2})?$")
 
@@ -134,11 +153,11 @@ def _early_career_facet(facets: Any) -> tuple[str, list[str]] | None:
     return next(iter(matched.items()), None)
 
 
-def _max_pages(source: SourceRef) -> int:
+def _max_pages(source: SourceRef, *, faceted: bool) -> int:
     configured = source.config.get("max_pages")
     if isinstance(configured, int) and configured > 0:
         return configured
-    return _MAX_PAGES
+    return _MAX_PAGES if faceted else _MAX_PAGES_UNFACETED
 
 
 def _configured_facet(source: SourceRef) -> tuple[str, list[str]] | None:
@@ -150,34 +169,88 @@ def _configured_facet(source: SourceRef) -> tuple[str, list[str]] | None:
     return ("workerSubType", ids) if ids else None
 
 
+def _cached_facet(source: SourceRef) -> tuple[str, list[str]] | None:
+    """config.facet — what discovery found, written back by `_facet_update`.
+
+    Facet ids are per-tenant GUIDs that change only when the tenant reconfigures its job
+    families, so re-deriving them every 30 minutes buys nothing and costs one shared-clock
+    slot per board. There is no cheap inline staleness check — a faceted crawl returning
+    nothing means "no interns open right now" far more often than it means "ids expired" —
+    so the cache ages out on `_FACET_TTL` instead. An entry that is malformed, unstamped,
+    or expired reads as absent, which simply means "probe again this run".
+    """
+    cached = source.config.get("facet")
+    if not isinstance(cached, dict):
+        return None
+    param = cached.get("parameter")
+    values = cached.get("values")
+    if not isinstance(param, str) or not param or not isinstance(values, list):
+        return None
+    try:
+        discovered_at = datetime.fromisoformat(str(cached.get("discovered_at")))
+    except ValueError:
+        return None
+    if discovered_at.tzinfo is None:
+        discovered_at = discovered_at.replace(tzinfo=UTC)
+    if datetime.now(UTC) - discovered_at > _FACET_TTL:
+        return None
+    ids = [v for v in values if isinstance(v, str) and v]
+    return (param, ids) if ids else None
+
+
+def _facet_update(found: tuple[str, list[str]] | None, *, had_cache: bool) -> dict[str, Any] | None:
+    """What to write back to sources.config after a discovery probe ran, or None to leave
+    it alone. Re-stamps on every probe even when the ids are unchanged — that stamp is
+    what buys the next TTL window. A probe that now finds nothing retracts the stored
+    entry rather than leaving ids we just failed to reproduce."""
+    if found is not None:
+        return {
+            "facet": {
+                "parameter": found[0],
+                "values": found[1],
+                "discovered_at": datetime.now(UTC).isoformat(),
+            }
+        }
+    return {"facet": None} if had_cache else None
+
+
 class WorkdayFetcher:
     async def fetch(self, source: SourceRef, client: PoliteClient) -> FetchResult:
         coords = coordinates(source)
-        applied = _configured_facet(source)
+        # config.worker_sub_types is a hand-pinned facet and always wins; config.facet is
+        # what a previous run discovered. Either one skips the probe entirely.
+        applied = _configured_facet(source) or _cached_facet(source)
+        if applied is not None:
+            return await self._crawl(source, client, coords, facet=applied)
 
-        if applied is None:
-            # Probe the unfaceted board once to read its facet ids, then discard the page:
-            # re-running from offset 0 with the facet applied is one wasted request and
-            # saves dozens on any board with more than a few hundred postings.
-            probe, status = await self._page(source, client, coords, offset=0, facet=None)
-            applied = _early_career_facet(probe.get("facets"))
-            if applied is None:
-                log.info(
-                    "workday: no early-career facet, crawling unfaceted",
-                    source=source.name,
-                    total=probe.get("total"),
-                )
-                return await self._crawl(
-                    source, client, coords, facet=None, first=probe, status=status
-                )
+        # Probe the unfaceted board once to read its facet ids, then discard the page:
+        # re-running from offset 0 with the facet applied is one wasted request and
+        # saves dozens on any board with more than a few hundred postings.
+        probe, status = await self._page(source, client, coords, offset=0, facet=None)
+        found = _early_career_facet(probe.get("facets"))
+        update = _facet_update(found, had_cache="facet" in source.config)
+        if found is None:
             log.info(
-                "workday: narrowing by facet",
+                "workday: no early-career facet, crawling unfaceted",
                 source=source.name,
-                facet=applied[0],
-                values=len(applied[1]),
+                total=probe.get("total"),
             )
-
-        return await self._crawl(source, client, coords, facet=applied)
+            return await self._crawl(
+                source,
+                client,
+                coords,
+                facet=None,
+                first=probe,
+                status=status,
+                config_updates=update,
+            )
+        log.info(
+            "workday: narrowing by facet",
+            source=source.name,
+            facet=found[0],
+            values=len(found[1]),
+        )
+        return await self._crawl(source, client, coords, facet=found, config_updates=update)
 
     async def _crawl(
         self,
@@ -188,13 +261,14 @@ class WorkdayFetcher:
         facet: tuple[str, list[str]] | None,
         first: dict[str, Any] | None = None,
         status: int | None = None,
+        config_updates: dict[str, Any] | None = None,
     ) -> FetchResult:
         """Page until a short page, the reported total, or the page cap. `first` lets the
         unfaceted path reuse the probe response instead of re-requesting offset 0."""
         postings: list[RawPosting] = []
         last_status = status
         total: int | None = None
-        limit = _max_pages(source)
+        limit = _max_pages(source, faceted=facet is not None)
 
         for page in range(limit):
             if page == 0 and first is not None:
@@ -227,7 +301,9 @@ class WorkdayFetcher:
             )
 
         # POST responses carry no useful validators, so no ETag/Last-Modified round-trip.
-        return FetchResult(postings=postings, http_status=last_status)
+        return FetchResult(
+            postings=postings, http_status=last_status, config_updates=config_updates
+        )
 
     @staticmethod
     def _with_base_url(item: Any, coords: WorkdayCoordinates) -> Any:

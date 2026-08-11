@@ -1,7 +1,8 @@
 """Declarative source list: parse sources.toml into specs for `jobtrack sources sync`.
 
-The file owns MANAGED_KEYS; the app owns RUNTIME_KEYS (fetch validators it writes back).
-Sync merges rather than replaces so syncing never clobbers a stored ETag.
+The file owns MANAGED_KEYS; the app owns RUNTIME_KEYS (what a fetch writes back: validators
+and Workday's discovered facet). Sync merges rather than replaces so syncing never clobbers
+a stored ETag.
 """
 
 import tomllib
@@ -24,7 +25,9 @@ MANAGED_KEYS = (
     "worker_sub_types",
     "max_pages",
 )
-RUNTIME_KEYS = ("etag", "last_modified")
+# "facet" is Workday's cached facet discovery, stamped with the time it was found — pin ids
+# by hand with the file-managed "worker_sub_types" instead, which takes precedence over it.
+RUNTIME_KEYS = ("etag", "last_modified", "facet")
 
 # Kinds addressed by a full URL rather than a board slug.
 URL_KINDS = frozenset({"scrape", "workday"})

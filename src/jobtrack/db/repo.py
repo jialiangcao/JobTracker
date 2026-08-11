@@ -118,6 +118,7 @@ async def record_source_success(
     *,
     etag: str | None = None,
     last_modified: str | None = None,
+    config_updates: dict[str, Any] | None = None,
 ) -> None:
     source.consecutive_failures = 0
     source.last_success_at = utcnow()
@@ -126,6 +127,13 @@ async def record_source_success(
         flag_modified(source, "config")
     if last_modified is not None:
         source.config["last_modified"] = last_modified
+        flag_modified(source, "config")
+    for key, value in (config_updates or {}).items():
+        # None retracts a key (a cached facet that stopped working); anything else stores it.
+        if value is None:
+            source.config.pop(key, None)
+        else:
+            source.config[key] = value
         flag_modified(source, "config")
 
 
